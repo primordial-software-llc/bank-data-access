@@ -6,4 +6,4 @@
 **/obj/
 packages/
 
-personal.json
+BankdDataAccess/aws-lambda-tools-defaults.json
