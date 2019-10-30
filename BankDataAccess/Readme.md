@@ -38,12 +38,12 @@ If already installed check if new version is available.
 
 Execute unit tests
 ```
-    cd "BankdDataAccess/test/BankdDataAccess.Tests"
+    cd "BankDataAccess/test/BankDataAccess.Tests"
     dotnet test
 ```
 
 Deploy function to AWS Lambda
 ```
-    cd "BankdDataAccess/src/BankdDataAccess"
+    cd "BankDataAccess/src/BankDataAccess"
     dotnet lambda deploy-function
 ```

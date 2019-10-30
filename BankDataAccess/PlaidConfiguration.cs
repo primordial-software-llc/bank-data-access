@@ -1,9 +1,10 @@
 ﻿using System;
 
-namespace MemexLambdaCrawlerTests
+namespace BankDataAccess
 {
-    class PlaidConfiguration
+    public class PlaidConfiguration
     {
+        public const string DEV_URL = "https://development.plaid.com";
         public static string DEV_CLIENT_ID => Environment.GetEnvironmentVariable("PLAID_DEV_CLIENT_ID");
         public static string DEV_PUBLIC_KEY => Environment.GetEnvironmentVariable("PLAID_DEV_PUBLIC_KEY");
         public static string DEV_SECRET => Environment.GetEnvironmentVariable("PLAID_DEV_SECRET");

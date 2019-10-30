@@ -1,15 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-using Xunit;
-using Amazon.Lambda.Core;
 using Amazon.Lambda.TestUtilities;
+using Newtonsoft.Json.Linq;
+using Xunit;
 
-using BankdDataAccess;
-
-namespace BankdDataAccess.Tests
+namespace BankDataAccess.Tests
 {
     public class FunctionTest
     {
@@ -20,9 +13,7 @@ namespace BankdDataAccess.Tests
             // Invoke the lambda function and confirm the string was upper cased.
             var function = new Function();
             var context = new TestLambdaContext();
-            var upperCase = function.FunctionHandler("hello world", context);
-
-            Assert.Equal("HELLO WORLD", upperCase);
+            var upperCase = function.FunctionHandler(new JObject(), context);
         }
 
     }
