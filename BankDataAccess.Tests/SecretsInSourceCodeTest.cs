@@ -4,15 +4,23 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace BankDataAccess.Tests
 {
     public class SecretsInSourceCodeTest
     {
+        private readonly ITestOutputHelper output;
+
+        public SecretsInSourceCodeTest(ITestOutputHelper output)
+        {
+            this.output = output;
+        }
+        const string PROJECT_ROOT = "C:\\Users\\peon\\Desktop\\projects\\bank-data-access\\";
         [Fact]
         public void Check_For_Secrets_In_Source_Code()
         {
-            var gitignoredFiles = new List<string>
+            var gitIgnoredFiles = new List<string>
             {
                 "BankDataAccess/aws-lambda-tools-defaults.json"
             };
@@ -22,15 +30,14 @@ namespace BankDataAccess.Tests
                 "c:", "random", "c:\\program files",
                 "c:\\users\\random", "1m", "true", "1"
             };
-            const string PROJECT_ROOT = "C:\\Users\\peon\\Desktop\\projects\\bank-data-access\\";
             var files = Directory.EnumerateFiles(PROJECT_ROOT, "*.*", SearchOption.AllDirectories).ToList();
             Assert.True(files.Count > 0);
 
             var gitIgnore = File.ReadAllLines("C:\\Users\\peon\\Desktop\\projects\\bank-data-access\\.gitignore");
-            foreach (var gitignoredFile in gitignoredFiles)
+            foreach (var gitIgnoredFile in gitIgnoredFiles)
             {
-                Assert.Contains(gitignoredFile, gitIgnore);
-                files = files.Where(x => !string.Equals(x, PROJECT_ROOT + gitignoredFile.Replace("/", "\\"), StringComparison.OrdinalIgnoreCase)).ToList();
+                Assert.Contains(gitIgnoredFile, gitIgnore);
+                files = files.Where(x => !string.Equals(x, PROJECT_ROOT + gitIgnoredFile.Replace("/", "\\"), StringComparison.OrdinalIgnoreCase)).ToList();
             }
 
             IList<string> secrets = new List<string>();
@@ -59,7 +66,7 @@ namespace BankDataAccess.Tests
                 {
                     if (e.Message.Contains("\\.vs\\")) // This whole folder is gitignored.
                     {
-                        Console.WriteLine("Skipped visual studio file: " + e.Message);
+                        output.WriteLine("Skipped visual studio file: " + e.Message);
                     }
                     else
                     {
@@ -67,7 +74,8 @@ namespace BankDataAccess.Tests
                     }
                 }
             }
-            Console.WriteLine($"checked {filesChecked} of {files.Count} files.");
+            output.WriteLine($"checked {filesChecked} of {files.Count} files. {files.Count - filesChecked} files were git ignored.");
+            output.WriteLine(DateTime.Now.ToString());
         }
 
         private void CheckForSecret(string sourceCode, string sourceCodeFile, string secret)

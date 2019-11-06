@@ -10,7 +10,6 @@ namespace BankDataAccess.Tests
     public class Test
     {
         private readonly ITestOutputHelper output;
-        private HttpClient client = new HttpClient();
 
         public Test(ITestOutputHelper output)
         {
@@ -37,6 +36,7 @@ namespace BankDataAccess.Tests
             var content = new StringContent(data.ToString(), Encoding.UTF8, "application/json");
             var url = PlaidConfiguration.DEV_URL + "/item/public_token/exchange";
             output.WriteLine(url);
+            var client = new HttpClient();
             var postResult = client.PostAsync(url, content).Result;
             output.WriteLine( ((int) postResult.StatusCode).ToString());
             output.WriteLine(postResult.Content.ReadAsStringAsync().Result);

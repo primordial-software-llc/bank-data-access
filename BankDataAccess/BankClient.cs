@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using Newtonsoft.Json.Linq;
@@ -9,7 +8,7 @@ namespace BankDataAccess
     public class BankClient
     {
         private string BaseUrl { get; }
-        private HttpClient Client = new HttpClient();
+        private readonly HttpClient Client = new HttpClient();
 
         public BankClient(string baseUrl)
         {
@@ -27,9 +26,12 @@ namespace BankDataAccess
             var content = new StringContent(data.ToString(), Encoding.UTF8, "application/json");
             var url = BaseUrl + "/accounts/balance/get";
             var postResult = Client.PostAsync(url, content).Result;
-            postResult.EnsureSuccessStatusCode();
-            var json = JObject.Parse(postResult.Content.ReadAsStringAsync().Result);
-            return json;
+            var result = postResult.Content.ReadAsStringAsync().Result;
+            if (!postResult.IsSuccessStatusCode)
+            {
+                throw new Exception(result);
+            }
+            return JObject.Parse(result);
         }
     }
 }
