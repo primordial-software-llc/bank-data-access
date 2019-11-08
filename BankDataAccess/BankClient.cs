@@ -15,16 +15,19 @@ namespace BankDataAccess
             BaseUrl = baseUrl;
         }
 
-        public JObject GetAccountBalance()
+        /// <summary>
+        /// Get account balance doesn't work with capital one: /accounts/balance/get
+        /// </summary>
+        public JObject GetAccounts(string accessToken)
         {
             var data = new JObject
             {
                 {"client_id", PlaidConfiguration.DEV_CLIENT_ID },
                 {"secret", PlaidConfiguration.DEV_SECRET },
-                { "access_token", PlaidConfiguration.DEV_ACCESS_TOKEN_PERSONAL_CHECKING }
+                { "access_token", accessToken }
             };
             var content = new StringContent(data.ToString(), Encoding.UTF8, "application/json");
-            var url = BaseUrl + "/accounts/balance/get";
+            var url = BaseUrl + "/accounts/get";
             var postResult = Client.PostAsync(url, content).Result;
             var result = postResult.Content.ReadAsStringAsync().Result;
             if (!postResult.IsSuccessStatusCode)

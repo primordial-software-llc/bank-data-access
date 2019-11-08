@@ -22,8 +22,10 @@ namespace BankDataAccess.Tests
         /// </summary>
         /// <remarks>
         /// Access token has been saved to environment variables.
+        /// Don't bother running until getting a new public token, because it expires after 30 minutes.
+        /// This will need to be run each time a new account is linked using the plaid form (until the process is refined): https://blog.plaid.com/plaid-link/
         /// </remarks>
-        // [Fact] Don't bother running until getting a new public token, because it expires after 30 minutes.
+        //[Fact] 
         public void Create_Access_Token()
         {
             // Use link form to get the pre-req data and authenticate to your bank: https://blog.plaid.com/plaid-link/
@@ -47,7 +49,8 @@ namespace BankDataAccess.Tests
         public void CheckAccountBalance()
         {
             var client = new BankClient(PlaidConfiguration.DEV_URL);
-            output.WriteLine(client.GetAccountBalance().ToString(Formatting.Indented));
+            var balance = client.GetAccounts(PlaidConfiguration.DEV_ACCESS_TOKEN_PERSONAL_CHECKING);
+            output.WriteLine(balance.ToString(Formatting.Indented));
         }
 
     }

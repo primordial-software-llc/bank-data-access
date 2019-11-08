@@ -1,7 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Amazon.DynamoDBv2;
+using Amazon.DynamoDBv2.Model;
+using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
+using AwsTools;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.Json.JsonSerializer))]
@@ -23,9 +29,41 @@ namespace BankDataAccess
             var email = JObject.Parse(payload)["email"].Value<string>();
             Console.WriteLine("User accessed API's: " + email);
 
+            var body = JObject.Parse(request.Body);
+            var requestType = body["requestType"] == null ? string.Empty : body["requestType"].Value<string>();
             try
             {
-                json = client.GetAccountBalance();
+                if (string.Equals(requestType, "budget"))
+                {
+                    var dbClient = new AmazonDynamoDBClient();
+                    var dbItem = dbClient.GetItemAsync(new BankDataAccessUser().GetTable(),
+                        new BankDataAccessUser {Email = email}.GetKey()
+                    ).Result;
+                    // MOVE THIS TO AWSTOOLS
+                    var user = JsonConvert.DeserializeObject<BankDataAccessUser>(Document.FromAttributeMap(dbItem.Item).ToJson());
+                    user.AccessTokens = null; // Don't send this data to the client. It should get moved to another table that's encrypted.
+                    json = JObject.Parse(JsonConvert.SerializeObject(user));
+                }
+                else if (string.Equals(requestType, "accountBalance") || string.IsNullOrWhiteSpace(requestType))
+                {
+                    var dbClient = new AmazonDynamoDBClient();
+                    var dbItem = dbClient.GetItemAsync(new BankDataAccessUser().GetTable(), new BankDataAccessUser { Email = email }.GetKey()).Result;
+                    var user = JsonConvert.DeserializeObject<BankDataAccessUser>(Document.FromAttributeMap(dbItem.Item).ToJson());
+                    var accounts = new JArray();
+                    foreach (var accessToken in user.AccessTokens ?? new List<string>())
+                    {
+                        var institutionAccounts = client.GetAccounts(accessToken);
+                        foreach (var account in institutionAccounts["accounts"])
+                        {
+                            accounts.Add(account);
+                        }
+                    }
+                    json = new JObject {{"accounts", accounts}};
+                }
+                else
+                {
+                    throw new Exception("Unknown requestType");
+                }
             }
             catch (Exception exception)
             {

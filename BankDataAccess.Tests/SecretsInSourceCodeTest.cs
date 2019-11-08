@@ -49,6 +49,8 @@ namespace BankDataAccess.Tests
                     secrets.Add(secret);
                 }
             }
+            secrets.Add("public-"+"development-"); // Skip finding this secret in this file using concatentation to obfuscate.
+            secrets.Add("access-"+"development-");
 
             int filesChecked = 0;
             foreach (string file in files)
