@@ -23,19 +23,22 @@ namespace BankDataAccess
             response.Headers.Add("access-control-allow-origin", "*");
             response.StatusCode = 200;
             JObject json;
-
             var authHeader = request.Headers["Authorization"];
             var payload = Base64Decode(authHeader.Split('.')[1]);
             var email = JObject.Parse(payload)["email"].Value<string>();
             Console.WriteLine("User accessed API's: " + email);
-
-            var body = JObject.Parse(request.Body);
-            var requestType = body["requestType"] == null ? string.Empty : body["requestType"].Value<string>();
+            //var body = JObject.Parse(request.Body);
+            var dbClient = new AmazonDynamoDBClient();
             try
             {
-                if (string.Equals(requestType, "budget"))
+                if (string.Equals(request.HttpMethod, "PATCH") &&
+                    string.Equals(request.Path, "/budget"))
                 {
-                    var dbClient = new AmazonDynamoDBClient();
+                    json = new JObject();
+                }
+                else if (string.Equals(request.HttpMethod, "GET") &&
+                         string.Equals(request.Path, "/budget"))
+                {
                     var dbItem = dbClient.GetItemAsync(new BankDataAccessUser().GetTable(),
                         new BankDataAccessUser {Email = email}.GetKey()
                     ).Result;
@@ -44,9 +47,9 @@ namespace BankDataAccess
                     user.AccessTokens = null; // Don't send this data to the client. It should get moved to another table that's encrypted.
                     json = JObject.Parse(JsonConvert.SerializeObject(user));
                 }
-                else if (string.Equals(requestType, "accountBalance") || string.IsNullOrWhiteSpace(requestType))
+                else if (string.Equals(request.HttpMethod, "GET") &&
+                         string.Equals(request.Path, "/accountBalance"))
                 {
-                    var dbClient = new AmazonDynamoDBClient();
                     var dbItem = dbClient.GetItemAsync(new BankDataAccessUser().GetTable(), new BankDataAccessUser { Email = email }.GetKey()).Result;
                     var user = JsonConvert.DeserializeObject<BankDataAccessUser>(Document.FromAttributeMap(dbItem.Item).ToJson());
                     var accounts = new JArray();
