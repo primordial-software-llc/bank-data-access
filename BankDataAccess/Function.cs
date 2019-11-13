@@ -1,12 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Amazon.DynamoDBv2;
-using Amazon.DynamoDBv2.Model;
 using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
-using AwsTools;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
@@ -27,14 +24,21 @@ namespace BankDataAccess
             var payload = Base64Decode(authHeader.Split('.')[1]);
             var email = JObject.Parse(payload)["email"].Value<string>();
             Console.WriteLine("User accessed API's: " + email);
-            //var body = JObject.Parse(request.Body);
+
             var dbClient = new AmazonDynamoDBClient();
             try
             {
                 if (string.Equals(request.HttpMethod, "PATCH") &&
                     string.Equals(request.Path, "/budget"))
                 {
-                    json = new JObject();
+                    var updateItemResponse = dbClient.UpdateItemAsync(
+                        new BankDataAccessUser().GetTable(),
+                        BankDataAccessUser.GetKey(email),
+                        Document.FromJson(request.Body).ToAttributeUpdateMap(false),
+                        ReturnValue.ALL_NEW
+                    ).Result;
+                    json = JObject.Parse(Document.FromAttributeMap(updateItemResponse.Attributes).ToJson());
+                    response.StatusCode = (int) updateItemResponse.HttpStatusCode;
                 }
                 else if (string.Equals(request.HttpMethod, "GET") &&
                          string.Equals(request.Path, "/budget"))

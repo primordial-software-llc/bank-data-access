@@ -33,9 +33,14 @@ namespace BankDataAccess
         [JsonProperty("weeklyRecurringExpenses")]
         public List<JObject> WeeklyRecurringExpenses { get; set; }
 
+        public static Dictionary<string, AttributeValue> GetKey(string email)
+        {
+            return new Dictionary<string, AttributeValue> { { "email", new AttributeValue { S = email } } };
+        }
+
         public Dictionary<string, AttributeValue> GetKey()
         {
-            return new Dictionary<string, AttributeValue> { {"email", new AttributeValue {S = Email}} };
+            return GetKey(Email);
         }
 
         public string GetTable()
