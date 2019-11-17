@@ -110,9 +110,9 @@ namespace BankDataAccess
                         jsonPatch["licenseAgreement"]["ipAddress"] = request.RequestContext.Identity.SourceIp;
                         jsonPatch["licenseAgreement"]["agreementDateUtc"] = DateTime.UtcNow.ToString("O");
                     }
-                    else
+                    else if (jsonPatch["licenseAgreement"] != null)
                     {
-                        jsonPatch["licenseAgreement"] = null;
+                        jsonPatch.Remove("licenseAgreement");
                     }
                     var updateItemResponse = UpdateUser(email, jsonPatch);
                     json = JObject.Parse(Document.FromAttributeMap(updateItemResponse.Attributes).ToJson());
