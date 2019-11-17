@@ -4,18 +4,21 @@ using AwsTools;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace BankDataAccess
+namespace BankDataAccess.DatabaseModel
 {
     public class BankDataAccessUser : IModel
     {
         [JsonProperty("email")]
         public string Email { get; set; }
+        [JsonProperty("licenseAgreement")]
+        public LicenseAgreement LicenseAgreement { get; set; }
+        [JsonProperty("bankLinks")]
+        public List<BankLink> BankLinks { get; set; }
+
         [JsonProperty("401k-contribution-for-year")]
         public string ContributionTo401KForYear { get; set; }
         [JsonProperty("401k-contribution-per-pay-check")]
         public string ContributionTo401KPerPayCheck { get; set; }
-        [JsonProperty("accessTokens")]
-        public List<string> AccessTokens { get; set; }
         [JsonProperty("assets")]
         public List<JObject> Assets { get; set; }
         [JsonProperty("balances")]

@@ -11,19 +11,6 @@ namespace BankDataAccess.Tests.InfrastructureAsCode
 {
     public class CreateBankDataAccessUserTable
     {
-        private static readonly RegionEndpoint HOME_REGION = RegionEndpoint.USEast1;
-
-        private static AWSCredentials CreateCredentialsFromDefaultProfile()
-        {
-            var chain = new CredentialProfileStoreChain();
-            var profile = "deploy";
-            if (!chain.TryGetAWSCredentials(profile, out AWSCredentials awsCredentials))
-            {
-                throw new Exception($"AWS credentials not found for \"{profile}\" profile.");
-            }
-            return awsCredentials;
-        }
-
         //[Fact]
         public void Create()
         {
@@ -53,7 +40,7 @@ namespace BankDataAccess.Tests.InfrastructureAsCode
                 }
             };
             var tableFactory = new DynamoDbTableFactory(
-                new AmazonDynamoDBClient(CreateCredentialsFromDefaultProfile(), HOME_REGION));
+                new AmazonDynamoDBClient(Factory.CreateCredentialsFromDefaultProfile(), Factory.HomeRegion));
             tableFactory.CreateTable(request);
         }
     }

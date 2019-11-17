@@ -1,5 +1,9 @@
-﻿using System.Net.Http;
-using System.Text;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Amazon.DynamoDBv2;
+using BankDataAccess.DatabaseModel;
+using BankDataAccess.PlaidModel;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit;
@@ -16,11 +20,47 @@ namespace BankDataAccess.Tests
             this.output = output;
         }
 
+        // ins_9
         [Fact]
-        public void CheckAccountBalance()
+        public void GetInstitution()
         {
-            var client = new BankClient(PlaidConfiguration.DEV_URL);
-            var balance = client.GetAccounts(PlaidConfiguration.DEV_ACCESS_TOKEN_PERSONAL_CHECKING);
+            var client = new BankClient(PlaidConfiguration.DEV_URL, new Logger());
+
+            var ins = client.GetInstitution("ins_9")["institution"];
+            output.WriteLine(ins.ToString(Formatting.Indented));
+
+
+            var itemJson = new JArray();
+            var institutionsJson = new JArray();
+            var institutions = new HashSet<string>();
+            var itemRecord = client.GetItem("")["item"];
+            institutions.Add(itemRecord["institution_id"].Value<string>());
+            itemJson.Add(itemRecord);
+            foreach (var institution in institutions)
+            {
+                institutionsJson.Add(client.GetInstitution(institution)["institution"]);
+            }
+            foreach (var item in itemJson)
+            {
+                var institutionId = item["institution_id"].Value<string>();
+                item["institution"] = institutionsJson.First(x =>
+                    string.Equals(x["institution_id"].Value<string>(), institutionId, StringComparison.OrdinalIgnoreCase));
+            }
+        }
+
+        [Fact]
+        public void GetItem()
+        {
+            var client = new BankClient(PlaidConfiguration.DEV_URL, new Logger());
+            var balance = client.GetItem("");
+            output.WriteLine(balance.ToString(Formatting.Indented));
+        }
+
+        [Fact]
+        public void RemoveItem()
+        {
+            var client = new BankClient(PlaidConfiguration.DEV_URL, new Logger());
+            var balance = client.RemoveItem("");
             output.WriteLine(balance.ToString(Formatting.Indented));
         }
 

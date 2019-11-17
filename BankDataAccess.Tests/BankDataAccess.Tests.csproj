@@ -14,4 +14,7 @@
   <ItemGroup>
     <ProjectReference Include="..\BankDataAccess\BankDataAccess.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Scripts\" />
+  </ItemGroup>
 </Project>
