@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
@@ -19,17 +21,17 @@ namespace BankDataAccess
         public APIGatewayProxyResponse FunctionHandler(APIGatewayProxyRequest request, ILambdaContext context)
         {
             var client = new BankClient(PlaidConfiguration.DEV_URL, new Logger());
-            var response = new APIGatewayProxyResponse();
-            response.Headers = new Dictionary<string, string>();
-            response.Headers.Add("access-control-allow-origin", "*");
-            response.StatusCode = 200;
+            var response = new APIGatewayProxyResponse
+            {
+                Headers = new Dictionary<string, string> {{"access-control-allow-origin", "*"}},
+                StatusCode = 200
+            };
             JToken json;
             var authHeader = request.Headers["Authorization"];
             var payload = Base64Decode(authHeader.Split('.')[1]);
             var email = JObject.Parse(payload)["email"].Value<string>();
             Console.WriteLine("User accessed API's: " + email);
             var databaseClient = new DatabaseClient<BankDataAccessUser>(new AmazonDynamoDBClient());
-            var updateSerializer = new JsonSerializer { NullValueHandling = NullValueHandling.Ignore };
             var user = databaseClient.Get(new BankDataAccessUser { Email = email });
             try
             {
@@ -41,9 +43,8 @@ namespace BankDataAccess
                         string.Equals(x.ItemId, body["itemId"].Value<string>(), StringComparison.OrdinalIgnoreCase));
                     client.RemoveItem(link.AccessToken);
                     user.BankLinks.Remove(link);
-                    var update = new BankDataAccessUser();
-                    update.BankLinks = user.BankLinks;
-                    var updateItemResponse = UpdateUser(email, JObject.FromObject(update, updateSerializer));
+                    var update = new JObject {{"bankLinks", JToken.FromObject(user.BankLinks)}};
+                    var updateItemResponse = UpdateUser(email, update);
                     response.StatusCode = (int)updateItemResponse.HttpStatusCode;
                     json = new JObject();
                 }
@@ -84,17 +85,14 @@ namespace BankDataAccess
                 {
                     var body = JObject.Parse(request.Body);
                     var accessTokenJson = client.GetAccessToken(body["publicToken"].Value<string>());
-                    var update = new BankDataAccessUser();
-                    // I don't like having a big model and using the c# model to update it.
-                    // Non nullable types could overwrite data.
-                    // c# models should be used for read only purposes to not alter data unintentionally.
-                    update.BankLinks = user.BankLinks ?? new List<BankLink>();
-                    update.BankLinks.Add(new BankLink
+                    var updatedBankLinks = user.BankLinks ?? new List<BankLink>();
+                    updatedBankLinks.Add(new BankLink
                     {
                         AccessToken = accessTokenJson["access_token"].Value<string>(),
                         ItemId = accessTokenJson["item_id"].Value<string>()
                     });
-                    var updateItemResponse = UpdateUser(email, JObject.FromObject(update, updateSerializer));
+                    var update = new JObject {{"bankLinks", JToken.FromObject(updatedBankLinks)}};
+                    var updateItemResponse = UpdateUser(email, update);
                     response.StatusCode = (int)updateItemResponse.HttpStatusCode;
                     json = new JObject();
                 }
@@ -127,18 +125,26 @@ namespace BankDataAccess
                 else if (string.Equals(request.HttpMethod, "GET") &&
                          string.Equals(request.Path, "/accountBalance"))
                 {
-                    var accounts = new List<AccountBalance>();
-                    var institutionsJson = new JArray();
-                    var institutions = new HashSet<string>();
-                    foreach (var bankLink in user.BankLinks ?? new List<BankLink>())
+                    var accounts = new ConcurrentBag<AccountBalance>();
+                    var institutionsDictionary = new ConcurrentDictionary<string, string>();
+                    user.BankLinks = user.BankLinks ?? new List<BankLink>();
+                    Parallel.ForEach(user.BankLinks, (bankLink) =>
                     {
                         var accountBalance = client.GetAccountBalance(bankLink.AccessToken);
-                        institutions.Add(accountBalance.Item["institution_id"].Value<string>());
+                        institutionsDictionary.TryAdd(
+                            accountBalance.Item["institution_id"].Value<string>(),
+                            accountBalance.Item["institution_id"].Value<string>());
                         accounts.Add(accountBalance);
-                    }
-                    foreach (var institution in institutions)
+                    });
+                    var institutionDetails = new ConcurrentBag<JObject>();
+                    Parallel.ForEach(institutionsDictionary.Keys, institution =>
                     {
-                        institutionsJson.Add(client.GetInstitution(institution)["institution"]);
+                        institutionDetails.Add(client.GetInstitution(institution));
+                    });
+                    var institutionsJson = new JArray();
+                    foreach (var institutionDetail in institutionDetails)
+                    {
+                        institutionsJson.Add(institutionDetail["institution"]);
                     }
                     foreach (var account in accounts)
                     {
