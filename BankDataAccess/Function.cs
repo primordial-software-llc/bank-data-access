@@ -33,6 +33,22 @@ namespace BankDataAccess
             Console.WriteLine("User accessed API's: " + email);
             var databaseClient = new DatabaseClient<BankDataAccessUser>(new AmazonDynamoDBClient());
             var user = databaseClient.Get(new BankDataAccessUser { Email = email });
+            if (string.IsNullOrWhiteSpace(user.Email))
+            {
+                user = new BankDataAccessUser
+                {
+                    Email = email,
+                    BiWeeklyIncome = new JObject {{"date", "2015-12-25T00:00:00Z"}, {"amount", 0}},
+                    MonthlyRecurringExpenses = new List<JObject>(),
+                    WeeklyRecurringExpenses = new List<JObject>()
+                };
+                var update = JObject.FromObject(user, new JsonSerializer {NullValueHandling = NullValueHandling.Ignore});
+                var dbClient = new AmazonDynamoDBClient();
+                var createResponse = dbClient.PutItemAsync(
+                    new BankDataAccessUser().GetTable(),
+                    Document.FromJson(update.ToString()).ToAttributeMap()
+                ).Result;
+            }
             try
             {
                 if (string.Equals(request.HttpMethod, "DELETE", StringComparison.OrdinalIgnoreCase) &&
