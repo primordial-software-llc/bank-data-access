@@ -7,7 +7,7 @@ using Amazon.Runtime;
 using Amazon.Runtime.CredentialManagement;
 using Xunit;
 
-namespace BankDataAccess.Tests.InfrastructureAsCode
+namespace FinanceApi.Tests.InfrastructureAsCode
 {
     public class CreateBankDataAccessUserTable
     {
@@ -16,7 +16,7 @@ namespace BankDataAccess.Tests.InfrastructureAsCode
         {
             var request = new CreateTableRequest
             {
-                TableName = "bank-data-access-users",
+                TableName = "Finance-Users",
                 KeySchema = new List<KeySchemaElement>
                 {
                     new KeySchemaElement

@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace BankDataAccess
+namespace FinanceApi
 {
     public class BankLink
     {

@@ -6,4 +6,5 @@
 **/obj/
 packages/
 
-BankDataAccess/aws-lambda-tools-defaults.json
+FinanceApi/aws-lambda-tools-defaults.json
+FinanceApi/aws-lambda-tools-defaults.test.json

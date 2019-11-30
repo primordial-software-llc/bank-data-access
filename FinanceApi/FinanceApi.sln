@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29418.71
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BankDataAccess", "BankDataAccess.csproj", "{71BB2EED-A0D9-4B0C-BEA4-239CC0CF730B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FinanceApi", "FinanceApi.csproj", "{71BB2EED-A0D9-4B0C-BEA4-239CC0CF730B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BankDataAccess.Tests", "..\BankDataAccess.Tests\BankDataAccess.Tests.csproj", "{842206A6-0229-4F52-8674-6C2E07A1CB55}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FinanceApi.Tests", "..\FinanceApi.Tests\FinanceApi.Tests.csproj", "{842206A6-0229-4F52-8674-6C2E07A1CB55}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

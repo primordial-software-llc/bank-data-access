@@ -8,50 +8,85 @@ using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
-using BankDataAccess.DatabaseModel;
-using BankDataAccess.PlaidModel;
+using FinanceApi.DatabaseModel;
+using FinanceApi.PlaidModel;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.Json.JsonSerializer))]
-namespace BankDataAccess
+namespace FinanceApi
 {
     public class Function
     {
         public APIGatewayProxyResponse FunctionHandler(APIGatewayProxyRequest request, ILambdaContext context)
         {
-            var client = new BankClient(PlaidConfiguration.DEV_URL, new Logger());
+            var client = new BankAccessClient(Configuration.DEV_URL, new Logger());
+            var clientDomain = "https://www.primordial-software.com";
             var response = new APIGatewayProxyResponse
             {
-                Headers = new Dictionary<string, string> {{"access-control-allow-origin", "*"}},
+                Headers = new Dictionary<string, string>
+                {
+                    {"access-control-allow-origin", clientDomain},
+                    {"Access-Control-Allow-Credentials", "true" }
+                },
                 StatusCode = 200
             };
-            JToken json;
-            var authHeader = request.Headers["Authorization"];
-            var payload = Base64Decode(authHeader.Split('.')[1]);
-            var email = JObject.Parse(payload)["email"].Value<string>();
-            Console.WriteLine("User accessed API's: " + email);
-            var databaseClient = new DatabaseClient<BankDataAccessUser>(new AmazonDynamoDBClient());
-            var user = databaseClient.Get(new BankDataAccessUser { Email = email });
-            if (string.IsNullOrWhiteSpace(user.Email))
+            string token = GetCookie(request, "idToken");
+            bool isAuthenticated = false;
+            if (!request.Path.StartsWith("/unauthenticated/", StringComparison.OrdinalIgnoreCase))
             {
-                user = new BankDataAccessUser
+                isAuthenticated = AwsCognitoJwtTokenValidator.IsValid(token, Configuration.FINANCE_API_COGNITO_USER_POOL_ID);
+                if (!isAuthenticated)
                 {
-                    Email = email,
-                    BiWeeklyIncome = new JObject {{"date", "2015-12-25T00:00:00Z"}, {"amount", 0}},
-                    MonthlyRecurringExpenses = new List<JObject>(),
-                    WeeklyRecurringExpenses = new List<JObject>()
-                };
-                var update = JObject.FromObject(user, new JsonSerializer {NullValueHandling = NullValueHandling.Ignore});
-                var dbClient = new AmazonDynamoDBClient();
-                var createResponse = dbClient.PutItemAsync(
-                    new BankDataAccessUser().GetTable(),
-                    Document.FromJson(update.ToString()).ToAttributeMap()
-                ).Result;
+                    response.StatusCode = 401;
+                    response.Body = new JObject { { "error", "The incoming token is invalid" } }.ToString();
+                    return response;
+                }
             }
+
+            JToken json;
+            FinanceUser user = null;
+            string email = string.Empty;
+            if (isAuthenticated)
+            {
+                var payload = Base64Decode(token.Split('.')[1]);
+                email = JObject.Parse(payload)["email"].Value<string>();
+                Console.WriteLine("User accessed API's: " + email);
+                var databaseClient = new DatabaseClient<FinanceUser>(new AmazonDynamoDBClient());
+                user = databaseClient.Get(new FinanceUser { Email = email });
+                if (string.IsNullOrWhiteSpace(user.Email))
+                {
+                    user = new FinanceUser
+                    {
+                        Email = email,
+                        BiWeeklyIncome = new JObject { { "date", "2015-12-25T00:00:00Z" }, { "amount", 0 } },
+                        MonthlyRecurringExpenses = new List<JObject>(),
+                        WeeklyRecurringExpenses = new List<JObject>()
+                    };
+                    var update = JObject.FromObject(user, new JsonSerializer { NullValueHandling = NullValueHandling.Ignore });
+                    var dbClient = new AmazonDynamoDBClient();
+                    var createResponse = dbClient.PutItemAsync(
+                        new FinanceUser().GetTable(),
+                        Document.FromJson(update.ToString()).ToAttributeMap()
+                    ).Result;
+                }
+            }
+
             try
             {
-                if (string.Equals(request.HttpMethod, "DELETE", StringComparison.OrdinalIgnoreCase) &&
+                if (string.Equals(request.HttpMethod, "POST", StringComparison.OrdinalIgnoreCase) &&
+                    string.Equals(request.Path, "/unauthenticated/setToken", StringComparison.OrdinalIgnoreCase))
+                {
+                    var body = JObject.Parse(request.Body);
+                    response.MultiValueHeaders = new Dictionary<string, IList<string>>();
+                    response.MultiValueHeaders.Add("Set-Cookie", new List<string>
+                    {
+                        $"idToken={body["idToken"]};Path=/;Secure;HttpOnly",
+                        $"refreshToken={body["refreshToken"]};Path=/;Secure;HttpOnly"
+                    });
+                    json = new JObject();
+                }
+                else if (string.Equals(request.HttpMethod, "DELETE", StringComparison.OrdinalIgnoreCase) &&
                     string.Equals(request.Path, "/bank-link", StringComparison.OrdinalIgnoreCase))
                 {
                     var body = JObject.Parse(request.Body);
@@ -185,12 +220,33 @@ namespace BankDataAccess
             return response;
         }
 
+        private string GetCookie(APIGatewayProxyRequest request, string cookieName)
+        {
+            var cookieHeader = request.MultiValueHeaders.Keys.FirstOrDefault(x => string.Equals(x, "cookie", StringComparison.OrdinalIgnoreCase));
+            if (string.IsNullOrWhiteSpace(cookieHeader))
+            {
+                return string.Empty;
+            }
+            var cookieValues = request.MultiValueHeaders[cookieHeader];
+            foreach (var cookieValue in cookieValues)
+            {
+                var idTokenCookie = cookieValue.Split(';')
+                    .Select(x => x.Trim())
+                    .FirstOrDefault(x => string.Equals(x.Split("=")[0], cookieName, StringComparison.OrdinalIgnoreCase));
+                if (!string.IsNullOrWhiteSpace(idTokenCookie) && idTokenCookie.Split("=").Length > 0)
+                {
+                    return idTokenCookie.Split("=")[1];
+                }
+            }
+
+            return string.Empty;
+        }
         private UpdateItemResponse UpdateUser(string email, JObject update)
         {
             var dbClient = new AmazonDynamoDBClient();
             return dbClient.UpdateItemAsync(
-                new BankDataAccessUser().GetTable(),
-                BankDataAccessUser.GetKey(email),
+                new FinanceUser().GetTable(),
+                FinanceUser.GetKey(email),
                 Document.FromJson(update.ToString()).ToAttributeUpdateMap(false),
                 ReturnValue.ALL_NEW
             ).Result;

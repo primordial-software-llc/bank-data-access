@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Amazon.DynamoDBv2;
-using BankDataAccess.DatabaseModel;
-using BankDataAccess.PlaidModel;
+using System.Net.Http;
+using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace BankDataAccess.Tests
+namespace FinanceApi.Tests
 {
     public class Test
     {
@@ -20,11 +19,17 @@ namespace BankDataAccess.Tests
             this.output = output;
         }
 
-        // ins_9
+        [Fact]
+        public void EmptyTokenIsNotValid()
+        {
+            var isValid = AwsCognitoJwtTokenValidator.IsValid(string.Empty, "us-east-1_rHS4WOhz6");
+            output.WriteLine(isValid.ToString());
+        }
+
         [Fact]
         public void GetInstitution()
         {
-            var client = new BankClient(PlaidConfiguration.DEV_URL, new Logger());
+            var client = new BankAccessClient(Configuration.DEV_URL, new Logger());
 
             var ins = client.GetInstitution("ins_9")["institution"];
             output.WriteLine(ins.ToString(Formatting.Indented));
@@ -51,7 +56,7 @@ namespace BankDataAccess.Tests
         [Fact]
         public void GetItem()
         {
-            var client = new BankClient(PlaidConfiguration.DEV_URL, new Logger());
+            var client = new BankAccessClient(Configuration.DEV_URL, new Logger());
             var balance = client.GetItem("");
             output.WriteLine(balance.ToString(Formatting.Indented));
         }
@@ -59,7 +64,7 @@ namespace BankDataAccess.Tests
         [Fact]
         public void RemoveItem()
         {
-            var client = new BankClient(PlaidConfiguration.DEV_URL, new Logger());
+            var client = new BankAccessClient(Configuration.DEV_URL, new Logger());
             var balance = client.RemoveItem("");
             output.WriteLine(balance.ToString(Formatting.Indented));
         }

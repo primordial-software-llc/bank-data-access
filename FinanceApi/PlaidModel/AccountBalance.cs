@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace BankDataAccess.PlaidModel
+namespace FinanceApi.PlaidModel
 {
     public class AccountBalance
     {

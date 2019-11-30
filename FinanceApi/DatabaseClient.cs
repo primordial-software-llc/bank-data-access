@@ -3,7 +3,7 @@ using Amazon.DynamoDBv2.DocumentModel;
 using AwsTools;
 using Newtonsoft.Json;
 
-namespace BankDataAccess
+namespace FinanceApi
 {
     public class DatabaseClient<T> where T : IModel, new()
     {

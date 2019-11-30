@@ -1,8 +1,6 @@
-﻿
+﻿using Newtonsoft.Json;
 
-using Newtonsoft.Json;
-
-namespace BankDataAccess.DatabaseModel
+namespace FinanceApi.DatabaseModel
 {
     public class LicenseAgreement
     {

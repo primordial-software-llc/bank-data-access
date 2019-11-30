@@ -12,9 +12,9 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BankDataAccess\BankDataAccess.csproj" />
+    <Folder Include="Scripts\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Scripts\" />
+    <ProjectReference Include="..\FinanceApi\FinanceApi.csproj" />
   </ItemGroup>
 </Project>

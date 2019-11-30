@@ -4,9 +4,9 @@ using AwsTools;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace BankDataAccess.DatabaseModel
+namespace FinanceApi.DatabaseModel
 {
-    public class BankDataAccessUser : IModel
+    public class FinanceUser : IModel
     {
         [JsonProperty("email")]
         public string Email { get; set; }
@@ -48,7 +48,7 @@ namespace BankDataAccess.DatabaseModel
 
         public string GetTable()
         {
-            return "bank-data-access-users";
+            return "Finance-Users";
         }
     }
 }

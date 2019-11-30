@@ -1,7 +1,7 @@
 ﻿using System;
 using AwsTools;
 
-namespace BankDataAccess
+namespace FinanceApi
 {
     public class Logger : ILogging
     {

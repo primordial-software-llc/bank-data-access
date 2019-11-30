@@ -3,7 +3,7 @@ using Amazon;
 using Amazon.Runtime;
 using Amazon.Runtime.CredentialManagement;
 
-namespace BankDataAccess.Tests
+namespace FinanceApi.Tests
 {
     class Factory
     {

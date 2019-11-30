@@ -2,7 +2,7 @@
 using Xunit;
 using Xunit.Abstractions;
 
-namespace BankDataAccess.Tests
+namespace FinanceApi.Tests
 {
     public class LoanInterestSchedule
     {

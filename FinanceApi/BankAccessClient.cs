@@ -2,20 +2,20 @@
 using System.Net.Http;
 using System.Text;
 using AwsTools;
-using BankDataAccess.PlaidModel;
+using FinanceApi.PlaidModel;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace BankDataAccess
+namespace FinanceApi
 {
-    public class BankClient
+    public class BankAccessClient
     {
         private string BaseUrl { get; }
         private ILogging Logger { get; }
         private readonly HttpClient Client = new HttpClient();
         
 
-        public BankClient(string baseUrl, ILogging logger)
+        public BankAccessClient(string baseUrl, ILogging logger)
         {
             BaseUrl = baseUrl;
             Logger = logger;
@@ -25,8 +25,8 @@ namespace BankDataAccess
         {
             var data = new JObject
             {
-                { "client_id", PlaidConfiguration.DEV_CLIENT_ID },
-                { "secret", PlaidConfiguration.DEV_SECRET },
+                { "client_id", Configuration.DEV_CLIENT_ID },
+                { "secret", Configuration.DEV_SECRET },
                 { "access_token", accessToken }
             };
             var json = Send("/accounts/balance/get", data);
@@ -38,7 +38,7 @@ namespace BankDataAccess
             var data = new JObject
             {
                 { "institution_id", institutionId },
-                { "public_key", PlaidConfiguration.DEV_PUBLIC_KEY }
+                { "public_key", Configuration.DEV_PUBLIC_KEY }
             };
             return Send("/institutions/get_by_id", data);
         }
@@ -47,8 +47,8 @@ namespace BankDataAccess
         {
             var data = new JObject
             {
-                { "client_id", PlaidConfiguration.DEV_CLIENT_ID },
-                { "secret", PlaidConfiguration.DEV_SECRET },
+                { "client_id", Configuration.DEV_CLIENT_ID },
+                { "secret", Configuration.DEV_SECRET },
                 { "access_token", accessToken }
             };
             return Send("/item/get", data);
@@ -58,8 +58,8 @@ namespace BankDataAccess
         {
             var data = new JObject
             {
-                { "client_id", PlaidConfiguration.DEV_CLIENT_ID },
-                { "secret", PlaidConfiguration.DEV_SECRET },
+                { "client_id", Configuration.DEV_CLIENT_ID },
+                { "secret", Configuration.DEV_SECRET },
                 { "access_token", accessToken }
             };
             var result = Send("/item/remove", data);
@@ -74,9 +74,9 @@ namespace BankDataAccess
         {
             var data = new JObject
             {
-                { "client_id", PlaidConfiguration.DEV_CLIENT_ID },
+                { "client_id", Configuration.DEV_CLIENT_ID },
                 { "access_token", accessToken },
-                { "secret", PlaidConfiguration.DEV_SECRET }
+                { "secret", Configuration.DEV_SECRET }
             };
             return Send("/item/public_token/create", data);
         }
@@ -85,9 +85,9 @@ namespace BankDataAccess
         {
             var data = new JObject
             {
-                { "client_id", PlaidConfiguration.DEV_CLIENT_ID },
+                { "client_id", Configuration.DEV_CLIENT_ID },
                 { "public_token", publicToken },
-                { "secret", PlaidConfiguration.DEV_SECRET }
+                { "secret", Configuration.DEV_SECRET }
             };
             return Send("/item/public_token/exchange", data);
         }

@@ -4,7 +4,7 @@ using System.Net;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
 
-namespace BankDataAccess.Tests.InfrastructureAsCode
+namespace FinanceApi.Tests.InfrastructureAsCode
 {
     class DynamoDbTableFactory
     {
