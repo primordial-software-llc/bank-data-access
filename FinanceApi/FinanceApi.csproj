@@ -5,9 +5,11 @@
     <AWSProjectType>Lambda</AWSProjectType>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Amazon.Extensions.CognitoAuthentication" Version="1.0.3" />
     <PackageReference Include="Amazon.Lambda.APIGatewayEvents" Version="1.2.0" />
     <PackageReference Include="Amazon.Lambda.Core" Version="1.1.0" />
     <PackageReference Include="Amazon.Lambda.Serialization.Json" Version="1.7.0" />
+    <PackageReference Include="AWSSDK.CognitoIdentityProvider" Version="3.3.107" />
     <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.3.101.87" />
     <PackageReference Include="AwsTools" Version="1.0.18" />
   </ItemGroup>

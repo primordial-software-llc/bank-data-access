@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
-using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit;
@@ -22,7 +20,7 @@ namespace FinanceApi.Tests
         [Fact]
         public void EmptyTokenIsNotValid()
         {
-            var isValid = AwsCognitoJwtTokenValidator.IsValid(string.Empty, "us-east-1_rHS4WOhz6");
+            var isValid = AwsCognitoJwtTokenValidator.IsValid(string.Empty, string.Empty);
             output.WriteLine(isValid.ToString());
         }
 

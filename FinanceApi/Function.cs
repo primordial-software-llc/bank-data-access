@@ -3,11 +3,15 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Amazon;
+using Amazon.CognitoIdentityProvider;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
+using Amazon.Extensions.CognitoAuthentication;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
+using Amazon.Runtime;
 using FinanceApi.DatabaseModel;
 using FinanceApi.PlaidModel;
 using Newtonsoft.Json;
@@ -47,11 +51,15 @@ namespace FinanceApi
             JToken json;
             FinanceUser user = null;
             string email = string.Empty;
-            if (isAuthenticated)
+            if (!string.IsNullOrWhiteSpace(token))
             {
                 var payload = Base64Decode(token.Split('.')[1]);
                 email = JObject.Parse(payload)["email"].Value<string>();
-                Console.WriteLine("User accessed API's: " + email);
+            }
+
+            if (isAuthenticated)
+            {
+                Console.WriteLine("Authenticated user accessed API's: " + email);
                 var databaseClient = new DatabaseClient<FinanceUser>(new AmazonDynamoDBClient());
                 user = databaseClient.Get(new FinanceUser { Email = email });
                 if (string.IsNullOrWhiteSpace(user.Email))
@@ -71,19 +79,83 @@ namespace FinanceApi
                     ).Result;
                 }
             }
-
             try
             {
+                // You can move the sign-in here just for consistency. It's kind of silly to have a setToken method. You might as well make it meaningful.
                 if (string.Equals(request.HttpMethod, "POST", StringComparison.OrdinalIgnoreCase) &&
                     string.Equals(request.Path, "/unauthenticated/setToken", StringComparison.OrdinalIgnoreCase))
                 {
                     var body = JObject.Parse(request.Body);
-                    response.MultiValueHeaders = new Dictionary<string, IList<string>>();
-                    response.MultiValueHeaders.Add("Set-Cookie", new List<string>
+                    response.MultiValueHeaders = new Dictionary<string, IList<string>>
                     {
-                        $"idToken={body["idToken"]};Path=/;Secure;HttpOnly",
-                        $"refreshToken={body["refreshToken"]};Path=/;Secure;HttpOnly"
-                    });
+                        {
+                            "Set-Cookie", new List<string>
+                            {
+                                $"idToken={body["idToken"]};Path=/;Secure;HttpOnly",
+                                $"refreshToken={body["refreshToken"]};Path=/;Secure;HttpOnly"
+                            }
+                        }
+                    };
+                    json = new JObject();
+                }
+                else if (string.Equals(request.HttpMethod, "POST", StringComparison.OrdinalIgnoreCase) &&
+                         string.Equals(request.Path, "/unauthenticated/refreshToken", StringComparison.OrdinalIgnoreCase))
+                {
+                    string refreshToken = GetCookie(request, "refreshToken");
+                    if (string.IsNullOrWhiteSpace(token) || string.IsNullOrWhiteSpace(refreshToken))
+                    {
+                        response.StatusCode = 400;
+                        response.Body = new JObject { { "error", "idToken and refreshToken cookies are required" } }.ToString();
+                        return response;
+                    }
+                    var provider = new AmazonCognitoIdentityProviderClient(new AnonymousAWSCredentials(), RegionEndpoint.USEast1);
+                    var userPool = new CognitoUserPool(Configuration.FINANCE_API_COGNITO_USER_POOL_ID, Configuration.FINANCE_API_COGNITO_CLIENT_ID, provider);
+                    var cognitoUser = new CognitoUser(email, Configuration.FINANCE_API_COGNITO_CLIENT_ID, userPool, provider)
+                    {
+                        SessionTokens = new CognitoUserSession(null, null, refreshToken, DateTime.UtcNow, DateTime.UtcNow.AddHours(1))
+                    };
+                    InitiateRefreshTokenAuthRequest refreshRequest = new InitiateRefreshTokenAuthRequest
+                    {
+                        AuthFlowType = AuthFlowType.REFRESH_TOKEN_AUTH
+                    };
+                    var refreshResponse = cognitoUser.StartWithRefreshTokenAuthAsync(refreshRequest).Result;
+                    response.MultiValueHeaders = new Dictionary<string, IList<string>>
+                        { { "Set-Cookie", new List<string> { $"idToken={refreshResponse.AuthenticationResult.IdToken};Path=/;Secure;HttpOnly" } } };
+                    json = new JObject();
+                }
+                else if (string.Equals(request.HttpMethod, "POST", StringComparison.OrdinalIgnoreCase) &&
+                         string.Equals(request.Path, "/signout", StringComparison.OrdinalIgnoreCase))
+                {
+                    string refreshToken = GetCookie(request, "refreshToken");
+                    if (string.IsNullOrWhiteSpace(token) || string.IsNullOrWhiteSpace(refreshToken))
+                    {
+                        response.StatusCode = 400;
+                        response.Body = new JObject { { "error", "idToken and refreshToken cookies are required" } }.ToString();
+                        return response;
+                    }
+                    var provider = new AmazonCognitoIdentityProviderClient(new AnonymousAWSCredentials(), RegionEndpoint.USEast1);
+                    var userPool = new CognitoUserPool(Configuration.FINANCE_API_COGNITO_USER_POOL_ID, Configuration.FINANCE_API_COGNITO_CLIENT_ID, provider);
+                    var cognitoUser = new CognitoUser(email, Configuration.FINANCE_API_COGNITO_CLIENT_ID, userPool, provider)
+                    {
+                        SessionTokens = new CognitoUserSession(null, null, refreshToken, DateTime.Now, DateTime.Now.AddHours(1))
+                    };
+                    InitiateRefreshTokenAuthRequest refreshRequest = new InitiateRefreshTokenAuthRequest
+                    {
+                        AuthFlowType = AuthFlowType.REFRESH_TOKEN_AUTH
+                    };
+                    var refreshResponse = cognitoUser.StartWithRefreshTokenAuthAsync(refreshRequest).Result;
+                    cognitoUser.SessionTokens = new CognitoUserSession(null, refreshResponse.AuthenticationResult.AccessToken, refreshToken, DateTime.Now, DateTime.Now.AddHours(1));
+                    cognitoUser.GlobalSignOutAsync().Wait();
+                    response.MultiValueHeaders = new Dictionary<string, IList<string>>
+                    {
+                        {
+                            "Set-Cookie", new List<string>
+                            {
+                                "idToken=;Path=/;Secure;HttpOnly;expires=Thu, 01 Jan 1970 00:00:00 UTC",
+                                "refreshToken=;Path=/;Secure;HttpOnly;expires=Thu, 01 Jan 1970 00:00:00 UTC"
+                            }
+                        }
+                    };
                     json = new JObject();
                 }
                 else if (string.Equals(request.HttpMethod, "DELETE", StringComparison.OrdinalIgnoreCase) &&
