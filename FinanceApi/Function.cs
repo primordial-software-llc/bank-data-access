@@ -14,6 +14,7 @@ using Amazon.Lambda.Core;
 using Amazon.Runtime;
 using FinanceApi.DatabaseModel;
 using FinanceApi.PlaidModel;
+using FinanceApi.Routes.Unauthenticated;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
@@ -59,24 +60,35 @@ namespace FinanceApi
 
             if (isAuthenticated)
             {
-                Console.WriteLine("Authenticated user accessed API's: " + email);
-                var databaseClient = new DatabaseClient<FinanceUser>(new AmazonDynamoDBClient());
-                user = databaseClient.Get(new FinanceUser { Email = email });
-                if (string.IsNullOrWhiteSpace(user.Email))
+                try
                 {
-                    user = new FinanceUser
+                    Console.WriteLine("Authenticated user accessed API's: " + email);
+                    var databaseClient = new DatabaseClient<FinanceUser>(new AmazonDynamoDBClient());
+                    user = databaseClient.Get(new FinanceUser { Email = email });
+                    if (string.IsNullOrWhiteSpace(user.Email))
                     {
-                        Email = email,
-                        BiWeeklyIncome = new JObject { { "date", "2015-12-25T00:00:00Z" }, { "amount", 0 } },
-                        MonthlyRecurringExpenses = new List<JObject>(),
-                        WeeklyRecurringExpenses = new List<JObject>()
-                    };
-                    var update = JObject.FromObject(user, new JsonSerializer { NullValueHandling = NullValueHandling.Ignore });
-                    var dbClient = new AmazonDynamoDBClient();
-                    var createResponse = dbClient.PutItemAsync(
-                        new FinanceUser().GetTable(),
-                        Document.FromJson(update.ToString()).ToAttributeMap()
-                    ).Result;
+                        user = new FinanceUser
+                        {
+                            Email = email,
+                            BiWeeklyIncome = new JObject { { "date", "2015-12-25T00:00:00Z" }, { "amount", 0 } },
+                            MonthlyRecurringExpenses = new List<JObject>(),
+                            WeeklyRecurringExpenses = new List<JObject>()
+                        };
+                        var update = JObject.FromObject(user, new JsonSerializer { NullValueHandling = NullValueHandling.Ignore });
+                        var dbClient = new AmazonDynamoDBClient();
+                        dbClient.PutItemAsync(
+                            new FinanceUser().GetTable(),
+                            Document.FromJson(update.ToString()).ToAttributeMap()
+                        ).Wait();
+                    }
+                }
+                catch (Exception exception)
+                {
+                    Console.WriteLine(exception);
+                    response.StatusCode = 500;
+                    json = new JObject { { "error", exception.ToString() } };
+                    response.Body = json.ToString();
+                    return response;
                 }
             }
             try
@@ -86,13 +98,14 @@ namespace FinanceApi
                     string.Equals(request.Path, "/unauthenticated/setToken", StringComparison.OrdinalIgnoreCase))
                 {
                     var body = JObject.Parse(request.Body);
+                    var expirationDate = DateTime.UtcNow.AddDays(30).ToString("ddd, dd MMM yyyy HH:mm:ss 'GMT'");
                     response.MultiValueHeaders = new Dictionary<string, IList<string>>
                     {
                         {
                             "Set-Cookie", new List<string>
                             {
-                                $"idToken={body["idToken"]};Path=/;Secure;HttpOnly",
-                                $"refreshToken={body["refreshToken"]};Path=/;Secure;HttpOnly"
+                                $"idToken={body["idToken"]};Path=/;Secure;HttpOnly;SameSite=Strict;Expires={expirationDate}",
+                                $"refreshToken={body["refreshToken"]};Path=/;Secure;HttpOnly;SameSite=Strict;Expires={expirationDate}"
                             }
                         }
                     };
@@ -108,20 +121,7 @@ namespace FinanceApi
                         response.Body = new JObject { { "error", "idToken and refreshToken cookies are required" } }.ToString();
                         return response;
                     }
-                    var provider = new AmazonCognitoIdentityProviderClient(new AnonymousAWSCredentials(), RegionEndpoint.USEast1);
-                    var userPool = new CognitoUserPool(Configuration.FINANCE_API_COGNITO_USER_POOL_ID, Configuration.FINANCE_API_COGNITO_CLIENT_ID, provider);
-                    var cognitoUser = new CognitoUser(email, Configuration.FINANCE_API_COGNITO_CLIENT_ID, userPool, provider)
-                    {
-                        SessionTokens = new CognitoUserSession(null, null, refreshToken, DateTime.UtcNow, DateTime.UtcNow.AddHours(1))
-                    };
-                    InitiateRefreshTokenAuthRequest refreshRequest = new InitiateRefreshTokenAuthRequest
-                    {
-                        AuthFlowType = AuthFlowType.REFRESH_TOKEN_AUTH
-                    };
-                    var refreshResponse = cognitoUser.StartWithRefreshTokenAuthAsync(refreshRequest).Result;
-                    response.MultiValueHeaders = new Dictionary<string, IList<string>>
-                        { { "Set-Cookie", new List<string> { $"idToken={refreshResponse.AuthenticationResult.IdToken};Path=/;Secure;HttpOnly" } } };
-                    json = new JObject();
+                    return new RefreshToken().Run(email, refreshToken, response);
                 }
                 else if (string.Equals(request.HttpMethod, "POST", StringComparison.OrdinalIgnoreCase) &&
                          string.Equals(request.Path, "/signout", StringComparison.OrdinalIgnoreCase))
@@ -285,6 +285,7 @@ namespace FinanceApi
             }
             catch (Exception exception)
             {
+                Console.WriteLine(exception);
                 response.StatusCode = 500;
                 json = new JObject {{"error", exception.ToString()}};
             }
