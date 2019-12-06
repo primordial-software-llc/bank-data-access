@@ -70,7 +70,7 @@ namespace FinanceApi
                         user = new FinanceUser
                         {
                             Email = email,
-                            BiWeeklyIncome = new JObject { { "date", "2015-12-25T00:00:00Z" }, { "amount", 0 } },
+                            Biweekly = new List<JObject> { new JObject { { "date", "2015-12-25T00:00:00Z" }, { "amount", 0 } } },
                             MonthlyRecurringExpenses = new List<JObject>(),
                             WeeklyRecurringExpenses = new List<JObject>()
                         };

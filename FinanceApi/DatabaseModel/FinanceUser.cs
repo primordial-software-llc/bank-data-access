@@ -23,8 +23,10 @@ namespace FinanceApi.DatabaseModel
         public List<JObject> Assets { get; set; }
         [JsonProperty("balances")]
         public List<JObject> Balances { get; set; }
-        [JsonProperty("biWeeklyIncome")]
-        public JObject BiWeeklyIncome { get; set; }
+
+        [JsonProperty("biweekly")]
+        public List<JObject> Biweekly { get; set; }
+
         [JsonProperty("monthlyRecurringExpenses")]
         public List<JObject> MonthlyRecurringExpenses { get; set; }
         [JsonProperty("paymentSources")]
