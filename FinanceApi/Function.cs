@@ -14,6 +14,7 @@ using Amazon.Lambda.Core;
 using Amazon.Runtime;
 using FinanceApi.DatabaseModel;
 using FinanceApi.PlaidModel;
+using FinanceApi.Routes;
 using FinanceApi.Routes.Unauthenticated;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -114,14 +115,12 @@ namespace FinanceApi
                 else if (string.Equals(request.HttpMethod, "POST", StringComparison.OrdinalIgnoreCase) &&
                          string.Equals(request.Path, "/unauthenticated/refreshToken", StringComparison.OrdinalIgnoreCase))
                 {
-                    string refreshToken = GetCookie(request, "refreshToken");
-                    if (string.IsNullOrWhiteSpace(token) || string.IsNullOrWhiteSpace(refreshToken))
-                    {
-                        response.StatusCode = 400;
-                        response.Body = new JObject { { "error", "idToken and refreshToken cookies are required" } }.ToString();
-                        return response;
-                    }
-                    return new RefreshToken().Run(email, refreshToken, response);
+                    return new RefreshToken().Run(email, request, response);
+                }
+                else if (string.Equals(request.HttpMethod, "GET", StringComparison.OrdinalIgnoreCase) &&
+                         string.Equals(request.Path, "/getUsername", StringComparison.OrdinalIgnoreCase))
+                {
+                    return new GetUsername().Run(email, request, response);
                 }
                 else if (string.Equals(request.HttpMethod, "POST", StringComparison.OrdinalIgnoreCase) &&
                          string.Equals(request.Path, "/signout", StringComparison.OrdinalIgnoreCase))
@@ -293,7 +292,7 @@ namespace FinanceApi
             return response;
         }
 
-        private string GetCookie(APIGatewayProxyRequest request, string cookieName)
+        public static string GetCookie(APIGatewayProxyRequest request, string cookieName)
         {
             var cookieHeader = request.MultiValueHeaders.Keys.FirstOrDefault(x => string.Equals(x, "cookie", StringComparison.OrdinalIgnoreCase));
             if (string.IsNullOrWhiteSpace(cookieHeader))

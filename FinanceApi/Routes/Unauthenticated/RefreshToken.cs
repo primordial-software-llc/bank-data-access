@@ -1,35 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using Amazon.Lambda.APIGatewayEvents;
 using Newtonsoft.Json.Linq;
 using Amazon.Runtime;
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Amazon;
 using Amazon.CognitoIdentityProvider;
-using Amazon.DynamoDBv2;
-using Amazon.DynamoDBv2.DocumentModel;
-using Amazon.DynamoDBv2.Model;
 using Amazon.Extensions.CognitoAuthentication;
-using Amazon.Lambda.APIGatewayEvents;
-using Amazon.Lambda.Core;
-using Amazon.Runtime;
-using FinanceApi.DatabaseModel;
-using FinanceApi.PlaidModel;
-using FinanceApi.Routes.Unauthenticated;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace FinanceApi.Routes.Unauthenticated
 {
     class RefreshToken
     {
-        public APIGatewayProxyResponse Run(string email, string refreshToken, APIGatewayProxyResponse response)
+        public APIGatewayProxyResponse Run(string email, APIGatewayProxyRequest request, APIGatewayProxyResponse response)
         {
+            string token = Function.GetCookie(request, "idToken");
+            string refreshToken = Function.GetCookie(request, "refreshToken");
+            if (string.IsNullOrWhiteSpace(token) || string.IsNullOrWhiteSpace(refreshToken))
+            {
+                response.StatusCode = 400;
+                response.Body = new JObject { { "error", "idToken and refreshToken cookies are required" } }.ToString();
+                return response;
+            }
             var provider = new AmazonCognitoIdentityProviderClient(new AnonymousAWSCredentials(), RegionEndpoint.USEast1);
             var userPool = new CognitoUserPool(Configuration.FINANCE_API_COGNITO_USER_POOL_ID, Configuration.FINANCE_API_COGNITO_CLIENT_ID, provider);
             var cognitoUser = new CognitoUser(email, Configuration.FINANCE_API_COGNITO_CLIENT_ID, userPool, provider)
