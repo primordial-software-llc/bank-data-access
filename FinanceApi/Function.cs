@@ -120,19 +120,14 @@ namespace FinanceApi
                         body["password"].Value<string>(),
                         new Dictionary<string, string>(), new Dictionary<string, string>());
                     result.Wait();
-                    CreateUser(email, body["agreedToLicense"].Value<bool>(), request.RequestContext.Identity.SourceIp);
+                    CreateUser(body["email"].Value<string>(), body["agreedToLicense"].Value<bool>(), request.RequestContext.Identity.SourceIp);
                     json = new JObject
                     {
                         { "status", "Your user has successfully been created. " +
-                                    $"Your user name is ${body["email"].Value<string>()}. " +
+                                    $"Your user name is {body["email"].Value<string>()}. " +
                                     "A confirmation link has been sent to your email from noreply@primordial-software.com. " +
                                     "You need to click the verification link in the email before you can login." }
                     };
-                }
-                else if (string.Equals(request.HttpMethod, "GET", StringComparison.OrdinalIgnoreCase) &&
-                         string.Equals(request.Path, "/getUsername", StringComparison.OrdinalIgnoreCase))
-                {
-                    return new GetUsername().Run(email, request, response);
                 }
                 else if (string.Equals(request.HttpMethod, "POST", StringComparison.OrdinalIgnoreCase) &&
                          string.Equals(request.Path, "/signout", StringComparison.OrdinalIgnoreCase))
@@ -239,8 +234,9 @@ namespace FinanceApi
                         jsonPatch.Remove("licenseAgreement");
                     }
                     var updateItemResponse = UpdateUser(email, jsonPatch);
-                    json = JObject.Parse(Document.FromAttributeMap(updateItemResponse.Attributes).ToJson());
-                    // CAUTION: NEED TO SEE IF BANK LINKS GET RETURNED.
+                    var jsonResponse = JObject.Parse(Document.FromAttributeMap(updateItemResponse.Attributes).ToJson());
+                    jsonResponse.Remove("bankLinks");
+                    json = jsonResponse;
                     response.StatusCode = (int) updateItemResponse.HttpStatusCode;
                 }
                 else if (string.Equals(request.HttpMethod, "GET") &&
