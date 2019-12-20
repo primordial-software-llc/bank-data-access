@@ -86,24 +86,12 @@ namespace FinanceApi
                 if (string.Equals(request.HttpMethod, "POST", StringComparison.OrdinalIgnoreCase) &&
                     string.Equals(request.Path, "/unauthenticated/setToken", StringComparison.OrdinalIgnoreCase))
                 {
-                    var body = JObject.Parse(request.Body);
-                    var expirationDate = DateTime.UtcNow.AddDays(30).ToString("ddd, dd MMM yyyy HH:mm:ss 'GMT'");
-                    response.MultiValueHeaders = new Dictionary<string, IList<string>>
-                    {
-                        {
-                            "Set-Cookie", new List<string>
-                            {
-                                $"idToken={body["idToken"]};Path=/;Secure;HttpOnly;SameSite=Strict;Expires={expirationDate}",
-                                $"refreshToken={body["refreshToken"]};Path=/;Secure;HttpOnly;SameSite=Strict;Expires={expirationDate}"
-                            }
-                        }
-                    };
-                    json = new JObject();
+                    return new SetToken().Run(request, response);
                 }
                 else if (string.Equals(request.HttpMethod, "POST", StringComparison.OrdinalIgnoreCase) &&
                          string.Equals(request.Path, "/unauthenticated/refreshToken", StringComparison.OrdinalIgnoreCase))
                 {
-                    return new RefreshToken().Run(email, request, response);
+                    return new RefreshToken().Run(request, response);
                 }
                 else if (string.Equals(request.HttpMethod, "POST", StringComparison.OrdinalIgnoreCase) &&
                          string.Equals(request.Path, "/unauthenticated/signup", StringComparison.OrdinalIgnoreCase))
@@ -349,7 +337,10 @@ namespace FinanceApi
             ).Result;
         }
 
-        private string Base64Decode(string base64Encoded)
+        /// <summary>
+        /// This function removes padding which is what notepad++ does as well.
+        /// </summary>
+        public static string Base64Decode(string base64Encoded)
         {
             base64Encoded = base64Encoded.PadRight(base64Encoded.Length + (base64Encoded.Length * 3) % 4, '=');
             return System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(base64Encoded));
