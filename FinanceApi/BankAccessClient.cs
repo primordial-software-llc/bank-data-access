@@ -25,8 +25,8 @@ namespace FinanceApi
         {
             var data = new JObject
             {
-                { "client_id", Configuration.DEV_CLIENT_ID },
-                { "secret", Configuration.DEV_SECRET },
+                { "client_id", Configuration.PLAID_CLIENT_ID },
+                { "secret", Configuration.PLAID_SECRET },
                 { "access_token", accessToken }
             };
             var json = Send("/accounts/balance/get", data);
@@ -38,7 +38,7 @@ namespace FinanceApi
             var data = new JObject
             {
                 { "institution_id", institutionId },
-                { "public_key", Configuration.DEV_PUBLIC_KEY }
+                { "public_key", Configuration.PLAID_PUBLIC_KEY }
             };
             return Send("/institutions/get_by_id", data);
         }
@@ -47,8 +47,8 @@ namespace FinanceApi
         {
             var data = new JObject
             {
-                { "client_id", Configuration.DEV_CLIENT_ID },
-                { "secret", Configuration.DEV_SECRET },
+                { "client_id", Configuration.PLAID_CLIENT_ID },
+                { "secret", Configuration.PLAID_SECRET },
                 { "access_token", accessToken }
             };
             return Send("/item/get", data);
@@ -58,8 +58,8 @@ namespace FinanceApi
         {
             var data = new JObject
             {
-                { "client_id", Configuration.DEV_CLIENT_ID },
-                { "secret", Configuration.DEV_SECRET },
+                { "client_id", Configuration.PLAID_CLIENT_ID },
+                { "secret", Configuration.PLAID_SECRET },
                 { "access_token", accessToken }
             };
             var result = Send("/item/remove", data);
@@ -74,9 +74,9 @@ namespace FinanceApi
         {
             var data = new JObject
             {
-                { "client_id", Configuration.DEV_CLIENT_ID },
+                { "client_id", Configuration.PLAID_CLIENT_ID },
                 { "access_token", accessToken },
-                { "secret", Configuration.DEV_SECRET }
+                { "secret", Configuration.PLAID_SECRET }
             };
             return Send("/item/public_token/create", data);
         }
@@ -85,9 +85,9 @@ namespace FinanceApi
         {
             var data = new JObject
             {
-                { "client_id", Configuration.DEV_CLIENT_ID },
+                { "client_id", Configuration.PLAID_CLIENT_ID },
                 { "public_token", publicToken },
-                { "secret", Configuration.DEV_SECRET }
+                { "secret", Configuration.PLAID_SECRET }
             };
             return Send("/item/public_token/exchange", data);
         }

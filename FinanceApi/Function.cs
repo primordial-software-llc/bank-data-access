@@ -26,7 +26,7 @@ namespace FinanceApi
     {
         public APIGatewayProxyResponse FunctionHandler(APIGatewayProxyRequest request, ILambdaContext context)
         {
-            var client = new BankAccessClient(Configuration.DEV_URL, new Logger());
+            var client = new BankAccessClient(Configuration.PLAID_URL, new Logger());
             var clientDomain = "https://www.primordial-software.com";
             var response = new APIGatewayProxyResponse
             {

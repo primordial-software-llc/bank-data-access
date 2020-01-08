@@ -27,7 +27,7 @@ namespace FinanceApi.Tests
         [Fact]
         public void GetInstitution()
         {
-            var client = new BankAccessClient(Configuration.DEV_URL, new Logger());
+            var client = new BankAccessClient(Configuration.PLAID_URL, new Logger());
 
             var ins = client.GetInstitution("ins_9")["institution"];
             output.WriteLine(ins.ToString(Formatting.Indented));
@@ -54,7 +54,7 @@ namespace FinanceApi.Tests
         [Fact]
         public void GetItem()
         {
-            var client = new BankAccessClient(Configuration.DEV_URL, new Logger());
+            var client = new BankAccessClient(Configuration.PLAID_URL, new Logger());
             var balance = client.GetItem("");
             output.WriteLine(balance.ToString(Formatting.Indented));
         }
@@ -62,7 +62,7 @@ namespace FinanceApi.Tests
         [Fact]
         public void RemoveItem()
         {
-            var client = new BankAccessClient(Configuration.DEV_URL, new Logger());
+            var client = new BankAccessClient(Configuration.PLAID_URL, new Logger());
             var balance = client.RemoveItem("");
             output.WriteLine(balance.ToString(Formatting.Indented));
         }
