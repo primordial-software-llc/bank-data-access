@@ -239,7 +239,7 @@ namespace FinanceApi
                     var accounts = new ConcurrentBag<AccountBalance>();
                     var institutionsDictionary = new ConcurrentDictionary<string, string>();
                     user.BankLinks = user.BankLinks ?? new List<BankLink>();
-                    Parallel.ForEach(user.BankLinks, (bankLink) =>
+                    Parallel.ForEach(user.BankLinks, new ParallelOptions { MaxDegreeOfParallelism = 10 }, (bankLink) =>
                     {
                         var accountBalance = client.GetAccountBalance(bankLink.AccessToken);
                         institutionsDictionary.TryAdd(
@@ -248,7 +248,7 @@ namespace FinanceApi
                         accounts.Add(accountBalance);
                     });
                     var institutionDetails = new ConcurrentBag<JObject>();
-                    Parallel.ForEach(institutionsDictionary.Keys, institution =>
+                    Parallel.ForEach(institutionsDictionary.Keys, new ParallelOptions { MaxDegreeOfParallelism = 10 }, institution =>
                     {
                         institutionDetails.Add(client.GetInstitution(institution));
                     });
