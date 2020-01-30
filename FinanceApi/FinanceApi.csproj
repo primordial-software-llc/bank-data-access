@@ -12,5 +12,6 @@
     <PackageReference Include="AWSSDK.CognitoIdentityProvider" Version="3.3.107" />
     <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.3.101.87" />
     <PackageReference Include="AwsTools" Version="1.0.18" />
+    <PackageReference Include="Stripe.net" Version="34.17.0" />
   </ItemGroup>
 </Project>
