@@ -6,12 +6,13 @@ using Amazon.Runtime;
 using Amazon;
 using Amazon.CognitoIdentityProvider;
 using Amazon.Extensions.CognitoAuthentication;
+using FinanceApi.DatabaseModel;
 
 namespace FinanceApi.Routes.Unauthenticated
 {
-    class RefreshToken
+    class RefreshToken : IRoute
     {
-        public APIGatewayProxyResponse Run(APIGatewayProxyRequest request, APIGatewayProxyResponse response)
+        public APIGatewayProxyResponse Run(APIGatewayProxyRequest request, APIGatewayProxyResponse response, FinanceUser user = null)
         {
             string token = Function.GetCookie(request, "idToken");
             string refreshToken = Function.GetCookie(request, "refreshToken");

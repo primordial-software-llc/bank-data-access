@@ -15,6 +15,7 @@ using Amazon.Runtime;
 using FinanceApi.DatabaseModel;
 using FinanceApi.PlaidModel;
 using FinanceApi.Routes;
+using FinanceApi.Routes.Authenticated;
 using FinanceApi.Routes.Unauthenticated;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -230,40 +231,13 @@ namespace FinanceApi
                 else if (string.Equals(request.HttpMethod, "GET") &&
                          string.Equals(request.Path, "/budget"))
                 {
-                    user.BankLinks = null; // Don't send this data to the client. It should get moved to another table that's encrypted.
+                    user.BankLinks = null; // Don't send this data to the client. It should get moved to another table
                     json = JObject.Parse(JsonConvert.SerializeObject(user));
                 }
                 else if (string.Equals(request.HttpMethod, "GET") &&
                          string.Equals(request.Path, "/accountBalance"))
                 {
-                    var accounts = new ConcurrentBag<AccountBalance>();
-                    var institutionsDictionary = new ConcurrentDictionary<string, string>();
-                    user.BankLinks = user.BankLinks ?? new List<BankLink>();
-                    Parallel.ForEach(user.BankLinks, new ParallelOptions { MaxDegreeOfParallelism = 10 }, (bankLink) =>
-                    {
-                        var accountBalance = client.GetAccountBalance(bankLink.AccessToken);
-                        institutionsDictionary.TryAdd(
-                            accountBalance.Item["institution_id"].Value<string>(),
-                            accountBalance.Item["institution_id"].Value<string>());
-                        accounts.Add(accountBalance);
-                    });
-                    var institutionDetails = new ConcurrentBag<JObject>();
-                    Parallel.ForEach(institutionsDictionary.Keys, new ParallelOptions { MaxDegreeOfParallelism = 10 }, institution =>
-                    {
-                        institutionDetails.Add(client.GetInstitution(institution));
-                    });
-                    var institutionsJson = new JArray();
-                    foreach (var institutionDetail in institutionDetails)
-                    {
-                        institutionsJson.Add(institutionDetail["institution"]);
-                    }
-                    foreach (var account in accounts)
-                    {
-                        var institutionId = account.Item["institution_id"].Value<string>();
-                        account.Item["institution"] = institutionsJson.First(x =>
-                            string.Equals(x["institution_id"].Value<string>(), institutionId, StringComparison.OrdinalIgnoreCase));
-                    }
-                    json = new JObject {{"allAccounts", JArray.FromObject(accounts)}};
+                    return new GetAccountBalance().Run(request, response, user);
                 }
                 else
                 {
