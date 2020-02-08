@@ -31,7 +31,7 @@ namespace FinanceApi.Routes.Authenticated
                 {
                     AgreedToLicense = body["agreedToBillingTerms"].Value<bool>(),
                     Date = DateTime.UtcNow.ToString("O"),
-                    IpAddress = request.RequestContext.Identity.SourceIp
+                    IpAddress = request.RequestContext.Identity.SourceIp // WARNING IP IS WRONG NOW THAT I'M USING CLOUD FLARE.
                 })
             };
             new UserService().UpdateUser(user.Email, jsonPatch, true);
