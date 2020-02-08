@@ -1,8 +1,6 @@
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Amazon;
 using Amazon.CognitoIdentityProvider;
 using Amazon.DynamoDBv2;
@@ -13,8 +11,6 @@ using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using Amazon.Runtime;
 using FinanceApi.DatabaseModel;
-using FinanceApi.PlaidModel;
-using FinanceApi.Routes;
 using FinanceApi.Routes.Authenticated;
 using FinanceApi.Routes.Unauthenticated;
 using Newtonsoft.Json;
@@ -97,26 +93,7 @@ namespace FinanceApi
                 else if (string.Equals(request.HttpMethod, "POST", StringComparison.OrdinalIgnoreCase) &&
                          string.Equals(request.Path, "/unauthenticated/signup", StringComparison.OrdinalIgnoreCase))
                 {
-                    var body = JObject.Parse(request.Body);
-                    if (!body["agreedToLicense"].Value<bool>())
-                    {
-                        throw new Exception("agreedToLicense must be true");
-                    }
-                    var provider = new AmazonCognitoIdentityProviderClient(new AnonymousAWSCredentials(), RegionEndpoint.USEast1);
-                    var userPool = new CognitoUserPool(Configuration.FINANCE_API_COGNITO_USER_POOL_ID, Configuration.FINANCE_API_COGNITO_CLIENT_ID, provider);
-                    var result = userPool.SignUpAsync(
-                        body["email"].Value<string>(),
-                        body["password"].Value<string>(),
-                        new Dictionary<string, string>(), new Dictionary<string, string>());
-                    result.Wait();
-                    CreateUser(body["email"].Value<string>(), body["agreedToLicense"].Value<bool>(), request.RequestContext.Identity.SourceIp);
-                    json = new JObject
-                    {
-                        { "status", "Your user has successfully been created. " +
-                                    $"Your user name is {body["email"].Value<string>()}. " +
-                                    "A confirmation link has been sent to your email from noreply@primordial-software.com. " +
-                                    "You need to click the verification link in the email before you can login." }
-                    };
+                    return new PostSignup().Run(request, response, user);
                 }
                 else if (string.Equals(request.HttpMethod, "POST", StringComparison.OrdinalIgnoreCase) &&
                          string.Equals(request.Path, "/signout", StringComparison.OrdinalIgnoreCase))
@@ -153,6 +130,11 @@ namespace FinanceApi
                     };
                     json = new JObject();
                 }
+                else if (string.Equals(request.HttpMethod, "POST", StringComparison.OrdinalIgnoreCase) &&
+                         string.Equals(request.Path, "/purchase", StringComparison.OrdinalIgnoreCase))
+                {
+                    return new PostPurchase().Run(request, response, user);
+                }
                 else if (string.Equals(request.HttpMethod, "DELETE", StringComparison.OrdinalIgnoreCase) &&
                     string.Equals(request.Path, "/bank-link", StringComparison.OrdinalIgnoreCase))
                 {
@@ -162,7 +144,7 @@ namespace FinanceApi
                     client.RemoveItem(link.AccessToken);
                     user.BankLinks.Remove(link);
                     var update = new JObject {{"bankLinks", JToken.FromObject(user.BankLinks)}};
-                    var updateItemResponse = UpdateUser(email, update);
+                    var updateItemResponse = new UserService().UpdateUser(email, update);
                     response.StatusCode = (int)updateItemResponse.HttpStatusCode;
                     json = new JObject();
                 }
@@ -210,7 +192,7 @@ namespace FinanceApi
                         ItemId = accessTokenJson["item_id"].Value<string>()
                     });
                     var update = new JObject {{"bankLinks", JToken.FromObject(updatedBankLinks)}};
-                    var updateItemResponse = UpdateUser(email, update);
+                    var updateItemResponse = new UserService().UpdateUser(email, update);
                     response.StatusCode = (int)updateItemResponse.HttpStatusCode;
                     json = new JObject();
                 }
@@ -218,11 +200,7 @@ namespace FinanceApi
                     string.Equals(request.Path, "/budget"))
                 {
                     var jsonPatch = JObject.Parse(request.Body);
-                    if (jsonPatch["licenseAgreement"] != null)
-                    {
-                        jsonPatch.Remove("licenseAgreement");
-                    }
-                    var updateItemResponse = UpdateUser(email, jsonPatch);
+                    var updateItemResponse = new UserService().UpdateUser(email, jsonPatch);
                     var jsonResponse = JObject.Parse(Document.FromAttributeMap(updateItemResponse.Attributes).ToJson());
                     jsonResponse.Remove("bankLinks");
                     json = jsonResponse;
@@ -275,40 +253,6 @@ namespace FinanceApi
             }
 
             return string.Empty;
-        }
-
-        private void CreateUser(string email, bool agreedToLicense, string ip)
-        {
-            var user = new FinanceUser
-            {
-                Email = email,
-                Biweekly = new List<JObject>(),
-                MonthlyRecurringExpenses = new List<JObject>(),
-                WeeklyRecurringExpenses = new List<JObject>(),
-                LicenseAgreement = new LicenseAgreement
-                {
-                    AgreedToLicense = agreedToLicense,
-                    Date = DateTime.UtcNow.ToString("O"),
-                    IpAddress = ip
-                }
-            };
-            var update = JObject.FromObject(user, new JsonSerializer { NullValueHandling = NullValueHandling.Ignore });
-            var dbClient = new AmazonDynamoDBClient();
-            dbClient.PutItemAsync(
-                new FinanceUser().GetTable(),
-                Document.FromJson(update.ToString()).ToAttributeMap()
-            ).Wait();
-        }
-
-        private UpdateItemResponse UpdateUser(string email, JObject update)
-        {
-            var dbClient = new AmazonDynamoDBClient();
-            return dbClient.UpdateItemAsync(
-                new FinanceUser().GetTable(),
-                FinanceUser.GetKey(email),
-                Document.FromJson(update.ToString()).ToAttributeUpdateMap(false),
-                ReturnValue.ALL_NEW
-            ).Result;
         }
 
         /// <summary>

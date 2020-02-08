@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using FinanceApi.Routes.Authenticated;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Stripe;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -21,83 +21,12 @@ namespace FinanceApi.Tests
         [Fact]
         public void Stripe_Purchase()
         {
-            StripeConfiguration.ApiKey = Configuration.STRIPE_API_SECRET_KEY;
-            const string PLAN = "plan_GdPUjMfpSganRW";
-            var customerSvc = new CustomerService();
-            var customer = GetOrCreateCustomer(customerSvc, "timg456789@yahoo.com");
-            var paymentMethodService = new PaymentMethodService();
-            var paymentMethod = paymentMethodService.Create(
-                new PaymentMethodCreateOptions
-                {
-                    Type = "card",
-                    Card = new PaymentMethodCardCreateOptions
-                    {
-                        Cvc = "123",
-                        Number = "4000000000000077",
-                        ExpMonth = 01,
-                        ExpYear = 2025
-                    },
-                });
-            paymentMethod = paymentMethodService.Attach(
-                paymentMethod.Id,
-                new PaymentMethodAttachOptions
-                {
-                    Customer = customer.Id
-                });
-            var subscriptionSvc = new SubscriptionService();
-            var subscription = GetOrCreateSubscription(subscriptionSvc, customer, PLAN, paymentMethod.Id);
-        }
-
-        private Subscription GetOrCreateSubscription(
-            SubscriptionService subscriptionService,
-            Customer customer,
-            string plan,
-            string paymentMethodId)
-        {
-            var subscription = subscriptionService.List(
-                new SubscriptionListOptions
-                {
-                    Customer = customer.Id,
-                    Plan = plan
-                }).FirstOrDefault();
-            if (subscription != default(Subscription))
-            {
-                return subscription;
-            }
-            subscription = subscriptionService.Create(new SubscriptionCreateOptions
-            {
-                Customer = customer.Id,
-                Items = new List<SubscriptionItemOptions>
-                {
-                    new SubscriptionItemOptions
-                    {
-                        Plan = plan,
-                        Quantity = 1
-                    }
-                },
-                DefaultPaymentMethod = paymentMethodId
-            });
-            return subscription;
-        }
-
-        private Customer GetOrCreateCustomer(CustomerService customerService, string email)
-        {
-            var customer = customerService.List(new CustomerListOptions
-            {
-                Email = email
-            }).FirstOrDefault();
-
-            if (customer != default(Customer))
-            {
-                return customer;
-            }
-
-            customer = customerService.Create(new CustomerCreateOptions
-            {
-                Email = email
-            });
-
-            return customer;
+            var subscription = new PostPurchase().Purchase(
+                "timg456789@yahoo.com",
+                "123",
+                "4000000000000077",
+                01,
+                2025);
         }
 
         [Fact]
