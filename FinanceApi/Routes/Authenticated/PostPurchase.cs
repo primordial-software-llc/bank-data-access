@@ -18,12 +18,25 @@ namespace FinanceApi.Routes.Authenticated
             {
                 throw new Exception("Must agree to billing terms");
             }
-            var subscription = Purchase(
-                user.Email,
-                body["cardCvc"].Value<string>(),
-                body["cardNumber"].Value<string>(),
-                body["cardExpirationMonth"].Value<long>(),
-                body["cardExpirationYear"].Value<long>());
+            Subscription subscription = null;
+            try
+            {
+                subscription = Purchase(
+                    user.Email,
+                    body["cardCvc"].Value<string>(),
+                    body["cardNumber"].Value<string>(),
+                    body["cardExpirationMonth"].Value<long>(),
+                    body["cardExpirationYear"].Value<long>());
+            }
+            catch (StripeException stripeException)
+            {
+                response.Body = new JObject
+                {
+                    {"status", stripeException.Message}
+                }.ToString();
+                response.StatusCode = 400;
+                return response;
+            }
             response.Body = JsonConvert.SerializeObject(subscription);
             var jsonPatch = new JObject
             {
