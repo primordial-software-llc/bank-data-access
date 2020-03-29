@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Amazon.Lambda.APIGatewayEvents;
 using FinanceApi.DatabaseModel;
+using FinanceApi.RequestModels;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Stripe;
@@ -11,22 +12,25 @@ namespace FinanceApi.Routes.Authenticated
 {
     public class PostPurchase : IRoute
     {
-        public APIGatewayProxyResponse Run(APIGatewayProxyRequest request, APIGatewayProxyResponse response, FinanceUser user = null)
+        public string HttpMethod => "POST";
+        public string Path => "/purchase";
+
+        public void Run(APIGatewayProxyRequest request, APIGatewayProxyResponse response, FinanceUser user)
         {
-            var body = JObject.Parse(request.Body);
-            if (body["agreedToBillingTerms"] == null || !body["agreedToBillingTerms"].Value<bool>())
+            var model = JsonConvert.DeserializeObject<PurchaseModel>(request.Body);
+            if (!model.AgreedToBillingTerms)
             {
                 throw new Exception("Must agree to billing terms");
             }
-            Subscription subscription = null;
+            Subscription subscription;
             try
             {
                 subscription = Purchase(
                     user.Email,
-                    body["cardCvc"].Value<string>(),
-                    body["cardNumber"].Value<string>(),
-                    body["cardExpirationMonth"].Value<long>(),
-                    body["cardExpirationYear"].Value<long>());
+                    model.CardCvc,
+                    model.CardNumber,
+                    model.CardExpirationMonth,
+                    model.CardExpirationYear);
             }
             catch (StripeException stripeException)
             {
@@ -35,20 +39,20 @@ namespace FinanceApi.Routes.Authenticated
                     {"status", stripeException.Message}
                 }.ToString();
                 response.StatusCode = 400;
-                return response;
+                return;
             }
             response.Body = JsonConvert.SerializeObject(subscription);
+            string ip = request.RequestContext.Identity.SourceIp; // WARNING IP IS WRONG NOW THAT I'M USING CLOUD FLARE.
             var jsonPatch = new JObject
             {
                 ["billingAgreement"] = JObject.FromObject(new BillingAgreement
                 {
-                    AgreedToLicense = body["agreedToBillingTerms"].Value<bool>(),
+                    AgreedToLicense = model.AgreedToBillingTerms,
                     Date = DateTime.UtcNow.ToString("O"),
-                    IpAddress = request.RequestContext.Identity.SourceIp // WARNING IP IS WRONG NOW THAT I'M USING CLOUD FLARE.
+                    IpAddress = ip
                 })
             };
             new UserService().UpdateUser(user.Email, jsonPatch, true);
-            return response;
         }
 
         public Subscription Purchase(string email, string cardCvc, string cardNumber, long cardExpirationMonth, long cardExpirationYear)

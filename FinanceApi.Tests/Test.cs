@@ -1,9 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using FinanceApi.Routes.Authenticated;
+﻿using FinanceApi.DatabaseModel;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -19,14 +20,66 @@ namespace FinanceApi.Tests
         }
 
         [Fact]
-        public void Stripe_Purchase()
+        public void Refreshes_On_First_Attempt()
         {
-            var subscription = new PostPurchase().Purchase(
-                "timg456789@yahoo.com",
-                "123",
-                "4000000000000077",
-                01,
-                2025);
+            var userBankAccount = new FinanceUserBankAccount();
+            if (!DateTime.TryParseExact(userBankAccount.Updated, "O", CultureInfo.InvariantCulture, DateTimeStyles.None, out var updated))
+            {
+                updated = DateTime.UtcNow.AddYears(-1);
+            }
+            var refreshPoint = DateTime.UtcNow.AddHours(-1);
+            if (refreshPoint <= updated)
+            {
+                Assert.True(false);
+            }
+            else
+            {
+                Assert.True(true);
+            }
+        }
+
+        [Fact]
+        public void Refreshes_When_Stale()
+        {
+            var userBankAccount = new FinanceUserBankAccount
+            {
+                Updated = DateTime.UtcNow.AddYears(-1).ToString("O")
+            };
+            if (!DateTime.TryParseExact(userBankAccount.Updated, "O", CultureInfo.InvariantCulture, DateTimeStyles.None, out var updated))
+            {
+                updated = DateTime.UtcNow;
+            }
+            var refreshPoint = DateTime.UtcNow.AddHours(-1);
+            if (refreshPoint <= updated)
+            {
+                Assert.True(false);
+            }
+            else
+            {
+                Assert.True(true);
+            }
+        }
+
+        [Fact]
+        public void Uses_Cache_When_Not_Stale()
+        {
+            var userBankAccount = new FinanceUserBankAccount
+            {
+                Updated = DateTime.UtcNow.AddYears(1).ToString("O")
+            };
+            if (!DateTime.TryParseExact(userBankAccount.Updated, "O", CultureInfo.InvariantCulture, DateTimeStyles.None, out var updated))
+            {
+                updated = DateTime.UtcNow;
+            }
+            var refreshPoint = DateTime.UtcNow.AddHours(-1);
+            if (refreshPoint <= updated)
+            {
+                Assert.True(true);
+            }
+            else
+            {
+                Assert.True(false);
+            }
         }
 
         [Fact]
@@ -34,49 +87,6 @@ namespace FinanceApi.Tests
         {
             var isValid = AwsCognitoJwtTokenValidator.IsValid(string.Empty, string.Empty);
             output.WriteLine(isValid.ToString());
-        }
-
-        [Fact]
-        public void GetInstitution()
-        {
-            var client = new BankAccessClient(Configuration.PLAID_URL, new Logger());
-
-            var ins = client.GetInstitution("ins_9")["institution"];
-            output.WriteLine(ins.ToString(Formatting.Indented));
-
-
-            var itemJson = new JArray();
-            var institutionsJson = new JArray();
-            var institutions = new HashSet<string>();
-            var itemRecord = client.GetItem("")["item"];
-            institutions.Add(itemRecord["institution_id"].Value<string>());
-            itemJson.Add(itemRecord);
-            foreach (var institution in institutions)
-            {
-                institutionsJson.Add(client.GetInstitution(institution)["institution"]);
-            }
-            foreach (var item in itemJson)
-            {
-                var institutionId = item["institution_id"].Value<string>();
-                item["institution"] = institutionsJson.First(x =>
-                    string.Equals(x["institution_id"].Value<string>(), institutionId, StringComparison.OrdinalIgnoreCase));
-            }
-        }
-
-        [Fact]
-        public void GetItem()
-        {
-            var client = new BankAccessClient(Configuration.PLAID_URL, new Logger());
-            var balance = client.GetItem("");
-            output.WriteLine(balance.ToString(Formatting.Indented));
-        }
-
-        [Fact]
-        public void RemoveItem()
-        {
-            var client = new BankAccessClient(Configuration.PLAID_URL, new Logger());
-            var balance = client.RemoveItem("");
-            output.WriteLine(balance.ToString(Formatting.Indented));
         }
 
     }

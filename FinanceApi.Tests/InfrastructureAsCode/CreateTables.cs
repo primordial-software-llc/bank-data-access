@@ -9,7 +9,7 @@ using Xunit;
 
 namespace FinanceApi.Tests.InfrastructureAsCode
 {
-    public class CreateBankDataAccessUserTable
+    public class CreateTables
     {
         //[Fact]
         public void Create()
@@ -17,6 +17,39 @@ namespace FinanceApi.Tests.InfrastructureAsCode
             var request = new CreateTableRequest
             {
                 TableName = "Finance-Users",
+                KeySchema = new List<KeySchemaElement>
+                {
+                    new KeySchemaElement
+                    {
+                        AttributeName = "email",
+                        KeyType = "HASH"
+                    }
+                },
+                AttributeDefinitions = new List<AttributeDefinition>
+                {
+                    new AttributeDefinition
+                    {
+                        AttributeName = "email",
+                        AttributeType = "S"
+                    }
+                },
+                ProvisionedThroughput = new ProvisionedThroughput
+                {
+                    ReadCapacityUnits = 5,
+                    WriteCapacityUnits = 1
+                }
+            };
+            var tableFactory = new DynamoDbTableFactory(
+                new AmazonDynamoDBClient(Factory.CreateCredentialsFromDefaultProfile(), Factory.HomeRegion));
+            tableFactory.CreateTable(request);
+        }
+
+        [Fact]
+        public void CreateFinanceUsersAccountsTable()
+        {
+            var request = new CreateTableRequest
+            {
+                TableName = "Finance-Users-Bank-Account",
                 KeySchema = new List<KeySchemaElement>
                 {
                     new KeySchemaElement

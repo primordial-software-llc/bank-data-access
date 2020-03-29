@@ -37,9 +37,6 @@ namespace FinanceApi.DatabaseModel
         [JsonProperty("monthlyRecurringExpenses")]
         public List<JObject> MonthlyRecurringExpenses { get; set; }
 
-        [JsonProperty("paymentSources")]
-        public List<string> PaymentSources { get; set; } // Does this get used anymore? I don't think so.
-
         [JsonProperty("pending")]
         public List<JObject> Pending { get; set; }
 
@@ -49,14 +46,10 @@ namespace FinanceApi.DatabaseModel
         [JsonProperty("weeklyRecurringExpenses")]
         public List<JObject> WeeklyRecurringExpenses { get; set; }
 
-        public static Dictionary<string, AttributeValue> GetKey(string email)
-        {
-            return new Dictionary<string, AttributeValue> { { "email", new AttributeValue { S = email } } };
-        }
-
         public Dictionary<string, AttributeValue> GetKey()
         {
-            return GetKey(Email);
+            return new Dictionary<string, AttributeValue> { { "email", new AttributeValue { S = Email } } };
+
         }
 
         public string GetTable()

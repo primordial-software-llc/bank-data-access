@@ -5,7 +5,11 @@ namespace FinanceApi.Routes
 {
     interface IRoute
     {
-        APIGatewayProxyResponse Run(APIGatewayProxyRequest request, APIGatewayProxyResponse response,
-            FinanceUser user = null);
+        string HttpMethod { get; }
+        string Path { get; }
+        void Run(
+            APIGatewayProxyRequest request,
+            APIGatewayProxyResponse response,
+            FinanceUser user);
     }
 }

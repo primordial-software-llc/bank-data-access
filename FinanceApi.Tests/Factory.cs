@@ -11,7 +11,7 @@ namespace FinanceApi.Tests
         public static AWSCredentials CreateCredentialsFromDefaultProfile()
         {
             var chain = new CredentialProfileStoreChain();
-            var profile = "deploy";
+            var profile = "deploy-production";
             if (!chain.TryGetAWSCredentials(profile, out AWSCredentials awsCredentials))
             {
                 throw new Exception($"AWS credentials not found for \"{profile}\" profile.");

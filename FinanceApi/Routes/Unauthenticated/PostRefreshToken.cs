@@ -10,19 +10,22 @@ using FinanceApi.DatabaseModel;
 
 namespace FinanceApi.Routes.Unauthenticated
 {
-    class RefreshToken : IRoute
+    class PostRefreshToken : IRoute
     {
-        public APIGatewayProxyResponse Run(APIGatewayProxyRequest request, APIGatewayProxyResponse response, FinanceUser user = null)
+        public string HttpMethod => "POST";
+        public string Path => "/unauthenticated/refreshToken";
+
+        public void Run(APIGatewayProxyRequest request, APIGatewayProxyResponse response, FinanceUser user)
         {
-            string token = Function.GetCookie(request, "idToken");
-            string refreshToken = Function.GetCookie(request, "refreshToken");
-            if (string.IsNullOrWhiteSpace(token) || string.IsNullOrWhiteSpace(refreshToken))
+            string idToken = CookieReader.GetCookie(request, "idToken");
+            string refreshToken = CookieReader.GetCookie(request, "refreshToken");
+            if (string.IsNullOrWhiteSpace(idToken) || string.IsNullOrWhiteSpace(refreshToken))
             {
                 response.StatusCode = 400;
                 response.Body = new JObject { { "error", "idToken and refreshToken cookies are required" } }.ToString();
-                return response;
+                return;
             }
-            var payload = Function.Base64Decode(token.Split('.')[1]);
+            var payload = Function.Base64Decode(idToken.Split('.')[1]);
             var email = JObject.Parse(payload)["email"].Value<string>();
             var provider = new AmazonCognitoIdentityProviderClient(new AnonymousAWSCredentials(), RegionEndpoint.USEast1);
             var userPool = new CognitoUserPool(Configuration.FINANCE_API_COGNITO_USER_POOL_ID, Configuration.FINANCE_API_COGNITO_CLIENT_ID, provider);
@@ -40,7 +43,6 @@ namespace FinanceApi.Routes.Unauthenticated
                 { { "Set-Cookie", new List<string> { $"idToken={refreshResponse.AuthenticationResult.IdToken};Path=/;Secure;HttpOnly;Expires={expirationDate}" } } };
 
             response.Body = new JObject().ToString();
-            return response;
         }
     }
 }
