@@ -1,10 +1,6 @@
 ﻿using FinanceApi.DatabaseModel;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using Xunit;
 using Xunit.Abstractions;
 

@@ -16,7 +16,7 @@ namespace FinanceApi.Routes.Authenticated
             var itemJson = new JArray();
             var institutionsJson = new JArray();
             var institutions = new HashSet<string>();
-            var bankClient = new BankAccessClient(Configuration.PLAID_URL, new Logger());
+            var bankClient = new BankAccessClient(Configuration.PlaidUrl, new Logger());
             foreach (var bankLink in user.BankLinks ?? new List<BankLink>())
             {
                 var item = bankClient.GetItem(bankLink.AccessToken)["item"];

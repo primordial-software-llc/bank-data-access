@@ -24,7 +24,7 @@ namespace FinanceApi.Routes.Unauthenticated
                 throw new Exception("agreedToLicense must be true");
             }
             var provider = new AmazonCognitoIdentityProviderClient(new AnonymousAWSCredentials(), RegionEndpoint.USEast1);
-            var userPool = new CognitoUserPool(Configuration.FINANCE_API_COGNITO_USER_POOL_ID, Configuration.FINANCE_API_COGNITO_CLIENT_ID, provider);
+            var userPool = new CognitoUserPool(Configuration.FinanceApiCognitoUserPoolId, Configuration.FinanceApiCognitoClientId, provider);
             var result = userPool.SignUpAsync(
                 model.Email,
                 model.Password,

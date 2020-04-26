@@ -8,3 +8,4 @@ packages/
 
 FinanceApi/aws-lambda-tools-defaults.json
 FinanceApi/aws-lambda-tools-defaults.test.json
+FinanceApi/aws-lambda-tools-defaults.production.json

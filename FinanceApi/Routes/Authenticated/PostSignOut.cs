@@ -26,8 +26,8 @@ namespace FinanceApi.Routes.Authenticated
                 return;
             }
             var provider = new AmazonCognitoIdentityProviderClient(new AnonymousAWSCredentials(), RegionEndpoint.USEast1);
-            var userPool = new CognitoUserPool(Configuration.FINANCE_API_COGNITO_USER_POOL_ID, Configuration.FINANCE_API_COGNITO_CLIENT_ID, provider);
-            var cognitoUser = new CognitoUser(user.Email, Configuration.FINANCE_API_COGNITO_CLIENT_ID, userPool, provider)
+            var userPool = new CognitoUserPool(Configuration.FinanceApiCognitoUserPoolId, Configuration.FinanceApiCognitoClientId, provider);
+            var cognitoUser = new CognitoUser(user.Email, Configuration.FinanceApiCognitoClientId, userPool, provider)
             {
                 SessionTokens = new CognitoUserSession(null, null, refreshToken, DateTime.Now, DateTime.Now.AddHours(1))
             };

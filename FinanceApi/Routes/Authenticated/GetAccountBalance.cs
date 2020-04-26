@@ -37,7 +37,7 @@ namespace FinanceApi.Routes.Authenticated
             var accounts = new ConcurrentBag<AccountBalance>();
             var institutionsDictionary = new ConcurrentDictionary<string, string>();
             user.BankLinks = user.BankLinks ?? new List<BankLink>();
-            var client = new BankAccessClient(Configuration.PLAID_URL, new Logger());
+            var client = new BankAccessClient(Configuration.PlaidUrl, new Logger());
             Parallel.ForEach(user.BankLinks, new ParallelOptions { MaxDegreeOfParallelism = 10 }, (bankLink) =>
             {
                 try

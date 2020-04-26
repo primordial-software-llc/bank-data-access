@@ -28,8 +28,8 @@ namespace FinanceApi.Routes.Unauthenticated
             var payload = Function.Base64Decode(idToken.Split('.')[1]);
             var email = JObject.Parse(payload)["email"].Value<string>();
             var provider = new AmazonCognitoIdentityProviderClient(new AnonymousAWSCredentials(), RegionEndpoint.USEast1);
-            var userPool = new CognitoUserPool(Configuration.FINANCE_API_COGNITO_USER_POOL_ID, Configuration.FINANCE_API_COGNITO_CLIENT_ID, provider);
-            var cognitoUser = new CognitoUser(email, Configuration.FINANCE_API_COGNITO_CLIENT_ID, userPool, provider)
+            var userPool = new CognitoUserPool(Configuration.FinanceApiCognitoUserPoolId, Configuration.FinanceApiCognitoClientId, provider);
+            var cognitoUser = new CognitoUser(email, Configuration.FinanceApiCognitoClientId, userPool, provider)
             {
                 SessionTokens = new CognitoUserSession(null, null, refreshToken, DateTime.UtcNow, DateTime.UtcNow.AddHours(1))
             };

@@ -15,13 +15,16 @@ namespace FinanceApi.Routes.Unauthenticated
         {
             var model = JsonConvert.DeserializeObject<SetTokenModel>(request.Body);
             var expirationDate = DateTime.UtcNow.AddDays(30).ToString("ddd, dd MMM yyyy HH:mm:ss 'GMT'");
+            var sameSite = Configuration.PlaidUrl.ToLower() == "https://sandbox.plaid.com".ToLower()
+                ? "" // Don't worry about exposing test cookies, I don't want to setup a custom domain for the test api's.
+                : ";SameSite=Strict";
             response.MultiValueHeaders = new Dictionary<string, IList<string>>
             {
                 {
                     "Set-Cookie", new List<string>
                     {
-                        $"idToken={model.IdToken};Path=/;Secure;HttpOnly;SameSite=Strict;Expires={expirationDate}",
-                        $"refreshToken={model.RefreshToken};Path=/;Secure;HttpOnly;SameSite=Strict;Expires={expirationDate}"
+                        $"idToken={model.IdToken};Path=/;Secure;HttpOnly;{sameSite}Expires={expirationDate}",
+                        $"refreshToken={model.RefreshToken};Path=/;Secure;HttpOnly;{sameSite}Expires={expirationDate}"
                     }
                 }
             };

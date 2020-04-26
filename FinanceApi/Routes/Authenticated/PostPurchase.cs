@@ -57,7 +57,7 @@ namespace FinanceApi.Routes.Authenticated
 
         public Subscription Purchase(string email, string cardCvc, string cardNumber, long cardExpirationMonth, long cardExpirationYear)
         {
-            StripeConfiguration.ApiKey = Configuration.STRIPE_API_SECRET_KEY;
+            StripeConfiguration.ApiKey = Configuration.StripeApiSecretKey;
             var customerSvc = new CustomerService();
             var customer = GetOrCreateCustomer(customerSvc, email);
             var paymentMethodService = new PaymentMethodService();
@@ -80,7 +80,7 @@ namespace FinanceApi.Routes.Authenticated
                     Customer = customer.Id
                 });
             var subscriptionSvc = new SubscriptionService();
-            var subscription = GetOrCreateSubscription(subscriptionSvc, customer, Configuration.STRIPE_INCOME_CALCULATOR_PRODUCT_PLAN_ID, paymentMethod.Id);
+            var subscription = GetOrCreateSubscription(subscriptionSvc, customer, Configuration.StripeIncomeCalculatorProductPlanId, paymentMethod.Id);
             return subscription;
         }
 

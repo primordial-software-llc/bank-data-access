@@ -31,7 +31,7 @@ namespace FinanceApi
             bool isAuthenticated = false;
             if (!request.Path.StartsWith("/unauthenticated/", StringComparison.OrdinalIgnoreCase))
             {
-                isAuthenticated = AwsCognitoJwtTokenValidator.IsValid(idToken, Configuration.FINANCE_API_COGNITO_USER_POOL_ID);
+                isAuthenticated = AwsCognitoJwtTokenValidator.IsValid(idToken, Configuration.FinanceApiCognitoUserPoolId);
                 if (!isAuthenticated)
                 {
                     response.StatusCode = 401;

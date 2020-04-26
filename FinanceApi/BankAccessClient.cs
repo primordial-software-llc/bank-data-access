@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Text;
 using AwsTools;
 using FinanceApi.PlaidModel;
+using FinanceApi.RequestModels;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -25,8 +26,8 @@ namespace FinanceApi
         {
             var data = new JObject
             {
-                { "client_id", Configuration.PLAID_CLIENT_ID },
-                { "secret", Configuration.PLAID_SECRET },
+                { "client_id", Configuration.PlaidClientId },
+                { "secret", Configuration.PlaidSecret },
                 { "access_token", accessToken }
             };
             var json = Send("/accounts/balance/get", data);
@@ -38,7 +39,7 @@ namespace FinanceApi
             var data = new JObject
             {
                 { "institution_id", institutionId },
-                { "public_key", Configuration.PLAID_PUBLIC_KEY }
+                { "public_key", Configuration.PlaidPublicKey }
             };
             return Send("/institutions/get_by_id", data);
         }
@@ -47,8 +48,8 @@ namespace FinanceApi
         {
             var data = new JObject
             {
-                { "client_id", Configuration.PLAID_CLIENT_ID },
-                { "secret", Configuration.PLAID_SECRET },
+                { "client_id", Configuration.PlaidClientId },
+                { "secret", Configuration.PlaidSecret },
                 { "access_token", accessToken }
             };
             return Send("/item/get", data);
@@ -58,8 +59,8 @@ namespace FinanceApi
         {
             var data = new JObject
             {
-                { "client_id", Configuration.PLAID_CLIENT_ID },
-                { "secret", Configuration.PLAID_SECRET },
+                { "client_id", Configuration.PlaidClientId },
+                { "secret", Configuration.PlaidSecret },
                 { "access_token", accessToken }
             };
             var result = Send("/item/remove", data);
@@ -74,22 +75,36 @@ namespace FinanceApi
         {
             var data = new JObject
             {
-                { "client_id", Configuration.PLAID_CLIENT_ID },
+                { "client_id", Configuration.PlaidClientId },
                 { "access_token", accessToken },
-                { "secret", Configuration.PLAID_SECRET }
+                { "secret", Configuration.PlaidSecret }
             };
             return Send("/item/public_token/create", data);
         }
 
-        public JObject GetAccessToken(string publicToken)
+        public AccessTokenResponse GetAccessToken(string publicToken)
         {
             var data = new JObject
             {
-                { "client_id", Configuration.PLAID_CLIENT_ID },
+                { "client_id", Configuration.PlaidClientId },
                 { "public_token", publicToken },
-                { "secret", Configuration.PLAID_SECRET }
+                { "secret", Configuration.PlaidSecret }
             };
-            return Send("/item/public_token/exchange", data);
+            var json = Send("/item/public_token/exchange", data);
+            return JsonConvert.DeserializeObject<AccessTokenResponse>(json.ToString());
+        }
+
+        public JObject GetDwollaProcessorToken(string accessToken, string accountId)
+        {
+            var data = new JObject
+            {
+                { "client_id", Configuration.PlaidClientId },
+                { "secret", Configuration.PlaidSecret },
+                { "access_token", accessToken },
+                { "account_id", accountId },
+                { "processor", "dwolla" }
+            };
+            return Send("/processor/token/create", data);
         }
 
         private JObject Send(string path, JObject data)
