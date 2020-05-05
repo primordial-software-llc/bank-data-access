@@ -17,7 +17,7 @@ namespace FinanceApi.Routes.Unauthenticated
             var expirationDate = DateTime.UtcNow.AddDays(30).ToString("ddd, dd MMM yyyy HH:mm:ss 'GMT'");
             var sameSite = Configuration.PlaidUrl.ToLower() == "https://sandbox.plaid.com".ToLower()
                 ? "" // Don't worry about exposing test cookies, I don't want to setup a custom domain for the test api's.
-                : ";SameSite=Strict";
+                : "SameSite=Strict;";
             response.MultiValueHeaders = new Dictionary<string, IList<string>>
             {
                 {
