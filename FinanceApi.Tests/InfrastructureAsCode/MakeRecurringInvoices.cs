@@ -1,4 +1,5 @@
 ﻿using Api;
+using FinanceApi.Tests.InfrastructureAsCode;
 using Xunit;
 using Xunit.Abstractions;
 

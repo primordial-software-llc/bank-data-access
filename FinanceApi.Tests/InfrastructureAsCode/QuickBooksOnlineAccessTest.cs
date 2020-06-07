@@ -2,14 +2,15 @@
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using PropertyRentalManagement.QuickBooksOnline.Models;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using PropertyRentalManagement.QuickBooksOnline.Models;
 using Xunit;
 using Xunit.Abstractions;
 using Customer = PropertyRentalManagement.QuickBooksOnline.Models.Customer;
 using Invoice = PropertyRentalManagement.QuickBooksOnline.Models.Invoice;
 
-namespace Tests
+namespace FinanceApi.Tests.InfrastructureAsCode
 {
     public class QuickBooksOnlineAccessTest
     {
@@ -26,6 +27,8 @@ namespace Tests
             var client = Factory.CreateQuickBooksOnlineClient(new XUnitLogger(Output));
             var customers = client.QueryAll<Customer>("select * from customer");
             Output.WriteLine(customers.Count.ToString());
+            Output.WriteLine(customers.Sum(x => x.Balance).ToString());
+            Output.WriteLine(JsonConvert.SerializeObject(customers, Formatting.Indented));
         }
 
         //[Fact]

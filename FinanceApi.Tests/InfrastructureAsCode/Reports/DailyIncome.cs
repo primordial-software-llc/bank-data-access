@@ -3,7 +3,7 @@ using PropertyRentalManagement.Reports;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Tests.Reports
+namespace FinanceApi.Tests.InfrastructureAsCode.Reports
 {
     public class DailyIncome
     {

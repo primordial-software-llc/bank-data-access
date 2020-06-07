@@ -1,10 +1,9 @@
-﻿using PropertyRentalManagement;
-using AwsTools;
+﻿using AwsTools;
 using Xunit.Abstractions;
 
-namespace Tests
+namespace FinanceApi.Tests.InfrastructureAsCode
 {
-    class XUnitLogger : ILogger, ILogging
+    class XUnitLogger : ILogging
     {
         private ITestOutputHelper Output { get; }
 

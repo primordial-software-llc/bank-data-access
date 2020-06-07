@@ -5,6 +5,7 @@ using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
 using FinanceApi.DatabaseModel;
 using Newtonsoft.Json.Linq;
+using PropertyRentalManagement;
 
 namespace FinanceApi
 {

@@ -10,6 +10,7 @@ using FinanceApi.DatabaseModel;
 using FinanceApi.PlaidModel;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using PropertyRentalManagement;
 
 namespace FinanceApi.Routes.Authenticated
 {

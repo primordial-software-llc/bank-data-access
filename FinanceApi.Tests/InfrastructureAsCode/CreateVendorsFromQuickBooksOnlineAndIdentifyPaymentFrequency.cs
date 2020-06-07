@@ -5,7 +5,7 @@ using PropertyRentalManagement.QuickBooksOnline.Models;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Tests
+namespace FinanceApi.Tests.InfrastructureAsCode
 {
     public class CreateVendorsFromQuickBooksOnlineAndIdentifyPaymentFrequency
     {
@@ -19,7 +19,7 @@ namespace Tests
         [Fact]
         public void Run()
         {
-            var qboClient = Factory.CreateQuickBooksOnlineClient(new XUnitLogger(Output));
+            var qboClient = Factory .CreateQuickBooksOnlineClient(new XUnitLogger(Output));
             var awsDbClient = Factory.CreateAmazonDynamoDbClient();
 
             var activeCustomers = qboClient.QueryAll<Customer>("select * from Customer Where Active = true");

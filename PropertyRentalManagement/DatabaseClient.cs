@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DocumentModel;
-using Amazon.DynamoDBv2.Model;
 using AwsTools;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Amazon.DynamoDBv2.Model;
 
 namespace PropertyRentalManagement
 {
@@ -21,6 +21,15 @@ namespace PropertyRentalManagement
         {
             var dbItem = Client.GetItemAsync(model.GetTable(), model.GetKey()).Result;
             return JsonConvert.DeserializeObject<T>(Document.FromAttributeMap(dbItem.Item).ToJson());
+        }
+
+        public void Create(T model)
+        {
+            var json = JObject.FromObject(model, new JsonSerializer { NullValueHandling = NullValueHandling.Ignore });
+            Client.PutItemAsync(
+                new T().GetTable(),
+                Document.FromJson(json.ToString()).ToAttributeMap()
+            ).Wait();
         }
 
         public void Update(Dictionary<string, AttributeValue> key, T model)

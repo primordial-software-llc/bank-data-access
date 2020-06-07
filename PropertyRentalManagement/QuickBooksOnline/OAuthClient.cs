@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using AwsTools;
 using Newtonsoft.Json;
 
 namespace PropertyRentalManagement.QuickBooksOnline
 {
     public class OAuthClient
     {
-        public static QuickBooksOnlineBearerToken GetAccessToken(string clientId, string clientSecret, string refreshToken, ILogger logger)
+        public static QuickBooksOnlineBearerToken GetAccessToken(string clientId, string clientSecret, string refreshToken, ILogging logger)
         {
             var authBasic = $"{clientId}:{clientSecret}";
             var authBasicEncoded = Convert.ToBase64String(Encoding.UTF8.GetBytes(authBasic));

@@ -1,2 +1,17 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=09fed4e7_002D8fa2_002D4e13_002Da3fc_002D88cbc7178371/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="GetCustomerCount" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;TestAncestor&gt;&#xD;
+    &lt;TestId&gt;xUnit::842206A6-0229-4F52-8674-6C2E07A1CB55::.NETCoreApp,Version=v2.1::FinanceApi.Tests.InfrastructureAsCode.QuickBooksOnlineAccessTest.GetCustomerCount&lt;/TestId&gt;&#xD;
+  &lt;/TestAncestor&gt;&#xD;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=98769937_002D665b_002D480e_002D95cd_002Df55efe6920f6/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="GetCustomerCount #3" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;TestAncestor&gt;&#xD;
+    &lt;TestId&gt;xUnit::842206A6-0229-4F52-8674-6C2E07A1CB55::.NETCoreApp,Version=v2.1::FinanceApi.Tests.InfrastructureAsCode.QuickBooksOnlineAccessTest.GetCustomerCount&lt;/TestId&gt;&#xD;
+  &lt;/TestAncestor&gt;&#xD;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=98e217e6_002Dde63_002D47c2_002D972d_002Dfe5d665e2e5a/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="GetCustomerCount #2" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;TestAncestor&gt;&#xD;
+    &lt;TestId&gt;xUnit::842206A6-0229-4F52-8674-6C2E07A1CB55::.NETCoreApp,Version=v2.1::FinanceApi.Tests.InfrastructureAsCode.QuickBooksOnlineAccessTest.GetCustomerCount&lt;/TestId&gt;&#xD;
+  &lt;/TestAncestor&gt;&#xD;
+&lt;/SessionState&gt;</s:String>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=Signup/@EntryIndexedValue">True</s:Boolean></wpf:ResourceDictionary>

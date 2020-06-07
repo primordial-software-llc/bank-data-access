@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using AwsTools;
 using PropertyRentalManagement.QuickBooksOnline;
 using PropertyRentalManagement.QuickBooksOnline.Models;
 
@@ -15,7 +16,7 @@ namespace PropertyRentalManagement.Reports
         public const int CUSTOMER_RESTAURANT = 1864;
         public const int CUSTOMER_VIRGIN_GUADALUPE = 1899;
 
-        public static void PrintReport(string reportDate, ILogger logger, QuickBooksOnlineClient qboClient)
+        public static void PrintReport(string reportDate, ILogging logger, QuickBooksOnlineClient qboClient)
         {
             var rentalCustomerIds = new List<int> { CUSTOMER_PARKING_A, CUSTOMER_PARKING_B, CUSTOMER_BAR_A, CUSTOMER_BAR_B, CUSTOMER_RESTAURANT };
             var payrollVendors = qboClient.QueryAll<QuickBooksOnline.Models.Vendor>($"select * from Vendor where DisplayName LIKE 'Mi Pueblo%'");
@@ -86,7 +87,7 @@ namespace PropertyRentalManagement.Reports
             logger.Log("----------------------------------------------------");
         }
 
-        public static decimal GetTotalIncomeFromCustomer(QuickBooksOnlineClient client, string date, int customerId, ILogger logger)
+        public static decimal GetTotalIncomeFromCustomer(QuickBooksOnlineClient client, string date, int customerId, ILogging logger)
         {
             var salesReceipts = client.QueryAll<SalesReceipt>(
                 $"select * from SalesReceipt Where TxnDate = '{date}' and CustomerRef = '{customerId}'");

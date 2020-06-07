@@ -36,7 +36,7 @@ namespace FinanceApi.Tests.InfrastructureAsCode
                 }
             };
             var tableFactory = new DynamoDbTableFactory(
-                new AmazonDynamoDBClient(global::Tests.Factory.CreateCredentialsFromProfile(), global::Tests.Factory.HomeRegion));
+                new AmazonDynamoDBClient(Factory.CreateCredentialsFromProfile(), Factory.HomeRegion));
             tableFactory.CreateTable(request);
         }
     }

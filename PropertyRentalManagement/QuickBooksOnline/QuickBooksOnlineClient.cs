@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Web;
+using AwsTools;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PropertyRentalManagement.DatabaseModel;
@@ -14,10 +15,12 @@ namespace PropertyRentalManagement.QuickBooksOnline
     public class QuickBooksOnlineClient
     {
         public QuickBooksOnlineBearerToken Token { get; set; }
-        public ILogger Logger { get; }
+        public ILogging Logger { get; }
+        public string RealmId { get; }
 
-        public QuickBooksOnlineClient(string realmId, DatabaseClient<QuickBooksOnlineConnection> dbClient, ILogger logger)
+        public QuickBooksOnlineClient(string realmId, DatabaseClient<QuickBooksOnlineConnection> dbClient, ILogging logger)
         {
+            RealmId = realmId;
             Logger = logger;
             var qboConnection = dbClient.Get(new QuickBooksOnlineConnection { RealmId = realmId });
             Token = OAuthClient.GetAccessToken(
@@ -76,7 +79,7 @@ namespace PropertyRentalManagement.QuickBooksOnline
             var client = new HttpClient { BaseAddress = new Uri("https://quickbooks.api.intuit.com") };
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Token.AccessToken);
 
-            var relativePath = $"/v3/company/{Configuration.RealmId}/{path}";
+            var relativePath = $"/v3/company/{RealmId}/{path}";
             var request = new HttpRequestMessage(method, relativePath);
             request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             if (!string.IsNullOrWhiteSpace(body))
