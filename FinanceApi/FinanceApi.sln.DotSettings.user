@@ -4,6 +4,11 @@
     &lt;TestId&gt;xUnit::842206A6-0229-4F52-8674-6C2E07A1CB55::.NETCoreApp,Version=v2.1::FinanceApi.Tests.InfrastructureAsCode.QuickBooksOnlineAccessTest.GetCustomerCount&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=6dfe61d8_002Dbd40_002D4d37_002D9784_002D82a696c8c82f/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="GetCustomerCount #4" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;TestAncestor&gt;&#xD;
+    &lt;TestId&gt;xUnit::842206A6-0229-4F52-8674-6C2E07A1CB55::.NETCoreApp,Version=v2.1::FinanceApi.Tests.InfrastructureAsCode.QuickBooksOnlineAccessTest.GetCustomerCount&lt;/TestId&gt;&#xD;
+  &lt;/TestAncestor&gt;&#xD;
+&lt;/SessionState&gt;</s:String>
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=98769937_002D665b_002D480e_002D95cd_002Df55efe6920f6/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="GetCustomerCount #3" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;TestAncestor&gt;&#xD;
     &lt;TestId&gt;xUnit::842206A6-0229-4F52-8674-6C2E07A1CB55::.NETCoreApp,Version=v2.1::FinanceApi.Tests.InfrastructureAsCode.QuickBooksOnlineAccessTest.GetCustomerCount&lt;/TestId&gt;&#xD;

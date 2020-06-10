@@ -2,8 +2,12 @@
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Amazon.DynamoDBv2;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using PropertyRentalManagement;
+using PropertyRentalManagement.DatabaseModel;
+using PropertyRentalManagement.QuickBooksOnline;
 using PropertyRentalManagement.QuickBooksOnline.Models;
 using Xunit;
 using Xunit.Abstractions;
@@ -24,11 +28,30 @@ namespace FinanceApi.Tests.InfrastructureAsCode
         [Fact]
         public void GetCustomerCount()
         {
-            var client = Factory.CreateQuickBooksOnlineClient(new XUnitLogger(Output));
+            var dynamoDbClient = new AmazonDynamoDBClient(Factory.CreateCredentialsForLakelandMiPuebloProfile(),
+                Factory.HomeRegion);
+            var databaseClient = new DatabaseClient<QuickBooksOnlineConnection>(dynamoDbClient);
+            var client = new QuickBooksOnlineClient(Configuration.RealmId, databaseClient, new XUnitLogger(Output));
+
+
             var customers = client.QueryAll<Customer>("select * from customer");
+
+            var customer = customers.Where(x => x.Id == "459").FirstOrDefault();
+
+            Output.WriteLine(JsonConvert.SerializeObject(customer));
+
+
+            return;
             Output.WriteLine(customers.Count.ToString());
             Output.WriteLine(customers.Sum(x => x.Balance).ToString());
             Output.WriteLine(JsonConvert.SerializeObject(customers, Formatting.Indented));
+
+
+
+            //var databaseClient = new DatabaseClient<QuickBooksOnlineConnection>(new AmazonDynamoDBClient());
+            //var qboClient = new QuickBooksOnlineClient(Configuration.RealmId, databaseClient, new Logger());
+            //var customers = qboClient.QueryAll<Customer>("select * from customer");
+
         }
 
         //[Fact]
