@@ -5,6 +5,3 @@
 **/bin/
 **/obj/
 packages/
-
-FinanceApi/aws-lambda-tools-defaults.json
-FinanceApi/aws-lambda-tools-defaults.test.json
