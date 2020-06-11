@@ -26,7 +26,7 @@ namespace PropertyRentalManagement.QuickBooksOnline.Models
         public decimal Balance { get; set; }
 
         [JsonProperty("PrimaryPhone")]
-        public string PhoneNumber { get; set; }
+        public PhoneNumber PrimaryPhone { get; set; }
 
         [JsonProperty("MetaData")]
         public MetaData MetaData { get; set; }
