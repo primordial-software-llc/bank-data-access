@@ -3,7 +3,7 @@ using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
 using Xunit;
 
-namespace FinanceApi.Tests.InfrastructureAsCode
+namespace FinanceApi.Tests.InfrastructureAsCode.PointOfSale
 {
     public class CreateVendorsTable
     {
@@ -37,7 +37,7 @@ namespace FinanceApi.Tests.InfrastructureAsCode
             };
             var tableFactory = new DynamoDbTableFactory(
                 new AmazonDynamoDBClient(Factory.CreateCredentialsFromProfile(), Factory.HomeRegion));
-            tableFactory.CreateTable(request);
+            tableFactory.CreateTable(request, false);
         }
     }
 }

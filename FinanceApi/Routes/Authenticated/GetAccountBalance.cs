@@ -11,6 +11,7 @@ using FinanceApi.PlaidModel;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PropertyRentalManagement;
+using PropertyRentalManagement.DataServices;
 
 namespace FinanceApi.Routes.Authenticated
 {

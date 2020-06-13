@@ -10,7 +10,7 @@ using FinanceApi.Routes.Authenticated;
 using FinanceApi.Routes.Authenticated.PointOfSale;
 using FinanceApi.Routes.Unauthenticated;
 using Newtonsoft.Json.Linq;
-using PropertyRentalManagement;
+using PropertyRentalManagement.DataServices;
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.Json.JsonSerializer))]
@@ -89,7 +89,8 @@ namespace FinanceApi
                     new GetAccountBalance(),
                     new GetBudget(),
                     new PatchBudget(),
-                    new GetCustomers()
+                    new GetCustomers(),
+                    new PostReceipt()
                 };
 
                 var matchedRoute = routes.FirstOrDefault(route => string.Equals(request.HttpMethod, route.HttpMethod, StringComparison.OrdinalIgnoreCase) &&

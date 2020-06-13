@@ -1,9 +1,8 @@
-﻿using Api;
-using FinanceApi.Tests.InfrastructureAsCode;
+﻿using PropertyRentalManagement.DataServices;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Tests
+namespace FinanceApi.Tests.InfrastructureAsCode
 {
     public class MakeRecurringInvoices
     {
@@ -14,7 +13,7 @@ namespace Tests
             Output = output;
         }
 
-        [Fact]
+        //[Fact]
         public void MakeWeeklyInvoices()
         {
             var vendorClient = new VendorService();

@@ -8,6 +8,7 @@ using AwsTools;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PropertyRentalManagement.DatabaseModel;
+using PropertyRentalManagement.DataServices;
 using PropertyRentalManagement.QuickBooksOnline.Models;
 
 namespace PropertyRentalManagement.QuickBooksOnline
@@ -72,6 +73,14 @@ namespace PropertyRentalManagement.QuickBooksOnline
                 return new List<T>();
             }
             return JsonConvert.DeserializeObject<IList<T>>(entityResults.ToString());
+        }
+
+        public T Create<T>(string path, T model) where T : IQuickBooksOnlineEntity, new()
+        {
+            var jsonInput = JsonConvert.SerializeObject(model, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+            var result = Request(path, HttpMethod.Post, jsonInput);
+            var json = JObject.Parse(result);
+            return JsonConvert.DeserializeObject<T>(json[new T().EntityName].ToString());
         }
 
         public string Request(string path, HttpMethod method, string body = null)

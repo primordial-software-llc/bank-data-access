@@ -4,6 +4,7 @@ using System.Linq;
 using AwsTools;
 using PropertyRentalManagement.QuickBooksOnline;
 using PropertyRentalManagement.QuickBooksOnline.Models;
+using PropertyRentalManagement.QuickBooksOnline.Models.Payments;
 
 namespace PropertyRentalManagement.Reports
 {

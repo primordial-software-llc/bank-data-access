@@ -15,10 +15,14 @@ namespace FinanceApi.Tests.InfrastructureAsCode
             Client = client;
         }
 
-        public void CreateTable(CreateTableRequest request)
+        public void CreateTable(CreateTableRequest request, bool deleteIfTableExists)
         {
             TableDescription tableDescription;
             var tableExists = TableExists(request.TableName);
+            if (tableExists && !deleteIfTableExists)
+            {
+                throw new Exception(request.TableName + " already exists");
+            }
             if (tableExists)
             {
                 Console.WriteLine("Table found, deleting");

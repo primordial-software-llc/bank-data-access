@@ -1,6 +1,7 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 
-namespace PropertyRentalManagement.QuickBooksOnline.Models
+namespace PropertyRentalManagement.QuickBooksOnline.Models.Payments
 {
     public class Payment : IQuickBooksOnlineEntity
     {
@@ -15,5 +16,11 @@ namespace PropertyRentalManagement.QuickBooksOnline.Models
 
         [JsonProperty("TotalAmt")]
         public decimal TotalAmount { get; set; }
+
+        [JsonProperty("PrivateNote")]
+        public string PrivateNote { get; set; }
+
+        [JsonProperty("Line")]
+        public List<PaymentLine> Line { get; set; }
     }
 }

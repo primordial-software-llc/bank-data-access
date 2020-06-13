@@ -9,20 +9,20 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PropertyRentalManagement.DatabaseModel;
 
-namespace Api
+namespace PropertyRentalManagement.DataServices
 {
     public class VendorService
     {
         public void Create(IAmazonDynamoDB dbClient, int quickBooksOnlineId, bool isActive, string paymentFrequency)
         {
-            var user = new Vendor
+            var vendor = new Vendor
             {
                 Id = Guid.NewGuid().ToString(),
                 QuickBooksOnlineId = quickBooksOnlineId,
                 IsActive = isActive,
                 PaymentFrequency = paymentFrequency
             };
-            var update = JObject.FromObject(user, new JsonSerializer { NullValueHandling = NullValueHandling.Ignore });
+            var update = JObject.FromObject(vendor, new JsonSerializer { NullValueHandling = NullValueHandling.Ignore });
             dbClient.PutItemAsync(
                 new Vendor().GetTable(),
                 Document.FromJson(update.ToString()).ToAttributeMap()

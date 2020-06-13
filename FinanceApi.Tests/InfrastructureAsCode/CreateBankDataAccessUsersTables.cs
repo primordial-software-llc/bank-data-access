@@ -41,7 +41,7 @@ namespace FinanceApi.Tests.InfrastructureAsCode
             };
             var tableFactory = new DynamoDbTableFactory(
                 new AmazonDynamoDBClient(Factory.CreateCredentialsFromProfile(), Factory.HomeRegion));
-            tableFactory.CreateTable(request);
+            tableFactory.CreateTable(request, false);
         }
 
         [Fact]
@@ -74,7 +74,7 @@ namespace FinanceApi.Tests.InfrastructureAsCode
             };
             var tableFactory = new DynamoDbTableFactory(
                 new AmazonDynamoDBClient(Factory.CreateCredentialsFromProfile(), Factory.HomeRegion));
-            tableFactory.CreateTable(request);
+            tableFactory.CreateTable(request, false);
         }
     }
 }

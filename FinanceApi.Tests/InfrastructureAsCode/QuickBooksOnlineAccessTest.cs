@@ -5,14 +5,14 @@ using System.Threading.Tasks;
 using Amazon.DynamoDBv2;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using PropertyRentalManagement;
 using PropertyRentalManagement.DatabaseModel;
+using PropertyRentalManagement.DataServices;
 using PropertyRentalManagement.QuickBooksOnline;
 using PropertyRentalManagement.QuickBooksOnline.Models;
+using PropertyRentalManagement.QuickBooksOnline.Models.Invoices;
+using PropertyRentalManagement.QuickBooksOnline.Models.Payments;
 using Xunit;
 using Xunit.Abstractions;
-using Customer = PropertyRentalManagement.QuickBooksOnline.Models.Customer;
-using Invoice = PropertyRentalManagement.QuickBooksOnline.Models.Invoice;
 
 namespace FinanceApi.Tests.InfrastructureAsCode
 {
@@ -31,10 +31,10 @@ namespace FinanceApi.Tests.InfrastructureAsCode
             var dynamoDbClient = new AmazonDynamoDBClient(Factory.CreateCredentialsForLakelandMiPuebloProfile(),
                 Factory.HomeRegion);
             var databaseClient = new DatabaseClient<QuickBooksOnlineConnection>(dynamoDbClient);
-            var client = new QuickBooksOnlineClient(Configuration.RealmId, databaseClient, new XUnitLogger(Output));
+            var qboClient = new QuickBooksOnlineClient(Configuration.RealmId, databaseClient, new XUnitLogger(Output));
 
 
-            var customers = client.QueryAll<Customer>("select * from customer");
+            var customers = qboClient.QueryAll<Customer>("select * from customer");
 
             var customer = customers.Where(x => x.Id == "459").FirstOrDefault();
 

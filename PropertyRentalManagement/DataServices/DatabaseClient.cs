@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DocumentModel;
+using Amazon.DynamoDBv2.Model;
 using AwsTools;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Amazon.DynamoDBv2.Model;
 
-namespace PropertyRentalManagement
+namespace PropertyRentalManagement.DataServices
 {
     public class DatabaseClient<T> where T : IModel, new()
     {

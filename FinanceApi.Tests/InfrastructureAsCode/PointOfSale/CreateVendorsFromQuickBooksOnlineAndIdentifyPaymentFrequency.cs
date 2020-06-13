@@ -1,11 +1,11 @@
 ﻿using System;
-using Api;
+using PropertyRentalManagement.DataServices;
 using PropertyRentalManagement.QuickBooksOnline;
 using PropertyRentalManagement.QuickBooksOnline.Models;
-using Xunit;
+using PropertyRentalManagement.QuickBooksOnline.Models.Invoices;
 using Xunit.Abstractions;
 
-namespace FinanceApi.Tests.InfrastructureAsCode
+namespace FinanceApi.Tests.InfrastructureAsCode.PointOfSale
 {
     public class CreateVendorsFromQuickBooksOnlineAndIdentifyPaymentFrequency
     {
@@ -16,7 +16,7 @@ namespace FinanceApi.Tests.InfrastructureAsCode
             Output = output;
         }
 
-        [Fact]
+        //[Fact]
         public void Run()
         {
             var qboClient = Factory .CreateQuickBooksOnlineClient(new XUnitLogger(Output));

@@ -4,8 +4,8 @@ using Amazon.DynamoDBv2;
 using Amazon.Runtime;
 using Amazon.Runtime.CredentialManagement;
 using AwsTools;
-using PropertyRentalManagement;
 using PropertyRentalManagement.DatabaseModel;
+using PropertyRentalManagement.DataServices;
 using PropertyRentalManagement.QuickBooksOnline;
 
 namespace FinanceApi.Tests.InfrastructureAsCode
