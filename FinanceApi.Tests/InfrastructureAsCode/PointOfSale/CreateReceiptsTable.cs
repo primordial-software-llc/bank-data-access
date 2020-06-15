@@ -19,20 +19,20 @@ namespace FinanceApi.Tests.InfrastructureAsCode.PointOfSale
             Output = output;
         }
 
-        //[Fact]
+        [Fact]
         public void TestInsert()
         {
             var receipt = new Receipt
             {
                 RentalDate = "2020-06-13",
-                CustomerId = 1945,
+                Customer = new Reference { Id = 1945.ToString() /* Name = "New test company"*/ },
                 AmountOfAccount = 500.01m,
                 RentalAmount = 0m,
                 ThisPayment = 10m,
                 Memo = "memo testing"
             };
 
-            var dynamoDbClient = new AmazonDynamoDBClient(Factory.CreateCredentialsForLakelandMiPuebloProfile(),
+            var dynamoDbClient = new AmazonDynamoDBClient(Factory.CreateCredentialsFromProfile(),
                 Factory.HomeRegion);
             var databaseClient = new DatabaseClient<QuickBooksOnlineConnection>(dynamoDbClient);
 

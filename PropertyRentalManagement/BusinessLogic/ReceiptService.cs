@@ -28,6 +28,13 @@ namespace PropertyRentalManagement.BusinessLogic
             receipt.Timestamp = DateTime.UtcNow.ToString("O");
             ReceiptDbClient.Create(receipt);
 
+            if (string.IsNullOrWhiteSpace(receipt.Customer.Id))
+            {
+                var customer = new Customer {DisplayName = receipt.Customer.Name};
+                customer = QuickBooksOnlineClient.Create("customer", customer);
+                receipt.Customer.Id = customer.Id;
+            }
+
             if (receipt.RentalAmount > 0)
             {
                 var invoice = CreateInvoice(receipt, receipt.RentalDate);
@@ -42,7 +49,7 @@ namespace PropertyRentalManagement.BusinessLogic
                 var payment = new Payment
                 {
                     TxnDate = receipt.RentalDate,
-                    CustomerRef = new Reference { Value = receipt.CustomerId.ToString() },
+                    CustomerRef = new QuickBooksOnline.Models.Reference { Value = receipt.Customer.Id.ToString() },
                     TotalAmount = appliedPaymentAmount,
                     PrivateNote = receipt.Memo,
                     Line = new List<PaymentLine>
@@ -72,7 +79,7 @@ namespace PropertyRentalManagement.BusinessLogic
                     var payment = new Payment
                     {
                         TxnDate = receipt.RentalDate,
-                        CustomerRef = new Reference {Value = receipt.CustomerId.ToString()},
+                        CustomerRef = new QuickBooksOnline.Models.Reference {Value = receipt.Customer.Id},
                         TotalAmount = creditRemaining,
                         PrivateNote = receipt.Memo
                     };
@@ -90,7 +97,7 @@ namespace PropertyRentalManagement.BusinessLogic
             var invoice = new Invoice
             {
                 TxnDate = transactionDate,
-                CustomerRef = new Reference { Value = receipt.CustomerId.ToString() },
+                CustomerRef = new QuickBooksOnline.Models.Reference { Value = receipt.Customer.Id },
                 Line = new List<InvoiceLine>
                 {
                     new InvoiceLine
@@ -98,9 +105,9 @@ namespace PropertyRentalManagement.BusinessLogic
                         DetailType = "SalesItemLineDetail",
                         SalesItemLineDetail = new SalesItemLineDetail
                         {
-                            ItemRef = new Reference { Value = Constants.QUICKBOOKS_PRODUCT_RENT.ToString() },
+                            ItemRef = new QuickBooksOnline.Models.Reference { Value = Constants.QUICKBOOKS_PRODUCT_RENT.ToString() },
                             Quantity = quantity,
-                            TaxCodeRef = new Reference { Value = Constants.QUICKBOOKS_INVOICE_LINE_TAXABLE },
+                            TaxCodeRef = new QuickBooksOnline.Models.Reference { Value = Constants.QUICKBOOKS_INVOICE_LINE_TAXABLE },
                             UnitPrice = taxableAmount
                         },
                         Amount = quantity * taxableAmount
@@ -108,10 +115,10 @@ namespace PropertyRentalManagement.BusinessLogic
                 },
                 TxnTaxDetail = new TxnTaxDetail
                 {
-                    TxnTaxCodeRef = new Reference { Value = Constants.QUICKBOOKS_RENTAL_TAX_RATE.ToString() }
+                    TxnTaxCodeRef = new QuickBooksOnline.Models.Reference { Value = Constants.QUICKBOOKS_RENTAL_TAX_RATE.ToString() }
                 },
                 PrivateNote = receipt.Memo,
-                SalesTermRef = new Reference { Value = Constants.QUICKBOOKS_TERMS_DUE_NOW.ToString() }
+                SalesTermRef = new QuickBooksOnline.Models.Reference { Value = Constants.QUICKBOOKS_TERMS_DUE_NOW.ToString() }
             };
             return invoice;
         }

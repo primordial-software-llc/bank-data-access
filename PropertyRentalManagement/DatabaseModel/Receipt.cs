@@ -16,8 +16,8 @@ namespace PropertyRentalManagement.DatabaseModel
         [JsonProperty("rentalDate")]
         public string RentalDate { get; set; }
 
-        [JsonProperty("customerId")]
-        public int CustomerId { get; set; }
+        [JsonProperty("customer")]
+        public Reference Customer { get; set; }
         
         [JsonProperty("amountOfAccount")]
         public decimal? AmountOfAccount { get; set; }
