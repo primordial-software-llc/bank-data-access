@@ -9,12 +9,12 @@ using PropertyRentalManagement.QuickBooksOnline.Models.Payments;
 
 namespace PropertyRentalManagement.BusinessLogic
 {
-    public class ReceiptService
+    public class ReceiptSave
     {
         private DatabaseClient<Receipt> ReceiptDbClient { get; }
         private QuickBooksOnlineClient QuickBooksOnlineClient { get; }
 
-        public ReceiptService(DatabaseClient<Receipt> receiptDbClient, QuickBooksOnlineClient quickBooksOnlineClient)
+        public ReceiptSave(DatabaseClient<Receipt> receiptDbClient, QuickBooksOnlineClient quickBooksOnlineClient)
         {
             ReceiptDbClient = receiptDbClient;
             QuickBooksOnlineClient = quickBooksOnlineClient;
@@ -22,7 +22,6 @@ namespace PropertyRentalManagement.BusinessLogic
 
         public ReceiptSaveResult SaveReceipt(Receipt receipt)
         {
-            ValidateReceipt(receipt);
             ReceiptSaveResult result = new ReceiptSaveResult();
             receipt.Id = Guid.NewGuid().ToString();
             receipt.Timestamp = DateTime.UtcNow.ToString("O");
@@ -49,7 +48,7 @@ namespace PropertyRentalManagement.BusinessLogic
                 var payment = new Payment
                 {
                     TxnDate = receipt.RentalDate,
-                    CustomerRef = new QuickBooksOnline.Models.Reference { Value = receipt.Customer.Id.ToString() },
+                    CustomerRef = new QuickBooksOnline.Models.Reference { Value = receipt.Customer.Id },
                     TotalAmount = appliedPaymentAmount,
                     PrivateNote = receipt.Memo,
                     Line = new List<PaymentLine>
@@ -121,22 +120,6 @@ namespace PropertyRentalManagement.BusinessLogic
                 SalesTermRef = new QuickBooksOnline.Models.Reference { Value = Constants.QUICKBOOKS_TERMS_DUE_NOW.ToString() }
             };
             return invoice;
-        }
-
-        private void ValidateReceipt(Receipt receipt)
-        {
-            if (receipt.RentalAmount < 0)
-            {
-                throw new Exception("Rental amount must be greater or equal to zero.");
-            }
-            if (receipt.ThisPayment < 0)
-            {
-                throw new Exception("This payment must be greater or equal to zero.");
-            }
-            if ((receipt.Memo ?? string.Empty).Length > Constants.QUICKBOOKS_MEMO_MAX_LENGTH)
-            {
-                throw new Exception($"Memo must be less than or equal to {Constants.QUICKBOOKS_MEMO_MAX_LENGTH} characters.");
-            }
         }
     }
 }

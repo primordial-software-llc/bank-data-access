@@ -1,4 +1,5 @@
-﻿using Amazon.DynamoDBv2;
+﻿using System.Linq;
+using Amazon.DynamoDBv2;
 using Amazon.Lambda.APIGatewayEvents;
 using FinanceApi.DatabaseModel;
 using Newtonsoft.Json;
@@ -26,7 +27,15 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
             var databaseClient = new DatabaseClient<QuickBooksOnlineConnection>(new AmazonDynamoDBClient());
             var receiptDbClient = new DatabaseClient<Receipt>(new AmazonDynamoDBClient());
             var qboClient = new QuickBooksOnlineClient(Configuration.RealmId, databaseClient, new Logger());
-            var receiptService = new ReceiptService(receiptDbClient, qboClient);
+
+            var validation = new ReceiptValidation().Validate(receipt);
+            if (validation.Any())
+            {
+                response.Body = new JObject { { "error", JArray.FromObject(validation) } }.ToString();
+                return;
+            }
+
+            var receiptService = new ReceiptSave(receiptDbClient, qboClient);
             var receiptResult = receiptService.SaveReceipt(receipt);
             response.Body = JsonConvert.SerializeObject(receiptResult);
         }

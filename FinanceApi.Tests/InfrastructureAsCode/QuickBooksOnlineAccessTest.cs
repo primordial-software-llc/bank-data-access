@@ -35,23 +35,7 @@ namespace FinanceApi.Tests.InfrastructureAsCode
 
 
             var customers = qboClient.QueryAll<Customer>("select * from customer");
-
-            var customer = customers.Where(x => x.Id == "459").FirstOrDefault();
-
-            Output.WriteLine(JsonConvert.SerializeObject(customer));
-
-
-            return;
-            Output.WriteLine(customers.Count.ToString());
-            Output.WriteLine(customers.Sum(x => x.Balance).ToString());
-            Output.WriteLine(JsonConvert.SerializeObject(customers, Formatting.Indented));
-
-
-
-            //var databaseClient = new DatabaseClient<QuickBooksOnlineConnection>(new AmazonDynamoDBClient());
-            //var qboClient = new QuickBooksOnlineClient(Configuration.RealmId, databaseClient, new Logger());
-            //var customers = qboClient.QueryAll<Customer>("select * from customer");
-
+            Output.WriteLine(JsonConvert.SerializeObject(customers));
         }
 
         //[Fact]

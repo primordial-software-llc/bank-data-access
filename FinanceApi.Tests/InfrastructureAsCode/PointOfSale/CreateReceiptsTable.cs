@@ -36,7 +36,7 @@ namespace FinanceApi.Tests.InfrastructureAsCode.PointOfSale
                 Factory.HomeRegion);
             var databaseClient = new DatabaseClient<QuickBooksOnlineConnection>(dynamoDbClient);
 
-            var receiptService = new ReceiptService(
+            var receiptService = new ReceiptSave(
                 new DatabaseClient<Receipt>(
                     new AmazonDynamoDBClient(Factory.CreateCredentialsFromProfile(), Factory.HomeRegion)),
                 new QuickBooksOnlineClient(Configuration.RealmId, databaseClient, new XUnitLogger(Output)));

@@ -8,5 +8,6 @@ namespace PropertyRentalManagement
         public static readonly string QUICKBOOKS_INVOICE_LINE_TAXABLE = "TAX";
         public static readonly int QUICKBOOKS_RENTAL_TAX_RATE = 5;
         public static readonly int QUICKBOOKS_MEMO_MAX_LENGTH = 4000;
+        public static readonly int QUICKBOOKS_CUSTOMER_DISPLAY_NAME_MAX_LENGTH = 500;
     }
 }
