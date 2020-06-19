@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 using PropertyRentalManagement.DatabaseModel;
 using PropertyRentalManagement.DataServices;
 using PropertyRentalManagement.QuickBooksOnline;
@@ -26,21 +27,21 @@ namespace PropertyRentalManagement.BusinessLogic
             {
                 Id = Guid.NewGuid().ToString(),
                 Timestamp = DateTime.UtcNow.ToString("O"),
-                Receipt = receipt
+                Receipt = JsonConvert.DeserializeObject<Receipt>(JsonConvert.SerializeObject(receipt))
             };
             ReceiptDbClient.Create(result);
 
-            if (string.IsNullOrWhiteSpace(receipt.Customer.Id))
+            string customerId = receipt.Customer.Id;
+            if (string.IsNullOrWhiteSpace(customerId))
             {
                 var customer = new Customer {DisplayName = receipt.Customer.Name};
                 customer = QuickBooksOnlineClient.Create("customer", customer);
-                receipt.Customer.Id = customer.Id;
+                customerId = customer.Id;
             }
 
             if (receipt.RentalAmount > 0)
             {
-                var invoice = CreateInvoice(receipt, receipt.RentalDate);
-                result.Invoice = QuickBooksOnlineClient.Create("invoice", invoice);
+                result.Invoice = QuickBooksOnlineClient.Create("invoice", CreateInvoice(customerId, receipt.RentalAmount, receipt.RentalDate, receipt.Memo));
             }
 
             if (receipt.ThisPayment > 0 && receipt.RentalAmount > 0)
@@ -51,7 +52,7 @@ namespace PropertyRentalManagement.BusinessLogic
                 var payment = new Payment
                 {
                     TxnDate = receipt.RentalDate,
-                    CustomerRef = new QuickBooksOnline.Models.Reference { Value = receipt.Customer.Id },
+                    CustomerRef = new QuickBooksOnline.Models.Reference { Value = customerId },
                     TotalAmount = appliedPaymentAmount,
                     PrivateNote = receipt.Memo,
                     Line = new List<PaymentLine>
@@ -81,7 +82,7 @@ namespace PropertyRentalManagement.BusinessLogic
                     var payment = new Payment
                     {
                         TxnDate = receipt.RentalDate,
-                        CustomerRef = new QuickBooksOnline.Models.Reference {Value = receipt.Customer.Id},
+                        CustomerRef = new QuickBooksOnline.Models.Reference {Value = customerId},
                         TotalAmount = creditRemaining,
                         PrivateNote = receipt.Memo
                     };
@@ -92,14 +93,14 @@ namespace PropertyRentalManagement.BusinessLogic
             return result;
         }
 
-        private Invoice CreateInvoice(Receipt receipt, string transactionDate)
+        private Invoice CreateInvoice(string customerId, decimal? rentalAmount, string transactionDate, string memo)
         {
             decimal quantity = 1;
-            decimal taxableAmount = receipt.RentalAmount.GetValueOrDefault() / 1.068m;
+            decimal taxableAmount = rentalAmount.GetValueOrDefault() / 1.068m;
             var invoice = new Invoice
             {
                 TxnDate = transactionDate,
-                CustomerRef = new QuickBooksOnline.Models.Reference { Value = receipt.Customer.Id },
+                CustomerRef = new QuickBooksOnline.Models.Reference { Value = customerId },
                 Line = new List<InvoiceLine>
                 {
                     new InvoiceLine
@@ -119,7 +120,7 @@ namespace PropertyRentalManagement.BusinessLogic
                 {
                     TxnTaxCodeRef = new QuickBooksOnline.Models.Reference { Value = Constants.QUICKBOOKS_RENTAL_TAX_RATE.ToString() }
                 },
-                PrivateNote = receipt.Memo,
+                PrivateNote = memo,
                 SalesTermRef = new QuickBooksOnline.Models.Reference { Value = Constants.QUICKBOOKS_TERMS_DUE_NOW.ToString() }
             };
             return invoice;

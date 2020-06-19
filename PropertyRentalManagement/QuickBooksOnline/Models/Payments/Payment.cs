@@ -8,6 +8,9 @@ namespace PropertyRentalManagement.QuickBooksOnline.Models.Payments
         [JsonIgnore]
         public string EntityName => "Payment";
 
+        [JsonProperty("Id")]
+        public string Id { get; set; }
+
         [JsonProperty("CustomerRef")]
         public Reference CustomerRef { get; set; }
 
