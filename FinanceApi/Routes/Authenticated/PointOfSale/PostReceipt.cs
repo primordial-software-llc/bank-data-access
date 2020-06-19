@@ -25,7 +25,7 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
             }
             var receipt = JsonConvert.DeserializeObject<Receipt>(request.Body);
             var databaseClient = new DatabaseClient<QuickBooksOnlineConnection>(new AmazonDynamoDBClient());
-            var receiptDbClient = new DatabaseClient<Receipt>(new AmazonDynamoDBClient());
+            var receiptDbClient = new DatabaseClient<ReceiptSaveResult>(new AmazonDynamoDBClient());
             var qboClient = new QuickBooksOnlineClient(Configuration.RealmId, databaseClient, new Logger());
 
             var validation = new ReceiptValidation().Validate(receipt);

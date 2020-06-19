@@ -11,10 +11,10 @@ namespace PropertyRentalManagement.BusinessLogic
 {
     public class ReceiptSave
     {
-        private DatabaseClient<Receipt> ReceiptDbClient { get; }
+        private DatabaseClient<ReceiptSaveResult> ReceiptDbClient { get; }
         private QuickBooksOnlineClient QuickBooksOnlineClient { get; }
 
-        public ReceiptSave(DatabaseClient<Receipt> receiptDbClient, QuickBooksOnlineClient quickBooksOnlineClient)
+        public ReceiptSave(DatabaseClient<ReceiptSaveResult> receiptDbClient, QuickBooksOnlineClient quickBooksOnlineClient)
         {
             ReceiptDbClient = receiptDbClient;
             QuickBooksOnlineClient = quickBooksOnlineClient;
@@ -22,10 +22,13 @@ namespace PropertyRentalManagement.BusinessLogic
 
         public ReceiptSaveResult SaveReceipt(Receipt receipt)
         {
-            ReceiptSaveResult result = new ReceiptSaveResult();
-            receipt.Id = Guid.NewGuid().ToString();
-            receipt.Timestamp = DateTime.UtcNow.ToString("O");
-            ReceiptDbClient.Create(receipt);
+            ReceiptSaveResult result = new ReceiptSaveResult
+            {
+                Id = Guid.NewGuid().ToString(),
+                Timestamp = DateTime.UtcNow.ToString("O"),
+                Receipt = receipt
+            };
+            ReceiptDbClient.Create(result);
 
             if (string.IsNullOrWhiteSpace(receipt.Customer.Id))
             {
@@ -85,7 +88,7 @@ namespace PropertyRentalManagement.BusinessLogic
                     result.UnappliedPayment = QuickBooksOnlineClient.Create("payment", payment);
                 }
             }
-            result.Receipt = receipt;
+            ReceiptDbClient.Create(result);
             return result;
         }
 

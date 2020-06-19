@@ -19,31 +19,6 @@ namespace FinanceApi.Tests.InfrastructureAsCode.PointOfSale
             Output = output;
         }
 
-        [Fact]
-        public void TestInsert()
-        {
-            var receipt = new Receipt
-            {
-                RentalDate = "2020-06-13",
-                Customer = new Reference { Id = 1945.ToString() /* Name = "New test company"*/ },
-                AmountOfAccount = 500.01m,
-                RentalAmount = 0m,
-                ThisPayment = 10m,
-                Memo = "memo testing"
-            };
-
-            var dynamoDbClient = new AmazonDynamoDBClient(Factory.CreateCredentialsFromProfile(),
-                Factory.HomeRegion);
-            var databaseClient = new DatabaseClient<QuickBooksOnlineConnection>(dynamoDbClient);
-
-            var receiptService = new ReceiptSave(
-                new DatabaseClient<Receipt>(
-                    new AmazonDynamoDBClient(Factory.CreateCredentialsFromProfile(), Factory.HomeRegion)),
-                new QuickBooksOnlineClient(Configuration.RealmId, databaseClient, new XUnitLogger(Output)));
-
-            var receiptResult = receiptService.SaveReceipt(receipt);
-        }
-
         //[Fact]
         public void Create()
         {
