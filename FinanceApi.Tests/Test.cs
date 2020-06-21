@@ -85,7 +85,7 @@ namespace FinanceApi.Tests
         [Fact]
         public void EmptyTokenIsNotValid()
         {
-            var isValid = AwsCognitoJwtTokenValidator.IsValid(string.Empty, string.Empty);
+            var isValid = AwsCognitoJwtTokenValidator.IsValid(string.Empty, string.Empty, string.Empty);
             output.WriteLine(isValid.ToString());
         }
 

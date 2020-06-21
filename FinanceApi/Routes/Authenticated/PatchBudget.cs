@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Amazon.DynamoDBv2.DocumentModel;
+﻿using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.Lambda.APIGatewayEvents;
 using FinanceApi.DatabaseModel;
 using Newtonsoft.Json.Linq;
@@ -15,9 +12,10 @@ namespace FinanceApi.Routes.Authenticated
         public void Run(APIGatewayProxyRequest request, APIGatewayProxyResponse response, FinanceUser user)
         {
             var jsonPatch = JObject.Parse(request.Body);
+            DataSanitization.SanitizeInput(jsonPatch);
             var updateItemResponse = new UserService().UpdateUser(user.Email, jsonPatch);
             var jsonResponse = JObject.Parse(Document.FromAttributeMap(updateItemResponse.Attributes).ToJson());
-            jsonResponse.Remove("bankLinks");
+            DataSanitization.SanitizeOutput(jsonResponse);
             response.Body = jsonResponse.ToString();
             response.StatusCode = (int)updateItemResponse.HttpStatusCode;
         }

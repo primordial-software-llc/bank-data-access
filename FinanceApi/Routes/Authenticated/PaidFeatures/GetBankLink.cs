@@ -5,7 +5,7 @@ using Amazon.Lambda.APIGatewayEvents;
 using FinanceApi.DatabaseModel;
 using Newtonsoft.Json.Linq;
 
-namespace FinanceApi.Routes.Authenticated
+namespace FinanceApi.Routes.Authenticated.PaidFeatures
 {
     class GetBankLink : IRoute
     {

@@ -6,9 +6,7 @@ using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using FinanceApi.DatabaseModel;
 using FinanceApi.Routes;
-using FinanceApi.Routes.Authenticated;
 using FinanceApi.Routes.Authenticated.PointOfSale;
-using FinanceApi.Routes.Unauthenticated;
 using Newtonsoft.Json.Linq;
 using PropertyRentalManagement.DataServices;
 
@@ -34,7 +32,7 @@ namespace FinanceApi
             bool isAuthenticated = false;
             if (!request.Path.StartsWith("/unauthenticated/", StringComparison.OrdinalIgnoreCase))
             {
-                isAuthenticated = AwsCognitoJwtTokenValidator.IsValid(idToken, Configuration.FINANCE_API_COGNITO_USER_POOL_ID);
+                isAuthenticated = AwsCognitoJwtTokenValidator.IsValid(idToken, Configuration.FINANCE_API_COGNITO_USER_POOL_ID, Configuration.FINANCE_API_COGNITO_CLIENT_ID);
                 if (!isAuthenticated)
                 {
                     response.StatusCode = 401;
@@ -77,22 +75,30 @@ namespace FinanceApi
             {
                 List<IRoute> routes = new List<IRoute>
                 {
-                    new PostSetToken(),
-                    new PostRefreshToken(),
-                    new PostSignup(),
-                    new PostSignOut(),
-                    new PostPurchase(),
-                    new DeleteBankLink(),
-                    new GetBankLink(),
-                    new PostCreatePublicToken(),
-                    new PostLinkAccessToken(),
-                    new GetAccountBalance(),
-                    new GetBudget(),
-                    new PatchBudget(),
-                    new GetCustomers(),
-                    new PostReceipt()
+                    new Routes.Unauthenticated.PostSetToken(),
+                    new Routes.Unauthenticated.PostRefreshToken(),
+                    new Routes.Unauthenticated.PostSignup()
                 };
-
+                if ((user?.BillingAgreement?.AgreedToBillingTerms).GetValueOrDefault())
+                {
+                    routes.Add(new Routes.Authenticated.PaidFeatures.PostLinkAccessToken());
+                    routes.Add(new Routes.Authenticated.PaidFeatures.GetBankLink());
+                    routes.Add(new Routes.Authenticated.PaidFeatures.DeleteBankLink());
+                    routes.Add(new Routes.Authenticated.PaidFeatures.PostCreatePublicToken());
+                }
+                if (isAuthenticated)
+                {
+                    routes.Add(new Routes.Authenticated.PostSignOut());
+                    routes.Add(new Routes.Authenticated.PostPurchase());
+                    routes.Add(new Routes.Authenticated.GetAccountBalance());
+                    routes.Add(new Routes.Authenticated.GetBudget());
+                    routes.Add(new Routes.Authenticated.PatchBudget());
+                }
+                if (new PointOfSaleAuthorization().IsAuthorized(user?.Email))
+                {
+                    routes.Add(new Routes.Authenticated.PointOfSale.GetCustomers());
+                    routes.Add(new Routes.Authenticated.PointOfSale.PostReceipt());
+                }
                 var matchedRoute = routes.FirstOrDefault(route => string.Equals(request.HttpMethod, route.HttpMethod, StringComparison.OrdinalIgnoreCase) &&
                                                                   string.Equals(request.Path, route.Path, StringComparison.OrdinalIgnoreCase));
                 if (matchedRoute != null)

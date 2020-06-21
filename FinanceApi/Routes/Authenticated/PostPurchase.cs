@@ -47,12 +47,12 @@ namespace FinanceApi.Routes.Authenticated
             {
                 ["billingAgreement"] = JObject.FromObject(new BillingAgreement
                 {
-                    AgreedToLicense = model.AgreedToBillingTerms,
+                    AgreedToBillingTerms = model.AgreedToBillingTerms,
                     Date = DateTime.UtcNow.ToString("O"),
                     IpAddress = ip
                 })
             };
-            new UserService().UpdateUser(user.Email, jsonPatch, true);
+            new UserService().UpdateUser(user.Email, jsonPatch);
         }
 
         public Subscription Purchase(string email, string cardCvc, string cardNumber, long cardExpirationMonth, long cardExpirationYear)

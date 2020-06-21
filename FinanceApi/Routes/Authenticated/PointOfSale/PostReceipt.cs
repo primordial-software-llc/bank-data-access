@@ -17,12 +17,6 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
         public string Path => "/point-of-sale/receipt";
         public void Run(APIGatewayProxyRequest request, APIGatewayProxyResponse response, FinanceUser user)
         {
-            if (!new PointOfSaleAuthorization().IsAuthorized(user.Email))
-            {
-                response.StatusCode = 400;
-                response.Body = new JObject { { "error", "unknown email" } }.ToString();
-                return;
-            }
             var receipt = JsonConvert.DeserializeObject<Receipt>(request.Body);
             var databaseClient = new DatabaseClient<QuickBooksOnlineConnection>(new AmazonDynamoDBClient());
             var receiptDbClient = new DatabaseClient<ReceiptSaveResult>(new AmazonDynamoDBClient());

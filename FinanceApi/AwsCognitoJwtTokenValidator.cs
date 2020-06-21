@@ -7,26 +7,22 @@ using Newtonsoft.Json.Linq;
 
 namespace FinanceApi
 {
-    /// <summary>
-    /// I'll keep this here just for one commit so I have it documented, but API gateway can do this validation so it's not needed if staying within AWS's products.
-    /// Feel free to remove this once it's in source control.
-    /// </summary>
     public class AwsCognitoJwtTokenValidator
     {
-        public static bool IsValid(string token, string cognitoUserPoolId)
+        public static bool IsValid(string token, string cognitoUserPoolId, string expectedAudience)
         {
             if (string.IsNullOrWhiteSpace(token))
             {
                 return false;
             }
-            var tokenHeader = Encoding.UTF8.GetString(AwsCognitoJwtTokenValidator.FromBase64Url(token.Split(".")[0]));
+            var tokenHeader = Encoding.UTF8.GetString(FromBase64Url(token.Split(".")[0]));
             var tokenKeyId = JObject.Parse(tokenHeader)["kid"].Value<string>();
 
             var publicKeys = new HttpClient().GetStringAsync($"https://cognito-idp.us-east-1.amazonaws.com/{cognitoUserPoolId}/.well-known/jwks.json").Result;
             var json = JObject.Parse(publicKeys);
             var key = json["keys"].ToList().First(x => string.Equals(x["kid"].Value<string>(), tokenKeyId, StringComparison.OrdinalIgnoreCase));
 
-            return IsValid(token, key["n"].Value<string>(), key["e"].Value<string>());
+            return IsValid(token, key["n"].Value<string>(), key["e"].Value<string>(), expectedAudience);
         }
         /// <summary>
         /// Split the first (header) and second (payload) parts of the jwt token.
@@ -39,7 +35,7 @@ namespace FinanceApi
         /// <param name="publicKeyModulus">n parameter in decoded public key</param>
         /// <param name="publicKeyExponent">e parameter in decoded public key</param>
         /// <returns></returns>
-        public static bool IsValid(string token, string publicKeyModulus, string publicKeyExponent)
+        private static bool IsValid(string token, string publicKeyModulus, string publicKeyExponent, string expectedAudience)
         {
             string[] tokenParts = token.Split('.');
 
@@ -55,7 +51,11 @@ namespace FinanceApi
             byte[] hash = sha256.ComputeHash(Encoding.UTF8.GetBytes(tokenParts[0] + '.' + tokenParts[1]));
 
             var payloadJson = JObject.Parse(Encoding.UTF8.GetString(FromBase64Url(tokenParts[1])));
-            if (!payloadJson["email_verified"].Value<bool>())
+            if (payloadJson["email_verified"] == null || !payloadJson["email_verified"].Value<bool>())
+            {
+                return false;
+            }
+            if (payloadJson["aud"] == null || !string.Equals(payloadJson["aud"].Value<string>(), expectedAudience, StringComparison.OrdinalIgnoreCase))
             {
                 return false;
             }

@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Amazon.Lambda.APIGatewayEvents;
 using FinanceApi.DatabaseModel;
 using FinanceApi.RequestModels;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace FinanceApi.Routes.Authenticated
+namespace FinanceApi.Routes.Authenticated.PaidFeatures
 {
     class PostLinkAccessToken : IRoute
     {

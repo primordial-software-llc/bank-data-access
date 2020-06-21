@@ -6,7 +6,7 @@ using FinanceApi.RequestModels;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace FinanceApi.Routes.Authenticated
+namespace FinanceApi.Routes.Authenticated.PaidFeatures
 {
     class DeleteBankLink : IRoute
     {

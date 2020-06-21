@@ -10,6 +10,12 @@ namespace FinanceApi.DatabaseModel
         [JsonProperty("email")]
         public string Email { get; set; }
 
+        [JsonProperty("firstName")]
+        public string FirstName { get; set; }
+
+        [JsonProperty("lastName")]
+        public string LastName { get; set; }
+
         [JsonProperty("licenseAgreement")]
         public LicenseAgreement LicenseAgreement { get; set; }
 

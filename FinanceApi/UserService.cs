@@ -5,7 +5,6 @@ using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
 using FinanceApi.DatabaseModel;
 using Newtonsoft.Json.Linq;
-using PropertyRentalManagement;
 using PropertyRentalManagement.DataServices;
 
 namespace FinanceApi
@@ -31,17 +30,8 @@ namespace FinanceApi
             dbClient.Create(user);
         }
 
-        // I NEED TO WHITE LIST THE PROPERTIES FOR UPDATE INSTEAD OF BLACKLIST, but I have far greater risks at the moment than exposing an authenticated users data to themselves.
-        public UpdateItemResponse UpdateUser(string email, JObject update, bool allowBillingAgreementUpdate = false)
+        public UpdateItemResponse UpdateUser(string email, JObject update)
         {
-            if (update["licenseAgreement"] != null)
-            {
-                update.Remove("licenseAgreement");
-            }
-            if (!allowBillingAgreementUpdate && update["billingAgreement"] != null)
-            {
-                update.Remove("billingAgreement");
-            }
             var dbClient = new AmazonDynamoDBClient();
             return dbClient.UpdateItemAsync(
                 new FinanceUser().GetTable(),

@@ -6,7 +6,7 @@ using FinanceApi.DatabaseModel;
 using FinanceApi.RequestModels;
 using Newtonsoft.Json;
 
-namespace FinanceApi.Routes.Authenticated
+namespace FinanceApi.Routes.Authenticated.PaidFeatures
 {
     class PostCreatePublicToken : IRoute
     {
