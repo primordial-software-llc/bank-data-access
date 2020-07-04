@@ -1,7 +1,6 @@
 ﻿using System;
 using PropertyRentalManagement.DataServices;
 using System.Linq;
-using Api;
 using PropertyRentalManagement.QuickBooksOnline;
 using PropertyRentalManagement.QuickBooksOnline.Models;
 using PropertyRentalManagement.QuickBooksOnline.Models.Invoices;
