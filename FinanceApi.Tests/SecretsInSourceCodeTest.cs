@@ -22,7 +22,6 @@ namespace FinanceApi.Tests
         {
             var gitIgnoredFiles = new List<string>
             {
-                "BankDataAccess/aws-lambda-tools-defaults.json"
             };
             var notSecrets = new List<string>
             {

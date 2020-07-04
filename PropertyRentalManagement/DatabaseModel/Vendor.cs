@@ -19,6 +19,9 @@ namespace PropertyRentalManagement.DatabaseModel
         [JsonProperty("paymentFrequency")]
         public string PaymentFrequency { get; set; }
 
+        [JsonProperty("rentPrice")]
+        public decimal? RentPrice { get; set; }
+
         public Dictionary<string, AttributeValue> GetKey()
         {
             return new Dictionary<string, AttributeValue> { { "id", new AttributeValue { S = Id } } };

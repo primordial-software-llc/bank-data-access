@@ -13,14 +13,16 @@ namespace PropertyRentalManagement.DataServices
 {
     public class VendorService
     {
-        public void Create(IAmazonDynamoDB dbClient, int quickBooksOnlineId, bool isActive, string paymentFrequency)
+        public void Create(IAmazonDynamoDB dbClient, int quickBooksOnlineId, bool isActive, string paymentFrequency,
+            decimal? rentPrice)
         {
             var vendor = new Vendor
             {
                 Id = Guid.NewGuid().ToString(),
                 QuickBooksOnlineId = quickBooksOnlineId,
                 IsActive = isActive,
-                PaymentFrequency = paymentFrequency
+                PaymentFrequency = paymentFrequency,
+                RentPrice = rentPrice
             };
             var update = JObject.FromObject(vendor, new JsonSerializer { NullValueHandling = NullValueHandling.Ignore });
             dbClient.PutItemAsync(

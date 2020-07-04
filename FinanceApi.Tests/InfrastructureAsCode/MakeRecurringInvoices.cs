@@ -14,17 +14,16 @@ namespace FinanceApi.Tests.InfrastructureAsCode
         }
 
         //[Fact]
-        public void MakeWeeklyInvoices()
+        public void MakeMonthlyInvoices()
         {
             var vendorClient = new VendorService();
-            var weeklyVendors = vendorClient.GetByPaymentFrequency(Factory.CreateAmazonDynamoDbClient(), "weekly");
-            Output.WriteLine(weeklyVendors.Count.ToString());
-            foreach (var weeklyVendor in weeklyVendors)
+            var monthlyVendors = vendorClient.GetByPaymentFrequency(Factory.CreateAmazonDynamoDbClient(), "monthly");
+            Output.WriteLine(monthlyVendors.Count.ToString());
+            foreach (var weeklyVendor in monthlyVendors)
             {
                 Output.WriteLine(weeklyVendor.QuickBooksOnlineId.ToString());
             }
         }
-
 
     }
 }

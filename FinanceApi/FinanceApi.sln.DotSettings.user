@@ -1,4 +1,5 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+<<<<<<< HEAD
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=5a5f9975_002D09b6_002D4361_002D8554_002Db8076d24c630/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="TestInsert" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;TestAncestor&gt;&#xD;
     &lt;TestId&gt;xUnit::842206A6-0229-4F52-8674-6C2E07A1CB55::.NETCoreApp,Version=v2.1::FinanceApi.Tests.InfrastructureAsCode.PointOfSale.CreateReceiptsTable.TestInsert&lt;/TestId&gt;&#xD;
@@ -8,6 +9,16 @@
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=e99a76d8_002D601d_002D4049_002D8679_002D236ad0bad131/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="Email_Is_Sanitized" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;TestAncestor&gt;&#xD;
     &lt;TestId&gt;xUnit::842206A6-0229-4F52-8674-6C2E07A1CB55::.NETCoreApp,Version=v2.1::FinanceApi.Tests.SanitizeUserInputTests&lt;/TestId&gt;&#xD;
+=======
+	
+	
+	
+	
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=f5660ce1_002Dffd9_002D41ef_002D89ce_002Daab648bfb5ae/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="RunProcessBankStatementsData" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;TestAncestor&gt;&#xD;
+    &lt;TestId&gt;xUnit::842206A6-0229-4F52-8674-6C2E07A1CB55::.NETCoreApp,Version=v2.1::Tests.ProcessBankStatements.RunProcessBankStatementsData&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::842206A6-0229-4F52-8674-6C2E07A1CB55::.NETCoreApp,Version=v2.1::FinanceApi.Tests.InfrastructureAsCode.CreateVendorsFromQuickBooksOnlineAndIdentifyPaymentFrequency.Run&lt;/TestId&gt;&#xD;
+>>>>>>> Identify monthly vendors and their rent price.
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
 	
