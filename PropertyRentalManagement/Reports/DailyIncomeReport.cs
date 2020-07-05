@@ -19,10 +19,9 @@ namespace PropertyRentalManagement.Reports
 
         public static void PrintReport(string reportDate, ILogging logger, QuickBooksOnlineClient qboClient)
         {
-            var rentalCustomerIds = new List<int> { CUSTOMER_PARKING_A, CUSTOMER_PARKING_B, CUSTOMER_BAR_A, CUSTOMER_BAR_B, CUSTOMER_RESTAURANT };
-            var payrollVendors = qboClient.QueryAll<QuickBooksOnline.Models.Vendor>($"select * from Vendor where DisplayName LIKE 'Mi Pueblo%'");
+            var payrollVendors = qboClient.QueryAll<Vendor>($"select * from Vendor where DisplayName LIKE 'Mi Pueblo%'");
             var expenses = qboClient.QueryAll<Purchase>($"select * from Purchase where TxnDate = '{reportDate}'"); // Entity ref isn't queryable, need to use a report to do this.
-            List<Tuple<QuickBooksOnline.Models.Vendor, decimal?>> vendorTotals = new List<Tuple<QuickBooksOnline.Models.Vendor, decimal?>>();
+            List<Tuple<Vendor, decimal?>> vendorTotals = new List<Tuple<Vendor, decimal?>>();
             foreach (var vendor in payrollVendors)
             {
                 var vendorExpenses = expenses
@@ -64,19 +63,13 @@ namespace PropertyRentalManagement.Reports
             }
 
             logger.Log($"Income for {reportDate}");
-            logger.Log($"Rent: {rentalIncome:C}");
-            logger.Log($"Parking A: {GetTotalIncomeFromCustomer(qboClient, reportDate, CUSTOMER_PARKING_A, logger):C}");
-            logger.Log($"Parking B: {GetTotalIncomeFromCustomer(qboClient, reportDate, CUSTOMER_PARKING_B, logger):C}");
-            logger.Log($"Bar A: {GetTotalIncomeFromCustomer(qboClient, reportDate, CUSTOMER_BAR_A, logger):C}");
-            logger.Log($"Bar B: {GetTotalIncomeFromCustomer(qboClient, reportDate, CUSTOMER_BAR_B, logger):C}");
-            logger.Log($"Restaurant: {GetTotalIncomeFromCustomer(qboClient, reportDate, CUSTOMER_RESTAURANT, logger):C}");
             foreach (var incomeTotal in incomeTotals)
             {
                 logger.Log($"{incomeTotal.Item1}: {incomeTotal.Item2:C}");
             }
 
             logger.Log($"\nPayments for {reportDate}");
-            foreach (var vendorTotal in vendorTotals)
+            foreach (var vendorTotal in vendorTotals.Where(x => x.Item2 > 0))
             {
                 logger.Log($"{vendorTotal.Item1.DisplayName}: {vendorTotal.Item2:C}");
             }
