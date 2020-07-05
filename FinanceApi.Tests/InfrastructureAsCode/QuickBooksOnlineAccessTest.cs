@@ -2,12 +2,8 @@
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Amazon.DynamoDBv2;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using PropertyRentalManagement.DatabaseModel;
-using PropertyRentalManagement.DataServices;
-using PropertyRentalManagement.QuickBooksOnline;
 using PropertyRentalManagement.QuickBooksOnline.Models;
 using PropertyRentalManagement.QuickBooksOnline.Models.Invoices;
 using PropertyRentalManagement.QuickBooksOnline.Models.Payments;
@@ -28,11 +24,7 @@ namespace FinanceApi.Tests.InfrastructureAsCode
         [Fact]
         public void GetCustomerCount()
         {
-            var dynamoDbClient = new AmazonDynamoDBClient(Factory.CreateCredentialsForLakelandMiPuebloProfile(),
-                Factory.HomeRegion);
-            var databaseClient = new DatabaseClient<QuickBooksOnlineConnection>(dynamoDbClient);
-            var qboClient = new QuickBooksOnlineClient(Configuration.RealmId, databaseClient, new XUnitLogger(Output));
-
+            var qboClient = Factory.CreateQuickBooksOnlineClient(new XUnitLogger(Output));
 
             var customers = qboClient.QueryAll<Customer>("select * from customer");
             Output.WriteLine(JsonConvert.SerializeObject(customers));

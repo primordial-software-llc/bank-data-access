@@ -37,7 +37,7 @@ namespace FinanceApi.Tests.InfrastructureAsCode
 
         public static IAmazonDynamoDB CreateAmazonDynamoDbClient()
         {
-            return new AmazonDynamoDBClient(CreateCredentialsFromProfile(), HomeRegion);
+            return new AmazonDynamoDBClient(CreateCredentialsForLakelandMiPuebloProfile(), HomeRegion);
         }
 
         public static QuickBooksOnlineClient CreateQuickBooksOnlineClient(ILogging logger)

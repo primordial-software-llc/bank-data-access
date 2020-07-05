@@ -13,14 +13,14 @@ namespace PropertyRentalManagement.DatabaseModel
         [JsonProperty("quickBooksOnlineId")]
         public int QuickBooksOnlineId { get; set; }
 
-        [JsonProperty("isActive")]
-        public bool IsActive { get; set; }
-
         [JsonProperty("paymentFrequency")]
         public string PaymentFrequency { get; set; }
 
         [JsonProperty("rentPrice")]
         public decimal? RentPrice { get; set; }
+
+        [JsonProperty("memo")]
+        public string Memo { get; set; }
 
         public Dictionary<string, AttributeValue> GetKey()
         {

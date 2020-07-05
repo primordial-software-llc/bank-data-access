@@ -46,7 +46,7 @@ namespace PropertyRentalManagement.QuickBooksOnline
             return json["QueryResponse"]["totalCount"].Value<int>();
         }
 
-        public IList<T> QueryAll<T>(string query) where T : IQuickBooksOnlineEntity, new()
+        public List<T> QueryAll<T>(string query) where T : IQuickBooksOnlineEntity, new()
         {
             var count = QueryCount<T>(query.Replace("select * from", "select count(*)from"));
             var maxResults = 100;
@@ -63,7 +63,7 @@ namespace PropertyRentalManagement.QuickBooksOnline
             return allResults;
         }
 
-        public IList<T> Query<T>(string query) where T : IQuickBooksOnlineEntity, new()
+        public List<T> Query<T>(string query) where T : IQuickBooksOnlineEntity, new()
         {
             var result = Request($"query?query={HttpUtility.UrlEncode(query)}", HttpMethod.Get);
             var json = JObject.Parse(result);
@@ -72,7 +72,7 @@ namespace PropertyRentalManagement.QuickBooksOnline
             {
                 return new List<T>();
             }
-            return JsonConvert.DeserializeObject<IList<T>>(entityResults.ToString());
+            return JsonConvert.DeserializeObject<List<T>>(entityResults.ToString());
         }
 
         public T Create<T>(string path, T model) where T : IQuickBooksOnlineEntity, new()
