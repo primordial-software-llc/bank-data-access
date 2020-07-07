@@ -29,8 +29,7 @@ namespace FinanceApi.Tests.InfrastructureAsCode
             var vendorClient = new VendorService();
             var monthlyVendors = vendorClient.GetByPaymentFrequency(
                 Factory.CreateAmazonDynamoDbClient(),
-                "monthly",
-                true);
+                "monthly");
 
             var qboClient = Factory.CreateQuickBooksOnlineClient(new XUnitLogger(Output));
             var saleReportService = new SaleReportService();

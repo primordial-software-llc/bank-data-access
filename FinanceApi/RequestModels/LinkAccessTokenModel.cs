@@ -4,7 +4,7 @@ namespace FinanceApi.RequestModels
 {
     class LinkAccessTokenModel
     {
-        [JsonProperty("publicToken")]
+        [JsonProperty("public_token")]
         public string PublicToken { get; set; }
     }
 }
