@@ -32,7 +32,7 @@ namespace PropertyRentalManagement.DataServices
                 scanResponse = Client.ScanAsync(scanRequest).Result;
                 foreach (var item in scanResponse.Items)
                 {
-                    items.Add(JsonConvert.DeserializeObject<T>(Document.FromAttributeMap(item)));
+                    items.Add(JsonConvert.DeserializeObject<T>(Document.FromAttributeMap(item).ToJson()));
                 }
             } while (scanResponse.LastEvaluatedKey.Any());
             return items;
