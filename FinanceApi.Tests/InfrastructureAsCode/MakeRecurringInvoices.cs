@@ -19,7 +19,7 @@ namespace FinanceApi.Tests.InfrastructureAsCode
             Output = output;
         }
 
-        [Fact]
+        //[Fact]
         public void MakeMonthlyInvoices()
         {
             var monthStart = new DateTime(2020, 7, 1);
@@ -44,9 +44,10 @@ namespace FinanceApi.Tests.InfrastructureAsCode
                 }
                 var salesToVendor = saleReportService.GetSales(
                     qboClient,
-                    monthlyVendor.QuickBooksOnlineId.ToString(),
                     monthStart,
-                    monthEnd);
+                    monthEnd,
+                    monthlyVendor.QuickBooksOnlineId.ToString(),
+                    new List<int>());
                 if (salesToVendor.Invoices.Any() || salesToVendor.SalesReceipts.Any())
                 {
                     continue;
@@ -57,7 +58,7 @@ namespace FinanceApi.Tests.InfrastructureAsCode
                 var invoice = new Invoice
                 {
                     TxnDate = monthStart.ToString("yyyy-MM-dd"),
-                    CustomerRef = new Reference { Value = customer.Id },
+                    CustomerRef = new Reference { Value = customer.Id.ToString() },
                     Line = new List<InvoiceLine>
                     {
                         new InvoiceLine

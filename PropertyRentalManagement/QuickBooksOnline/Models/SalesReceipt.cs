@@ -15,5 +15,8 @@ namespace PropertyRentalManagement.QuickBooksOnline.Models
 
         [JsonProperty("TotalAmt")]
         public decimal TotalAmount { get; set; }
+
+        [JsonProperty("MetaData")]
+        public MetaData MetaData { get; set; }
     }
 }

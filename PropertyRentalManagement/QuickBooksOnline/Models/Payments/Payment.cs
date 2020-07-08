@@ -25,5 +25,8 @@ namespace PropertyRentalManagement.QuickBooksOnline.Models.Payments
 
         [JsonProperty("Line")]
         public List<PaymentLine> Line { get; set; }
+
+        [JsonProperty("MetaData")]
+        public MetaData MetaData { get; set; }
     }
 }

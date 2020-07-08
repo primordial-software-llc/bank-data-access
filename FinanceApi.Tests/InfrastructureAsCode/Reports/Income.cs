@@ -5,26 +5,24 @@ using Xunit.Abstractions;
 
 namespace FinanceApi.Tests.InfrastructureAsCode.Reports
 {
-    public class DailyIncome
+    public class Income
     {
         private ITestOutputHelper Output { get; }
 
-        public DailyIncome(ITestOutputHelper output)
+        public Income(ITestOutputHelper output)
         {
             Output = output;
         }
 
-        /// <summary>
-        /// Some income doesn't get entered into QB as it happens.
-        /// These sales are in excel.
-        /// </summary>
         [Fact]
         public void PrintDailyIncome()
         {
-            var reportDate = new DateTime(2020, 5, 3).ToString("yyyy-MM-dd");
-            DailyIncomeReport.PrintReport(reportDate, new XUnitLogger(Output),
+            var start = new DateTime(2020, 6, 29);
+            var end = new DateTime(2020, 7, 5);
+            IncomeReport.PrintReport(
+                start,
+                end, new XUnitLogger(Output),
                 Factory.CreateQuickBooksOnlineClient(new XUnitLogger(Output)));
         }
-
     }
 }

@@ -1,13 +1,14 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
 
 namespace PropertyRentalManagement.QuickBooksOnline.Models
 {
     public class MetaData
     {
         [JsonProperty("CreateTime")]
-        public string CreateTime { get; set; }
+        public DateTime CreateTime { get; set; }
 
         [JsonProperty("LastUpdatedTime")]
-        public string LastUpdatedTime { get; set; }
+        public DateTime LastUpdatedTime { get; set; }
     }
 }

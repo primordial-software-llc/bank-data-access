@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using PropertyRentalManagement.DataServices;
 using System.Linq;
 using PropertyRentalManagement.BusinessLogic;
@@ -29,18 +30,28 @@ namespace FinanceApi.Tests.InfrastructureAsCode.PointOfSale
             {
                 var marchStart = new DateTime(2020, 3, 1);
                 var marchEnd = new DateTime(2020, 3, 31);
-                var marchSales = saleReportService.GetSales(qboClient, customer.Id,
-                    marchStart, marchEnd);
+                var marchSales = saleReportService.GetSales(
+                    qboClient,
+                    marchStart,
+                    marchEnd,
+                    customer.Id,
+                    new List<int>());
                 var oneReceiptMarch = marchSales.Invoices.Count + marchSales.SalesReceipts.Count == 1;
-                var maySales = saleReportService.GetSales(qboClient, customer.Id,
+                var maySales = saleReportService.GetSales(
+                    qboClient,
                     new DateTime(2020, 5, 1),
-                    new DateTime(2020, 5, 31));
+                    new DateTime(2020, 5, 31),
+                    customer.Id,
+                    new List<int>());
                 var oneReceiptMay = maySales.Invoices.Count + maySales.SalesReceipts.Count == 1;
                 var juneStart = new DateTime(2020, 6, 1);
                 var juneEnd = new DateTime(2020, 6, 30);
-                var juneSales = saleReportService.GetSales(qboClient, customer.Id,
+                var juneSales = saleReportService.GetSales(
+                    qboClient,
                     juneStart,
-                    juneEnd);
+                    juneEnd,
+                    customer.Id,
+                    new List<int>());
                 var oneReceiptJune = juneSales.Invoices.Count + juneSales.SalesReceipts.Count == 1;
 
                 string paymentFrequency = oneReceiptMarch && oneReceiptMay && oneReceiptJune ? "monthly" : string.Empty;
