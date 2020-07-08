@@ -22,12 +22,13 @@ namespace FinanceApi.Tests.InfrastructureAsCode
         }
 
         [Fact]
-        public void GetCustomerCount()
+        public void GetCustomers()
         {
             var qboClient = Factory.CreateQuickBooksOnlineClient(new XUnitLogger(Output));
 
             var customers = qboClient.QueryAll<Customer>("select * from customer");
-            Output.WriteLine(JsonConvert.SerializeObject(customers));
+            Output.WriteLine(customers.Count.ToString());
+            //Output.WriteLine(JsonConvert.SerializeObject(customers));
         }
 
         //[Fact]

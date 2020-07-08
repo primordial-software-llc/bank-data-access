@@ -97,6 +97,7 @@ namespace FinanceApi
                 if (new PointOfSaleAuthorization().IsAuthorized(user?.Email))
                 {
                     routes.Add(new Routes.Authenticated.PointOfSale.GetCustomers());
+                    routes.Add(new Routes.Authenticated.PointOfSale.GetCustomerPaymentSettings());
                     routes.Add(new Routes.Authenticated.PointOfSale.PostReceipt());
                 }
                 var matchedRoute = routes.FirstOrDefault(route => string.Equals(request.HttpMethod, route.HttpMethod, StringComparison.OrdinalIgnoreCase) &&
