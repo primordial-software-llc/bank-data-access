@@ -46,7 +46,7 @@ namespace FinanceApi.Tests.InfrastructureAsCode
                     qboClient,
                     monthStart,
                     monthEnd,
-                    monthlyVendor.QuickBooksOnlineId.ToString(),
+                    monthlyVendor.QuickBooksOnlineId,
                     new List<int>());
                 if (salesToVendor.Invoices.Any() || salesToVendor.SalesReceipts.Any())
                 {

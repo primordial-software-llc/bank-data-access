@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
@@ -15,6 +16,26 @@ namespace PropertyRentalManagement.DataServices
         public DatabaseClient(IAmazonDynamoDB client)
         {
             Client = client;
+        }
+
+        public List<T> GetAll()
+        {
+            var scanRequest = new ScanRequest(new T().GetTable());
+            ScanResponse scanResponse = null;
+            var items = new List<T>();
+            do
+            {
+                if (scanResponse != null)
+                {
+                    scanRequest.ExclusiveStartKey = scanResponse.LastEvaluatedKey;
+                }
+                scanResponse = Client.ScanAsync(scanRequest).Result;
+                foreach (var item in scanResponse.Items)
+                {
+                    items.Add(JsonConvert.DeserializeObject<T>(Document.FromAttributeMap(item)));
+                }
+            } while (scanResponse.LastEvaluatedKey.Any());
+            return items;
         }
 
         public T Get(T model)

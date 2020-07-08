@@ -70,7 +70,7 @@ namespace FinanceApi.Tests.InfrastructureAsCode.PointOfSale
                     }
                 }
 
-                new VendorService().Create(awsDbClient, int.Parse(customer.Id), paymentFrequency, rentPrice, string.Empty);
+                new VendorService().Create(awsDbClient, customer.Id, paymentFrequency, rentPrice, string.Empty);
             }
         }
 

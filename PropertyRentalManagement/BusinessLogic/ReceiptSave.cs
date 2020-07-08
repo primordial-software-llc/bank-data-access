@@ -36,7 +36,7 @@ namespace PropertyRentalManagement.BusinessLogic
             {
                 var customer = new Customer {DisplayName = receipt.Customer.Name};
                 customer = QuickBooksOnlineClient.Create("customer", customer);
-                customerId = customer.Id;
+                customerId = customer.Id.ToString();
             }
 
             if (receipt.RentalAmount > 0)

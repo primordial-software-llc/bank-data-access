@@ -62,7 +62,7 @@ namespace PropertyRentalManagement.Reports
                     qboClient,
                     start,
                     end,
-                    nonRentalCustomerId.ToString(),
+                    nonRentalCustomerId,
                     new List<int>());
                 incomeTotals.Add(new Tuple<string, decimal?>(
                     customer.DisplayName,

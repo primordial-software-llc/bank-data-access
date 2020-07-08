@@ -10,10 +10,10 @@ namespace PropertyRentalManagement.BusinessLogic
 {
     public class SaleReportService
     {
-        public SaleReport GetSales(QuickBooksOnlineClient client, DateTime start, DateTime end, string customerId, List<int> ignoredCustomerIds)
+        public SaleReport GetSales(QuickBooksOnlineClient client, DateTime start, DateTime end, int? customerId, List<int> ignoredCustomerIds)
         {
             string salesReceiptQuery = $"select * from SalesReceipt Where TxnDate >= '{start:yyyy-MM-dd}' and TxnDate <= '{end:yyyy-MM-dd}'";
-            if (!string.IsNullOrWhiteSpace(customerId))
+            if (customerId.GetValueOrDefault() > 0)
             {
                 salesReceiptQuery += $" and CustomerRef = '{customerId}'";
             }
@@ -22,7 +22,7 @@ namespace PropertyRentalManagement.BusinessLogic
                 .ToList();
 
             var paymentQuery = $"select * from Payment Where TxnDate >= '{start:yyyy-MM-dd}' and TxnDate <= '{end:yyyy-MM-dd}'";
-            if (!string.IsNullOrWhiteSpace(customerId))
+            if (customerId.GetValueOrDefault() > 0)
             {
                 paymentQuery += $" and CustomerRef = '{customerId}'";
             }
@@ -31,7 +31,7 @@ namespace PropertyRentalManagement.BusinessLogic
                 .ToList();
 
             var invoiceQuery = $"select * from Invoice Where TxnDate >= '{start:yyyy-MM-dd}' and TxnDate <= '{end:yyyy-MM-dd}'";
-            if (!string.IsNullOrWhiteSpace(customerId))
+            if (customerId.GetValueOrDefault() > 0)
             {
                 invoiceQuery += $" and CustomerRef = '{customerId}'";
             }
