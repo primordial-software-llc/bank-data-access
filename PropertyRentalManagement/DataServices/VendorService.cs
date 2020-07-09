@@ -5,15 +5,15 @@ using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
 using AwsTools;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using PropertyRentalManagement.DatabaseModel;
 
 namespace PropertyRentalManagement.DataServices
 {
     public class VendorService
     {
-        public void Create(IAmazonDynamoDB dbClient, int quickBooksOnlineId, string paymentFrequency,
+        public Vendor CreateModel(
+            int quickBooksOnlineId,
+            string paymentFrequency,
             decimal? rentPrice,
             string memo)
         {
@@ -25,11 +25,7 @@ namespace PropertyRentalManagement.DataServices
                 RentPrice = rentPrice,
                 Memo = memo
             };
-            var update = JObject.FromObject(vendor, new JsonSerializer { NullValueHandling = NullValueHandling.Ignore });
-            dbClient.PutItemAsync(
-                new Vendor().GetTable(),
-                Document.FromJson(update.ToString()).ToAttributeMap()
-            ).Wait();
+            return vendor;
         }
 
         public List<Vendor> GetByPaymentFrequency(IAmazonDynamoDB dbClient, string paymentFrequency)

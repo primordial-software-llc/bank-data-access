@@ -19,27 +19,44 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
         public string Path => "/point-of-sale/customer-payment-settings";
         public void Run(APIGatewayProxyRequest request, APIGatewayProxyResponse response, FinanceUser user)
         {
-            var databaseClient = new DatabaseClient<QuickBooksOnlineConnection>(new AmazonDynamoDBClient());
-            var qboClient = new QuickBooksOnlineClient(Configuration.RealmId, databaseClient, new Logger());
+            var dbClient = new AmazonDynamoDBClient();
+            var qboDbClient = new DatabaseClient<QuickBooksOnlineConnection>(dbClient);
+            var qboClient = new QuickBooksOnlineClient(Configuration.RealmId, qboDbClient, new Logger());
             var customers = qboClient.QueryAll<Customer>("select * from customer")
                 .ToDictionary(x => x.Id);
 
-            var vendorDataClient = new DatabaseClient<Vendor>(new AmazonDynamoDBClient());
+            var vendorDataClient = new DatabaseClient<Vendor>(dbClient);
             var vendors = vendorDataClient.GetAll()
+                .Where(x => customers.ContainsKey(x.QuickBooksOnlineId))
                 .ToDictionary(x => x.QuickBooksOnlineId);
 
-            var activeCustomerPaymentSettings = new List<CustomerPaymentSettingsModel>();
-            foreach (var customer in customers.Values)
+            var newCustomers = customers.Where(x => !vendors.ContainsKey(x.Key));
+            var vendorService = new VendorService();
+            foreach (var newCustomer in newCustomers)
             {
-                vendors.TryGetValue(customer.Id, out var vendor);
-                activeCustomerPaymentSettings.Add(new CustomerPaymentSettingsModel
+                var vendor = vendorService.CreateModel(newCustomer.Key, null, null, null);
+                vendorDataClient.Create(vendor);
+                vendors.Add(vendor.QuickBooksOnlineId, vendor);
+            }
+
+            var json = new List<CustomerPaymentSettingsModel>();
+            foreach (var vendor in vendors.Values)
+            {
+                var customer = customers[vendor.QuickBooksOnlineId];
+                json.Add(new CustomerPaymentSettingsModel
                 {
-                    Customer = customer,
-                    Vendor = vendor
+                    Id = vendor.Id,
+                    QuickBooksOnlineId = vendor.QuickBooksOnlineId,
+                    PaymentFrequency = vendor.PaymentFrequency,
+                    RentPrice = vendor.RentPrice,
+                    Memo = vendor.Memo,
+                    FirstName = customer.GivenName,
+                    LastName = customer.FamilyName,
+                    DisplayName = customer.DisplayName
                 });
             }
-            
-            response.Body = JsonConvert.SerializeObject(activeCustomerPaymentSettings);
+
+            response.Body = JsonConvert.SerializeObject(json);
         }
     }
 }

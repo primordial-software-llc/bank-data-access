@@ -6,6 +6,7 @@ using PropertyRentalManagement.BusinessLogic;
 using PropertyRentalManagement.QuickBooksOnline.Models;
 using Xunit;
 using Xunit.Abstractions;
+using Vendor = PropertyRentalManagement.DatabaseModel.Vendor;
 
 namespace FinanceApi.Tests.InfrastructureAsCode.PointOfSale
 {
@@ -70,7 +71,8 @@ namespace FinanceApi.Tests.InfrastructureAsCode.PointOfSale
                     }
                 }
 
-                new VendorService().Create(awsDbClient, customer.Id, paymentFrequency, rentPrice, string.Empty);
+                var vendor = new VendorService().CreateModel(customer.Id, paymentFrequency, rentPrice, string.Empty);
+                var vendorDataClient = new DatabaseClient<Vendor>(awsDbClient);
             }
         }
 
