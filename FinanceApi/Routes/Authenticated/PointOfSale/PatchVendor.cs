@@ -20,7 +20,7 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
             var vendorUpdates = JsonConvert.DeserializeObject<Vendor>(request.Body);
             var vendorId = vendorUpdates.GetKey();
             vendorUpdates.Id = null;
-            if (vendorUpdates != null && vendorUpdates.Memo.Length > 4000)
+            if (vendorUpdates.Memo != null && vendorUpdates.Memo.Length > 4000)
             {
                 throw new Exception("Memo can't exceed 4,000 characters");
             }
