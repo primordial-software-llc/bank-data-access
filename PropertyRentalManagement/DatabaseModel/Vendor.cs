@@ -11,7 +11,7 @@ namespace PropertyRentalManagement.DatabaseModel
         public string Id { get; set; }
 
         [JsonProperty("quickBooksOnlineId")]
-        public int QuickBooksOnlineId { get; set; }
+        public int? QuickBooksOnlineId { get; set; }
 
         [JsonProperty("paymentFrequency")]
         public string PaymentFrequency { get; set; }

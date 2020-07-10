@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Amazon.DynamoDBv2;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using FinanceApi.DatabaseModel;
 using FinanceApi.Routes;
 using FinanceApi.Routes.Authenticated.PointOfSale;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PropertyRentalManagement.DataServices;
 
@@ -98,6 +100,8 @@ namespace FinanceApi
                 {
                     routes.Add(new Routes.Authenticated.PointOfSale.GetCustomers());
                     routes.Add(new Routes.Authenticated.PointOfSale.GetCustomerPaymentSettings());
+                    routes.Add(new Routes.Authenticated.PointOfSale.GetCustomerPaymentSettingsById());
+                    routes.Add(new Routes.Authenticated.PointOfSale.PatchVendor());
                     routes.Add(new Routes.Authenticated.PointOfSale.PostReceipt());
                 }
                 var matchedRoute = routes.FirstOrDefault(route => string.Equals(request.HttpMethod, route.HttpMethod, StringComparison.OrdinalIgnoreCase) &&

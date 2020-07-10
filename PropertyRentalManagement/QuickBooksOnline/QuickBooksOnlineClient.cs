@@ -48,10 +48,10 @@ namespace PropertyRentalManagement.QuickBooksOnline
 
         public List<T> QueryAll<T>(string query) where T : IQuickBooksOnlineEntity, new()
         {
-            var count = QueryCount<T>(query.Replace("select * from", "select count(*)from"));
+            var count = QueryCount<T>(query.Replace("select * from", "select count(*) from"));
             var maxResults = 1000;
             var allResults = new List<T>();
-            for (int startPosition = 1; startPosition < count; startPosition += maxResults)
+            for (int startPosition = 1; startPosition <= count; startPosition += maxResults)
             {
                 var pagedQuery = $"{query} STARTPOSITION {startPosition} MAXRESULTS {maxResults}";
                 var result = Request($"query?query={HttpUtility.UrlEncode(pagedQuery)}", HttpMethod.Get);

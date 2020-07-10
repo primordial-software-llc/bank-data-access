@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Amazon.DynamoDBv2;
-using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
 using AwsTools;
 using PropertyRentalManagement.DatabaseModel;
@@ -12,7 +11,7 @@ namespace PropertyRentalManagement.DataServices
     public class VendorService
     {
         public Vendor CreateModel(
-            int quickBooksOnlineId,
+            int? quickBooksOnlineId,
             string paymentFrequency,
             decimal? rentPrice,
             string memo)

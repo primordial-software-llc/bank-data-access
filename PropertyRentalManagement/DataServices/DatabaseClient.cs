@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
@@ -53,15 +54,18 @@ namespace PropertyRentalManagement.DataServices
             ).Wait();
         }
 
-        public void Update(Dictionary<string, AttributeValue> key, T model)
+        public T Update(Dictionary<string, AttributeValue> key, T model)
         {
             var update = JObject.FromObject(model, new JsonSerializer { NullValueHandling = NullValueHandling.Ignore });
             var updates = Document.FromJson(update.ToString()).ToAttributeUpdateMap(false);
-            Client.UpdateItemAsync(
+            var result = Client.UpdateItemAsync(
                 new T().GetTable(),
                 key,
-                updates
-            ).Wait();
+                updates,
+                ReturnValue.ALL_NEW
+            ).Result;
+            return JsonConvert.DeserializeObject<T>(Document.FromAttributeMap(result.Attributes).ToJson());
         }
+
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -26,7 +27,7 @@ namespace FinanceApi.Tests.InfrastructureAsCode
         {
             var qboClient = Factory.CreateQuickBooksOnlineClient(new XUnitLogger(Output));
 
-            var customers = qboClient.QueryAll<Customer>("select * from customer");
+            var customers = qboClient.QueryAll<Customer>("select * from Customer");
             Output.WriteLine(customers.Count.ToString());
             //Output.WriteLine(JsonConvert.SerializeObject(customers));
         }
