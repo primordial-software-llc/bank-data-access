@@ -7,10 +7,13 @@ namespace PropertyRentalManagement.QuickBooksOnline.Models
         [JsonIgnore]
         public string EntityName => "Vendor";
 
-        [JsonProperty("DisplayName")]
-        public string DisplayName { get; set; }
+        [JsonProperty("SyncToken")]
+        public string SyncToken { get; set; }
 
         [JsonProperty("Id")]
-        public string Id { get; set; }
+        public int? Id { get; set; }
+
+        [JsonProperty("DisplayName")]
+        public string DisplayName { get; set; }
     }
 }

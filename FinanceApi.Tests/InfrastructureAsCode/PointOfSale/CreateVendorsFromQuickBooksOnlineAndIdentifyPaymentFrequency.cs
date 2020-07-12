@@ -26,7 +26,7 @@ namespace FinanceApi.Tests.InfrastructureAsCode.PointOfSale
             var awsDbClient = Factory.CreateAmazonDynamoDbClient();
 
             var activeCustomers = qboClient.QueryAll<Customer>("select * from Customer Where Active = true");
-            var saleReportService = new SaleReportService();
+            var saleReportService = new SalesReportService();
             foreach (var customer in activeCustomers)
             {
                 var marchStart = new DateTime(2020, 3, 1);
@@ -71,7 +71,7 @@ namespace FinanceApi.Tests.InfrastructureAsCode.PointOfSale
                     }
                 }
 
-                var vendor = new VendorService().CreateModel(customer.Id, paymentFrequency, rentPrice, string.Empty);
+                var vendor = VendorService.CreateModel(customer.Id, paymentFrequency, rentPrice, string.Empty);
                 var vendorDataClient = new DatabaseClient<Vendor>(awsDbClient);
             }
         }

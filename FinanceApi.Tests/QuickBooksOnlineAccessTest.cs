@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Linq;
 using System.Net.Http;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
+using FinanceApi.Tests.InfrastructureAsCode;
 using Newtonsoft.Json.Linq;
+using PropertyRentalManagement.BusinessLogic;
+using PropertyRentalManagement.DataServices;
 using PropertyRentalManagement.QuickBooksOnline.Models;
 using PropertyRentalManagement.QuickBooksOnline.Models.Invoices;
 using PropertyRentalManagement.QuickBooksOnline.Models.Payments;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace FinanceApi.Tests.InfrastructureAsCode
+namespace FinanceApi.Tests
 {
     public class QuickBooksOnlineAccessTest
     {

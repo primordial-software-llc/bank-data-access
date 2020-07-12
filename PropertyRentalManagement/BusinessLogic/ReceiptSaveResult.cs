@@ -22,11 +22,8 @@ namespace PropertyRentalManagement.BusinessLogic
         [JsonProperty("invoice")]
         public Invoice Invoice { get; set; }
 
-        [JsonProperty("paymentAppliedToInvoice")]
-        public Payment PaymentAppliedToInvoice { get; set; }
-
-        [JsonProperty("unappliedPayment")]
-        public Payment UnappliedPayment { get; set; }
+        [JsonProperty("payments")]
+        public List<Payment> Payments { get; set; }
 
         public Dictionary<string, AttributeValue> GetKey()
         {

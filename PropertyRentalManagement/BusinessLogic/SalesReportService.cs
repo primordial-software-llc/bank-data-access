@@ -8,9 +8,9 @@ using PropertyRentalManagement.QuickBooksOnline.Models.Payments;
 
 namespace PropertyRentalManagement.BusinessLogic
 {
-    public class SaleReportService
+    public class SalesReportService
     {
-        public SaleReport GetSales(QuickBooksOnlineClient client, DateTime start, DateTime end, int? customerId, List<int> ignoredCustomerIds)
+        public SalesReport GetSales(QuickBooksOnlineClient client, DateTime start, DateTime end, int? customerId = null, List<int> ignoredCustomerIds = null)
         {
             string salesReceiptQuery = $"select * from SalesReceipt Where TxnDate >= '{start:yyyy-MM-dd}' and TxnDate <= '{end:yyyy-MM-dd}'";
             if (customerId.GetValueOrDefault() > 0)
@@ -18,7 +18,7 @@ namespace PropertyRentalManagement.BusinessLogic
                 salesReceiptQuery += $" and CustomerRef = '{customerId}'";
             }
             var salesReceipts = client.QueryAll<SalesReceipt>(salesReceiptQuery)
-                .Where(x => !ignoredCustomerIds.Contains(int.Parse(x.CustomerRef.Value)))
+                .Where(x => ignoredCustomerIds == null || !ignoredCustomerIds.Contains(int.Parse(x.CustomerRef.Value)))
                 .ToList();
 
             var paymentQuery = $"select * from Payment Where TxnDate >= '{start:yyyy-MM-dd}' and TxnDate <= '{end:yyyy-MM-dd}'";
@@ -27,24 +27,26 @@ namespace PropertyRentalManagement.BusinessLogic
                 paymentQuery += $" and CustomerRef = '{customerId}'";
             }
             var payments = client.QueryAll<Payment>(paymentQuery)
-                .Where(x => !ignoredCustomerIds.Contains(int.Parse(x.CustomerRef.Value)))
+                .Where(x => ignoredCustomerIds == null || !ignoredCustomerIds.Contains(int.Parse(x.CustomerRef.Value)))
                 .ToList();
+            return new SalesReport
+            {
+                SalesReceipts = salesReceipts,
+                Invoices = GetInvoices(client, start, end, customerId, ignoredCustomerIds),
+                Payments = payments
+            };
+        }
 
+        public List<Invoice> GetInvoices(QuickBooksOnlineClient client, DateTime start, DateTime end, int? customerId = null, List<int> ignoredCustomerIds = null)
+        {
             var invoiceQuery = $"select * from Invoice Where TxnDate >= '{start:yyyy-MM-dd}' and TxnDate <= '{end:yyyy-MM-dd}'";
             if (customerId.GetValueOrDefault() > 0)
             {
                 invoiceQuery += $" and CustomerRef = '{customerId}'";
             }
-            var invoices = client.QueryAll<Invoice>(invoiceQuery)
-                .Where(x => !ignoredCustomerIds.Contains(int.Parse(x.CustomerRef.Value)))
+            return client.QueryAll<Invoice>(invoiceQuery)
+                .Where(x => ignoredCustomerIds == null || !ignoredCustomerIds.Contains(int.Parse(x.CustomerRef.Value)))
                 .ToList();
-
-            return new SaleReport
-            {
-                SalesReceipts = salesReceipts,
-                Invoices = invoices,
-                Payments = payments
-            };
         }
 
     }

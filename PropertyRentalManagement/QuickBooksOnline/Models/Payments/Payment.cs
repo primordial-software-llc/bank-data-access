@@ -8,8 +8,11 @@ namespace PropertyRentalManagement.QuickBooksOnline.Models.Payments
         [JsonIgnore]
         public string EntityName => "Payment";
 
+        [JsonProperty("SyncToken")]
+        public string SyncToken { get; set; }
+
         [JsonProperty("Id")]
-        public string Id { get; set; }
+        public int? Id { get; set; }
 
         [JsonProperty("CustomerRef")]
         public Reference CustomerRef { get; set; }
@@ -18,7 +21,7 @@ namespace PropertyRentalManagement.QuickBooksOnline.Models.Payments
         public string TxnDate { get; set; }
 
         [JsonProperty("TotalAmt")]
-        public decimal TotalAmount { get; set; }
+        public decimal? TotalAmount { get; set; }
 
         [JsonProperty("PrivateNote")]
         public string PrivateNote { get; set; }

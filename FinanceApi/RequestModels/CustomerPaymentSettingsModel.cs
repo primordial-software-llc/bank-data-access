@@ -27,5 +27,8 @@ namespace FinanceApi.RequestModels
 
         [JsonProperty("displayName")]
         public string DisplayName { get; set; }
+
+        [JsonProperty("balance")]
+        public decimal Balance { get; set; }
     }
 }

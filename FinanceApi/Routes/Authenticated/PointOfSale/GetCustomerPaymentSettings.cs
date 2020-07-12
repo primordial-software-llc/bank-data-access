@@ -9,7 +9,6 @@ using PropertyRentalManagement.DatabaseModel;
 using PropertyRentalManagement.DataServices;
 using PropertyRentalManagement.QuickBooksOnline;
 using PropertyRentalManagement.QuickBooksOnline.Models;
-using Vendor = PropertyRentalManagement.DatabaseModel.Vendor;
 
 namespace FinanceApi.Routes.Authenticated.PointOfSale
 {
@@ -22,27 +21,24 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
             var dbClient = new AmazonDynamoDBClient();
             var qboDbClient = new DatabaseClient<QuickBooksOnlineConnection>(dbClient);
             var qboClient = new QuickBooksOnlineClient(Configuration.RealmId, qboDbClient, new Logger());
-            var customers = qboClient.QueryAll<Customer>("select * from customer")
+            var vendorClient = new DatabaseClient<PropertyRentalManagement.DatabaseModel.Vendor>(dbClient);
+            var allActiveCustomers = qboClient.QueryAll<Customer>("select * from customer")
                 .ToDictionary(x => x.Id);
-
-            var vendorDataClient = new DatabaseClient<Vendor>(dbClient);
-            var vendors = vendorDataClient.GetAll()
-                .Where(x => customers.ContainsKey(x.QuickBooksOnlineId))
+            var activeVendors = vendorClient.GetAll()
+                .Where(x => allActiveCustomers.ContainsKey(x.QuickBooksOnlineId))
                 .ToDictionary(x => x.QuickBooksOnlineId);
-
-            var newCustomers = customers.Where(x => !vendors.ContainsKey(x.Key));
-            var vendorService = new VendorService();
+            var newCustomers = allActiveCustomers.Where(x => !activeVendors.ContainsKey(x.Key));
             foreach (var newCustomer in newCustomers)
             {
-                var vendor = vendorService.CreateModel(newCustomer.Key, null, null, null);
-                vendorDataClient.Create(vendor);
-                vendors.Add(vendor.QuickBooksOnlineId, vendor);
+                var vendor = VendorService.CreateModel(newCustomer.Key, null, null, null);
+                vendorClient.Create(vendor);
+                activeVendors.Add(vendor.QuickBooksOnlineId, vendor);
             }
 
             var json = new List<CustomerPaymentSettingsModel>();
-            foreach (var vendor in vendors.Values)
+            foreach (var vendor in activeVendors.Values)
             {
-                var customer = customers[vendor.QuickBooksOnlineId];
+                var customer = allActiveCustomers[vendor.QuickBooksOnlineId];
                 json.Add(new CustomerPaymentSettingsModel
                 {
                     Id = vendor.Id,
@@ -52,10 +48,10 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
                     Memo = vendor.Memo,
                     FirstName = customer.GivenName,
                     LastName = customer.FamilyName,
-                    DisplayName = customer.DisplayName
+                    DisplayName = customer.DisplayName,
+                    Balance = customer.Balance
                 });
             }
-
             response.Body = JsonConvert.SerializeObject(json);
         }
     }

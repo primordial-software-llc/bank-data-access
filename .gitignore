@@ -6,3 +6,5 @@
 **/obj/
 packages/
 FinanceApi.Tests/PdfBankStatementProcessing/*
+FinanceApi.Tests/ExcelExpenseProcessing.cs
+FinanceApi/FinanceApi.sln.DotSettings.user

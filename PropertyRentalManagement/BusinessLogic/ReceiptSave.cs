@@ -13,12 +13,12 @@ namespace PropertyRentalManagement.BusinessLogic
     public class ReceiptSave
     {
         private DatabaseClient<ReceiptSaveResult> ReceiptDbClient { get; }
-        private QuickBooksOnlineClient QuickBooksOnlineClient { get; }
+        private QuickBooksOnlineClient QuickBooksClient { get; }
 
-        public ReceiptSave(DatabaseClient<ReceiptSaveResult> receiptDbClient, QuickBooksOnlineClient quickBooksOnlineClient)
+        public ReceiptSave(DatabaseClient<ReceiptSaveResult> receiptDbClient, QuickBooksOnlineClient quickBooksClient)
         {
             ReceiptDbClient = receiptDbClient;
-            QuickBooksOnlineClient = quickBooksOnlineClient;
+            QuickBooksClient = quickBooksClient;
         }
 
         public ReceiptSaveResult SaveReceipt(Receipt receipt)
@@ -35,62 +35,82 @@ namespace PropertyRentalManagement.BusinessLogic
             if (string.IsNullOrWhiteSpace(customerId))
             {
                 var customer = new Customer {DisplayName = receipt.Customer.Name};
-                customer = QuickBooksOnlineClient.Create("customer", customer);
+                customer = QuickBooksClient.Create("customer", customer);
                 customerId = customer.Id.ToString();
             }
 
             if (receipt.RentalAmount > 0)
             {
-                result.Invoice = QuickBooksOnlineClient.Create("invoice", CreateInvoice(customerId, receipt.RentalAmount, receipt.RentalDate, receipt.Memo));
+                result.Invoice = QuickBooksClient.Create("invoice", CreateInvoice(customerId, receipt.RentalAmount, receipt.RentalDate, receipt.Memo));
             }
 
-            if (receipt.ThisPayment > 0 && receipt.RentalAmount > 0)
+            result.Payments = new List<Payment>();
+            if (receipt.ThisPayment > 0)
             {
-                decimal appliedPaymentAmount = receipt.ThisPayment.GetValueOrDefault() <= receipt.RentalAmount.GetValueOrDefault()
-                    ? receipt.ThisPayment.GetValueOrDefault()
-                    : receipt.RentalAmount.GetValueOrDefault();
-                var payment = new Payment
+                var unpaidInvoices = QuickBooksClient.QueryAll<Invoice>($"select * from Invoice where Balance != '0' and CustomerRef = '{customerId}' ORDERBY TxnDate");
+                decimal payment = receipt.ThisPayment.GetValueOrDefault();
+                foreach (var unpaidInvoice in unpaidInvoices)
                 {
-                    TxnDate = receipt.RentalDate,
-                    CustomerRef = new QuickBooksOnline.Models.Reference { Value = customerId },
-                    TotalAmount = appliedPaymentAmount,
-                    PrivateNote = receipt.Memo,
-                    Line = new List<PaymentLine>
+                    var paymentAppliedToInvoice = CreatePayment(
+                        unpaidInvoice,
+                        customerId,
+                        payment,
+                        receipt.RentalDate,
+                        receipt.Memo);
+                    result.Payments.Add(paymentAppliedToInvoice);
+                    payment -= paymentAppliedToInvoice.TotalAmount.GetValueOrDefault();
+                    if (payment <= 0)
                     {
-                        new PaymentLine
+                        break;
+                    }
+                }
+                if (payment > 0)
+                {
+                    var unappliedPayment = CreatePayment(
+                        null,
+                        customerId,
+                        payment,
+                        receipt.RentalDate,
+                        receipt.Memo
+                    );
+                    result.Payments.Add(unappliedPayment);
+                }
+            }
+
+            ReceiptDbClient.Create(result);
+            return result;
+        }
+
+        private Payment CreatePayment(
+            Invoice invoice,
+            string customerId,
+            decimal payment,
+            string date,
+            string memo)
+        {
+            PaymentApplicator.GetPayment(payment, (invoice?.Balance).GetValueOrDefault());
+            var appliedPayment = new Payment
+            {
+                TxnDate = date,
+                CustomerRef = new QuickBooksOnline.Models.Reference { Value = customerId },
+                TotalAmount = payment,
+                PrivateNote = memo
+            };
+            if (invoice != null)
+            {
+                appliedPayment.Line = new List<PaymentLine>
+                {
+                    new PaymentLine
+                    {
+                        Amount = payment,
+                        LinkedTxn = new List<LinkedTransaction>
                         {
-                            Amount = appliedPaymentAmount,
-                            LinkedTxn = new List<LinkedTransaction>
-                            {
-                                new LinkedTransaction
-                                {
-                                    TxnId = result.Invoice.Id,
-                                    TxnType = "Invoice"
-                                }
-                            }
+                            new LinkedTransaction {TxnId = invoice.Id.ToString(), TxnType = "Invoice"}
                         }
                     }
                 };
-                result.PaymentAppliedToInvoice = QuickBooksOnlineClient.Create("payment", payment);
             }
-
-            if (receipt.ThisPayment > 0)
-            {
-                decimal creditRemaining = receipt.ThisPayment.GetValueOrDefault() - receipt.RentalAmount.GetValueOrDefault();
-                if (creditRemaining > 0)
-                {
-                    var payment = new Payment
-                    {
-                        TxnDate = receipt.RentalDate,
-                        CustomerRef = new QuickBooksOnline.Models.Reference {Value = customerId},
-                        TotalAmount = creditRemaining,
-                        PrivateNote = receipt.Memo
-                    };
-                    result.UnappliedPayment = QuickBooksOnlineClient.Create("payment", payment);
-                }
-            }
-            ReceiptDbClient.Create(result);
-            return result;
+            return QuickBooksClient.Create("payment", appliedPayment);
         }
 
         private Invoice CreateInvoice(string customerId, decimal? rentalAmount, string transactionDate, string memo)

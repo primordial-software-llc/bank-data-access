@@ -7,6 +7,12 @@ namespace PropertyRentalManagement.QuickBooksOnline.Models
         [JsonIgnore]
         public string EntityName => "SalesReceipt";
 
+        [JsonProperty("SyncToken")]
+        public string SyncToken { get; set; }
+
+        [JsonProperty("Id")]
+        public int? Id { get; set; }
+
         [JsonProperty("CustomerRef")]
         public Reference CustomerRef { get; set; }
 

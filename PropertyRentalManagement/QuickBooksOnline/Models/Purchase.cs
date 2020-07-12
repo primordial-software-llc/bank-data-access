@@ -9,7 +9,7 @@ namespace PropertyRentalManagement.QuickBooksOnline.Models
         public string SyncToken { get; set; }
 
         [JsonProperty("Id")]
-        public string Id { get; set; }
+        public int? Id { get; set; }
 
         [JsonProperty("TotalAmt")]
         public decimal? TotalAmount { get; set; }

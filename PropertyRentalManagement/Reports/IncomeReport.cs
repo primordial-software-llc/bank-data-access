@@ -27,7 +27,7 @@ namespace PropertyRentalManagement.Reports
                 var vendorExpenses = expenses
                     .Where(x => x.EntityRef != null &&
                                 string.Equals(x.EntityRef.Type, "vendor", StringComparison.OrdinalIgnoreCase) && // Entity ref isn't queryable
-                                x.EntityRef.Value == vendor.Id)
+                                x.EntityRef.Value == vendor.Id.GetValueOrDefault().ToString())
                     .ToList();
                 var vendorTotal = vendorExpenses.Sum(x => x.TotalAmount);
                 vendorTotals.Add(new Tuple<Vendor, decimal?>(vendor, vendorTotal));
@@ -43,7 +43,7 @@ namespace PropertyRentalManagement.Reports
                 CUSTOMER_VIRGIN_GUADALUPE
             };
 
-            var rentalSalesReport = new SaleReportService().GetSales(
+            var rentalSalesReport = new SalesReportService().GetSales(
                 qboClient,
                 start,
                 end,
@@ -58,7 +58,7 @@ namespace PropertyRentalManagement.Reports
             foreach (var nonRentalCustomerId in nonRentalCustomers)
             {
                 var customer = qboClient.Query<Customer>($"select * from Customer where Id = '{nonRentalCustomerId}'").First();
-                var nonRentalSalesReport = new SaleReportService().GetSales(
+                var nonRentalSalesReport = new SalesReportService().GetSales(
                     qboClient,
                     start,
                     end,

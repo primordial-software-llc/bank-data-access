@@ -5,7 +5,7 @@ using PropertyRentalManagement.QuickBooksOnline.Models.Payments;
 
 namespace PropertyRentalManagement.BusinessLogic
 {
-    public class SaleReport
+    public class SalesReport
     {
         public IList<SalesReceipt> SalesReceipts { get; set; }
         public IList<Invoice> Invoices { get; set; }

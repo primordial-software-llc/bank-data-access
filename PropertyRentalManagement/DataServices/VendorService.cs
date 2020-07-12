@@ -10,7 +10,14 @@ namespace PropertyRentalManagement.DataServices
 {
     public class VendorService
     {
-        public Vendor CreateModel(
+        public IAmazonDynamoDB DbClient { get; }
+
+        public VendorService(IAmazonDynamoDB dbClient)
+        {
+            DbClient = dbClient;
+        }
+
+        public static Vendor CreateModel(
             int? quickBooksOnlineId,
             string paymentFrequency,
             decimal? rentPrice,
@@ -27,7 +34,7 @@ namespace PropertyRentalManagement.DataServices
             return vendor;
         }
 
-        public List<Vendor> GetByPaymentFrequency(IAmazonDynamoDB dbClient, string paymentFrequency)
+        public List<Vendor> GetByPaymentFrequency(string paymentFrequency)
         {
             var scanRequest = new ScanRequest(new Vendor().GetTable())
             {
@@ -51,7 +58,7 @@ namespace PropertyRentalManagement.DataServices
                 {
                     scanRequest.ExclusiveStartKey = scanResponse.LastEvaluatedKey;
                 }
-                scanResponse = dbClient.ScanAsync(scanRequest).Result;
+                scanResponse = DbClient.ScanAsync(scanRequest).Result;
                 if (scanResponse.Items.Any())
                 {
                     allMatches.AddRange(scanResponse.Items);
