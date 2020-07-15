@@ -10,10 +10,34 @@ namespace PropertyRentalManagement.BusinessLogic
 {
     public class RecurringInvoices
     {
-        public List<Invoice> CreateInvoices(DateTime start, DateTime end, VendorService vendorService, QuickBooksOnlineClient qboClient, string frequency)
+        private const string FREQUENCY_WEEKLY = "weekly";
+        private const string FREQUENCY_MONTHLY = "monthly";
+
+        public List<Invoice> CreateWeeklyInvoices(DateTime date, VendorService vendorService,
+            QuickBooksOnlineClient quickBooksClient)
         {
-            var allInvoices = new SalesReportService().GetInvoices(qboClient, start, end);
-            var allActiveCustomers = qboClient.QueryAll<Customer>("select * from customer")
+            var start = StartOfWeek(date, DayOfWeek.Monday);
+            var end = EndOfWeek(date, DayOfWeek.Sunday);
+            return CreateInvoices(start, end, vendorService, quickBooksClient, FREQUENCY_WEEKLY);
+        }
+
+        public List<Invoice> CreateMonthlyInvoices(DateTime date, VendorService vendorService, QuickBooksOnlineClient quickBooksClient)
+        {
+            var monthStart = StartOfMonth(date);
+            var monthEnd = new DateTime(monthStart.Year, monthStart.Month,
+                DateTime.DaysInMonth(monthStart.Year, monthStart.Month));
+            return new RecurringInvoices().CreateInvoices(
+                monthStart,
+                monthEnd,
+                vendorService,
+                quickBooksClient,
+                FREQUENCY_MONTHLY);
+        }
+
+        public List<Invoice> CreateInvoices(DateTime start, DateTime end, VendorService vendorService, QuickBooksOnlineClient quickBooksClient, string frequency)
+        {
+            var allInvoices = new SalesReportService().GetInvoices(quickBooksClient, start, end);
+            var allActiveCustomers = quickBooksClient.QueryAll<Customer>("select * from customer")
                 .ToDictionary(x => x.Id);
             var vendors = new ActiveVendorSearch().GetActiveVendors(allActiveCustomers, vendorService, frequency);
             var newInvoices = new List<Invoice>();
@@ -22,11 +46,11 @@ namespace PropertyRentalManagement.BusinessLogic
                 var vendorInvoices = allInvoices.Where(x => x.CustomerRef.Value == vendor.QuickBooksOnlineId.ToString());
                 if (!vendorInvoices.Any())
                 {
-                    var invoiceDate = string.Equals("weekly", frequency, StringComparison.OrdinalIgnoreCase) ? end : start;
-                    newInvoices.Add(CreateInvoice(qboClient, invoiceDate, allActiveCustomers[vendor.QuickBooksOnlineId], vendor));
+                    var invoiceDate = string.Equals(FREQUENCY_WEEKLY, frequency, StringComparison.OrdinalIgnoreCase) ? end : start;
+                    newInvoices.Add(CreateInvoice(quickBooksClient, invoiceDate, allActiveCustomers[vendor.QuickBooksOnlineId], vendor));
                 }
             }
-            var paymentApplicator = new PaymentApplicator(qboClient);
+            var paymentApplicator = new PaymentApplicator(quickBooksClient);
             foreach (var invoice in newInvoices)
             {
                 paymentApplicator.ApplyUnappliedPaymentsToInvoice(invoice);
@@ -67,5 +91,26 @@ namespace PropertyRentalManagement.BusinessLogic
             return qboClient.Create(invoice);
         }
 
+        public static DateTime StartOfWeek(DateTime dt, DayOfWeek startOfWeek)
+        {
+            int diff = (7 + (dt.DayOfWeek - startOfWeek)) % 7;
+            return dt.AddDays(-1 * diff).Date;
+        }
+
+        public static DateTime EndOfWeek(DateTime date, DayOfWeek endOfWeek)
+        {
+            int diff = (endOfWeek - date.DayOfWeek + 7) % 7;
+            return date.AddDays(diff).Date;
+        }
+
+        public static DateTime StartOfMonth(DateTime date)
+        {
+            return new DateTime(date.Year, date.Month, 1);
+        }
+
+        public static DateTime EndOfMonth(DateTime date)
+        {
+            return new DateTime(date.Year, date.Month, 1).AddMonths(1).AddDays(-1);
+        }
     }
 }

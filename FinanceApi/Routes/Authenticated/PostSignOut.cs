@@ -29,7 +29,7 @@ namespace FinanceApi.Routes.Authenticated
             var userPool = new CognitoUserPool(Configuration.FINANCE_API_COGNITO_USER_POOL_ID, Configuration.FINANCE_API_COGNITO_CLIENT_ID, provider);
             var cognitoUser = new CognitoUser(user.Email, Configuration.FINANCE_API_COGNITO_CLIENT_ID, userPool, provider)
             {
-                SessionTokens = new CognitoUserSession(null, null, refreshToken, DateTime.Now, DateTime.Now.AddHours(1))
+                SessionTokens = new CognitoUserSession(null, null, refreshToken, DateTime.UtcNow, DateTime.UtcNow.AddHours(1))
             };
             InitiateRefreshTokenAuthRequest refreshRequest = new InitiateRefreshTokenAuthRequest
             {
