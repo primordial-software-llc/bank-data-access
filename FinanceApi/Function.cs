@@ -103,6 +103,7 @@ namespace FinanceApi
                     routes.Add(new Routes.Authenticated.PointOfSale.PostReceipt());
                     routes.Add(new Routes.Authenticated.PointOfSale.PostCreateWeeklyInvoices());
                     routes.Add(new Routes.Authenticated.PointOfSale.PostCreateMonthlyInvoices());
+                    routes.Add(new Routes.Authenticated.PointOfSale.GetRecurringInvoiceDateRange());
                 }
                 var matchedRoute = routes.FirstOrDefault(route => string.Equals(request.HttpMethod, route.HttpMethod, StringComparison.OrdinalIgnoreCase) &&
                                                                   string.Equals(request.Path, route.Path, StringComparison.OrdinalIgnoreCase));

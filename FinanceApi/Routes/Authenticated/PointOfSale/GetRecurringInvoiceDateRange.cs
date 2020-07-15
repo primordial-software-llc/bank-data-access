@@ -16,7 +16,10 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
         public void Run(APIGatewayProxyRequest request, APIGatewayProxyResponse response, FinanceUser user)
         {
             var model = JsonConvert.DeserializeObject<GetRecurringInvoiceDateRangeModel>(request.Body);
-            var date = new DateTime(model.CalendarDay.Year, model.CalendarDay.Month, model.CalendarDay.DayOfMonth, 0, 0, 0, DateTimeKind.Utc);
+            var year = int.Parse(request.QueryStringParameters["year"]);
+            var month = int.Parse(request.QueryStringParameters["month"]);
+            var dayOfMonth = int.Parse(request.QueryStringParameters["dayOfMonth"]);
+            var date = new DateTime(year, month, dayOfMonth, 0, 0, 0, DateTimeKind.Utc);
             DateRange dateRange = model.Frequency == RecurringInvoices.Frequency.Weekly
                 ? RecurringInvoices.GetWeekDateRange(date)
                 : RecurringInvoices.GetMonthDateRange(date);
