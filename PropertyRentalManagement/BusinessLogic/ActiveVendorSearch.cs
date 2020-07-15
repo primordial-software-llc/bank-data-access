@@ -7,7 +7,7 @@ namespace PropertyRentalManagement.BusinessLogic
 {
     public class ActiveVendorSearch
     {
-        public Dictionary<int?, DatabaseModel.Vendor> GetActiveVendors(Dictionary<int?, Customer> allActiveCustomers, VendorService vendorService, string paymentFrequency)
+        public Dictionary<int?, DatabaseModel.Vendor> GetActiveVendors(Dictionary<int?, Customer> allActiveCustomers, VendorService vendorService, RecurringInvoices.Frequency paymentFrequency)
         {
             var activeVendors = vendorService.GetByPaymentFrequency(paymentFrequency)
                 .Where(x => allActiveCustomers.ContainsKey(x.QuickBooksOnlineId))

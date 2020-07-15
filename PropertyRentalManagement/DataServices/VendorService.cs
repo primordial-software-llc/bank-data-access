@@ -4,6 +4,7 @@ using System.Linq;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
 using AwsTools;
+using PropertyRentalManagement.BusinessLogic;
 using PropertyRentalManagement.DatabaseModel;
 
 namespace PropertyRentalManagement.DataServices
@@ -34,13 +35,18 @@ namespace PropertyRentalManagement.DataServices
             return vendor;
         }
 
-        public List<Vendor> GetByPaymentFrequency(string paymentFrequency)
+        public List<Vendor> GetByPaymentFrequency(RecurringInvoices.Frequency paymentFrequency)
         {
+            if (paymentFrequency != RecurringInvoices.Frequency.Weekly ||
+                paymentFrequency != RecurringInvoices.Frequency.Monthly)
+            {
+                throw new Exception($"Unknown payment frequency {paymentFrequency}");
+            }
             var scanRequest = new ScanRequest(new Vendor().GetTable())
             {
                 ExpressionAttributeValues = new Dictionary<string, AttributeValue>
                 {
-                    {":paymentFrequency", new AttributeValue {S = paymentFrequency}}
+                    {":paymentFrequency", new AttributeValue {S = paymentFrequency == RecurringInvoices.Frequency.Weekly ? "weekly" : "monthly"}}
                 },
                 ExpressionAttributeNames = new Dictionary<string, string>
                 {

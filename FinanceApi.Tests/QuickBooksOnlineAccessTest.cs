@@ -2,7 +2,10 @@
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using FinanceApi.RequestModels;
+using FinanceApi.Routes.Authenticated.PointOfSale;
 using FinanceApi.Tests.InfrastructureAsCode;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PropertyRentalManagement.BusinessLogic;
 using PropertyRentalManagement.DataServices;
@@ -26,6 +29,10 @@ namespace FinanceApi.Tests
         [Fact]
         public void GetCustomers()
         {
+
+            Output.WriteLine(JsonConvert.SerializeObject(new GetRecurringInvoiceDateRangeModel { Frequency = RecurringInvoices.Frequency.Monthly }));
+
+            return;
             var qboClient = Factory.CreateQuickBooksOnlineClient(new XUnitLogger(Output));
 
             var customers = qboClient.QueryAll<Customer>("select * from Customer");

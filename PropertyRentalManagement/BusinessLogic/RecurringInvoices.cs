@@ -10,8 +10,11 @@ namespace PropertyRentalManagement.BusinessLogic
 {
     public class RecurringInvoices
     {
-        private const string FREQUENCY_WEEKLY = "weekly";
-        private const string FREQUENCY_MONTHLY = "monthly";
+        public enum Frequency
+        {
+            Weekly = 0,
+            Monthly
+        }
 
         private VendorService VendorService { get; }
         private QuickBooksOnlineClient QuickBooksClient { get; }
@@ -26,24 +29,17 @@ namespace PropertyRentalManagement.BusinessLogic
 
         public List<Invoice> CreateWeeklyInvoices(DateTime date)
         {
-            var start = StartOfWeek(date, DayOfWeek.Monday);
-            var end = EndOfWeek(date, DayOfWeek.Sunday);
-            return CreateInvoices(start, end, FREQUENCY_WEEKLY);
+            return CreateInvoices(GetWeekDateRange(date), Frequency.Weekly);
         }
 
         public List<Invoice> CreateMonthlyInvoices(DateTime date)
         {
-            var start = StartOfMonth(date);
-            var end = new DateTime(start.Year, start.Month, DateTime.DaysInMonth(start.Year, start.Month));
-            return CreateInvoices(
-                start,
-                end,
-                FREQUENCY_MONTHLY);
+            return CreateInvoices(GetMonthDateRange(date), Frequency.Monthly);
         }
 
-        public List<Invoice> CreateInvoices(DateTime start, DateTime end, string frequency)
+        public List<Invoice> CreateInvoices(DateRange dateRange, Frequency frequency)
         {
-            var allInvoices = new SalesReportService().GetInvoices(QuickBooksClient, start, end);
+            var allInvoices = new SalesReportService().GetInvoices(QuickBooksClient, dateRange.Start, dateRange.End);
             var allActiveCustomers = QuickBooksClient.QueryAll<Customer>("select * from customer")
 
                 .Where(x => x.Id == 1945) // WARNING REMOVE
@@ -56,7 +52,7 @@ namespace PropertyRentalManagement.BusinessLogic
                 var vendorInvoices = allInvoices.Where(x => x.CustomerRef.Value == vendor.QuickBooksOnlineId.ToString());
                 if (!vendorInvoices.Any())
                 {
-                    var invoiceDate = string.Equals(FREQUENCY_WEEKLY, frequency, StringComparison.OrdinalIgnoreCase) ? end : start;
+                    var invoiceDate = frequency == Frequency.Weekly ? dateRange.End : dateRange.Start;
                     newInvoices.Add(CreateInvoice(invoiceDate, allActiveCustomers[vendor.QuickBooksOnlineId], vendor));
                 }
             }
@@ -99,6 +95,20 @@ namespace PropertyRentalManagement.BusinessLogic
                 SalesTermRef = new Reference { Value = Constants.QUICKBOOKS_TERMS_DUE_NOW.ToString() }
             };
             return QuickBooksClient.Create(invoice);
+        }
+
+        public static DateRange GetWeekDateRange(DateTime date)
+        {
+            var start = StartOfWeek(date, DayOfWeek.Monday);
+            var end = EndOfWeek(date, DayOfWeek.Sunday);
+            return new DateRange {Start = start, End = end};
+        }
+
+        public static DateRange GetMonthDateRange(DateTime date)
+        {
+            var start = StartOfMonth(date);
+            var end = new DateTime(start.Year, start.Month, DateTime.DaysInMonth(start.Year, start.Month));
+            return new DateRange {Start = start, End = end};
         }
 
         public static DateTime StartOfWeek(DateTime dt, DayOfWeek startOfWeek)
