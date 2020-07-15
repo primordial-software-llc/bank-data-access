@@ -37,7 +37,7 @@ namespace PropertyRentalManagement.DataServices
 
         public List<Vendor> GetByPaymentFrequency(RecurringInvoices.Frequency paymentFrequency)
         {
-            if (paymentFrequency != RecurringInvoices.Frequency.Weekly ||
+            if (paymentFrequency != RecurringInvoices.Frequency.Weekly &&
                 paymentFrequency != RecurringInvoices.Frequency.Monthly)
             {
                 throw new Exception($"Unknown payment frequency {paymentFrequency}");
