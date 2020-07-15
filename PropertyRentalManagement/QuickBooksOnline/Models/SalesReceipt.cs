@@ -24,5 +24,8 @@ namespace PropertyRentalManagement.QuickBooksOnline.Models
 
         [JsonProperty("MetaData")]
         public MetaData MetaData { get; set; }
+
+        [JsonProperty("sparse")]
+        public bool? Sparse { get; set; }
     }
 }

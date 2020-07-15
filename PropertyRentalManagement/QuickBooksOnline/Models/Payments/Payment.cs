@@ -23,6 +23,9 @@ namespace PropertyRentalManagement.QuickBooksOnline.Models.Payments
         [JsonProperty("TotalAmt")]
         public decimal? TotalAmount { get; set; }
 
+        [JsonProperty("UnappliedAmt")]
+        public decimal? UnappliedAmt { get; set; }
+
         [JsonProperty("PrivateNote")]
         public string PrivateNote { get; set; }
 
@@ -31,5 +34,8 @@ namespace PropertyRentalManagement.QuickBooksOnline.Models.Payments
 
         [JsonProperty("MetaData")]
         public MetaData MetaData { get; set; }
+
+        [JsonProperty("sparse")]
+        public bool? Sparse { get; set; }
     }
 }

@@ -20,10 +20,16 @@ namespace FinanceApi.Tests
         [Fact]
         public void OverPayment()
         {
-            Assert.Equal(20, PaymentApplicator.GetPayment(20, 0));
-            Assert.Equal(11, PaymentApplicator.GetPayment(20, 9));
+            Assert.Equal(0, PaymentApplicator.GetPayment(20, 0));
+            Assert.Equal(9, PaymentApplicator.GetPayment(20, 9));
             Assert.Equal(10, PaymentApplicator.GetPayment(20, 10));
-            Assert.Equal(9, PaymentApplicator.GetPayment(20, 11));
+            Assert.Equal(11, PaymentApplicator.GetPayment(20, 11));
+        }
+
+        [Fact]
+        public void NoInvoice()
+        {
+            Assert.Equal(10, PaymentApplicator.GetPayment(10, null));
         }
     }
 }

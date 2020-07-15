@@ -35,13 +35,13 @@ namespace PropertyRentalManagement.BusinessLogic
             if (string.IsNullOrWhiteSpace(customerId))
             {
                 var customer = new Customer {DisplayName = receipt.Customer.Name};
-                customer = QuickBooksClient.Create("customer", customer);
+                customer = QuickBooksClient.Create(customer);
                 customerId = customer.Id.ToString();
             }
 
             if (receipt.RentalAmount > 0)
             {
-                result.Invoice = QuickBooksClient.Create("invoice", CreateInvoice(customerId, receipt.RentalAmount, receipt.RentalDate, receipt.Memo));
+                result.Invoice = QuickBooksClient.Create(CreateInvoice(customerId, receipt.RentalAmount, receipt.RentalDate, receipt.Memo));
             }
 
             result.Payments = new List<Payment>();
@@ -49,9 +49,10 @@ namespace PropertyRentalManagement.BusinessLogic
             {
                 var unpaidInvoices = QuickBooksClient.QueryAll<Invoice>($"select * from Invoice where Balance != '0' and CustomerRef = '{customerId}' ORDERBY TxnDate");
                 decimal payment = receipt.ThisPayment.GetValueOrDefault();
+                var paymentApplicator = new PaymentApplicator(QuickBooksClient);
                 foreach (var unpaidInvoice in unpaidInvoices)
                 {
-                    var paymentAppliedToInvoice = CreatePayment(
+                    var paymentAppliedToInvoice = paymentApplicator.CreatePayment(
                         unpaidInvoice,
                         customerId,
                         payment,
@@ -66,7 +67,7 @@ namespace PropertyRentalManagement.BusinessLogic
                 }
                 if (payment > 0)
                 {
-                    var unappliedPayment = CreatePayment(
+                    var unappliedPayment = paymentApplicator.CreatePayment(
                         null,
                         customerId,
                         payment,
@@ -79,38 +80,6 @@ namespace PropertyRentalManagement.BusinessLogic
 
             ReceiptDbClient.Create(result);
             return result;
-        }
-
-        private Payment CreatePayment(
-            Invoice invoice,
-            string customerId,
-            decimal payment,
-            string date,
-            string memo)
-        {
-            PaymentApplicator.GetPayment(payment, (invoice?.Balance).GetValueOrDefault());
-            var appliedPayment = new Payment
-            {
-                TxnDate = date,
-                CustomerRef = new QuickBooksOnline.Models.Reference { Value = customerId },
-                TotalAmount = payment,
-                PrivateNote = memo
-            };
-            if (invoice != null)
-            {
-                appliedPayment.Line = new List<PaymentLine>
-                {
-                    new PaymentLine
-                    {
-                        Amount = payment,
-                        LinkedTxn = new List<LinkedTransaction>
-                        {
-                            new LinkedTransaction {TxnId = invoice.Id.ToString(), TxnType = "Invoice"}
-                        }
-                    }
-                };
-            }
-            return QuickBooksClient.Create("payment", appliedPayment);
         }
 
         private Invoice CreateInvoice(string customerId, decimal? rentalAmount, string transactionDate, string memo)

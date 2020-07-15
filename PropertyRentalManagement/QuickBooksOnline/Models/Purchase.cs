@@ -34,5 +34,8 @@ namespace PropertyRentalManagement.QuickBooksOnline.Models
 
         [JsonIgnore]
         public string EntityName => "Purchase";
+
+        [JsonProperty("sparse")]
+        public bool? Sparse { get; set; }
     }
 }

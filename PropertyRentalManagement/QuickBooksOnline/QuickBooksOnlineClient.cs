@@ -75,10 +75,29 @@ namespace PropertyRentalManagement.QuickBooksOnline
             return JsonConvert.DeserializeObject<List<T>>(entityResults.ToString());
         }
 
-        public T Create<T>(string path, T model) where T : IQuickBooksOnlineEntity, new()
+        public T Create<T>(T model) where T : IQuickBooksOnlineEntity, new()
         {
+            model.Id = null;
             var jsonInput = JsonConvert.SerializeObject(model, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-            var result = Request(path, HttpMethod.Post, jsonInput);
+            var result = Request(model.EntityName.ToLower(), HttpMethod.Post, jsonInput);
+            var json = JObject.Parse(result);
+            return JsonConvert.DeserializeObject<T>(json[new T().EntityName].ToString());
+        }
+
+        public T FullUpdate<T>(T model) where T : IQuickBooksOnlineEntity, new()
+        {
+            model.Sparse = false;
+            var jsonInput = JsonConvert.SerializeObject(model, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+            var result = Request(model.EntityName.ToLower(), HttpMethod.Post, jsonInput);
+            var json = JObject.Parse(result);
+            return JsonConvert.DeserializeObject<T>(json[new T().EntityName].ToString());
+        }
+
+        public T SparseUpdate<T>(T model) where T : IQuickBooksOnlineEntity, new()
+        {
+            model.Sparse = true;
+            var jsonInput = JsonConvert.SerializeObject(model, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+            var result = Request(model.EntityName.ToLower(), HttpMethod.Post, jsonInput);
             var json = JObject.Parse(result);
             return JsonConvert.DeserializeObject<T>(json[new T().EntityName].ToString());
         }

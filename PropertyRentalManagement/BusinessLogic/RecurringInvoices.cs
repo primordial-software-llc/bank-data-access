@@ -22,13 +22,19 @@ namespace PropertyRentalManagement.BusinessLogic
                 var vendorInvoices = allInvoices.Where(x => x.CustomerRef.Value == vendor.QuickBooksOnlineId.ToString());
                 if (!vendorInvoices.Any())
                 {
-                    newInvoices.Add(CreateInvoice(qboClient, start, allActiveCustomers[vendor.QuickBooksOnlineId], vendor));
+                    var invoiceDate = string.Equals("weekly", frequency, StringComparison.OrdinalIgnoreCase) ? end : start;
+                    newInvoices.Add(CreateInvoice(qboClient, invoiceDate, allActiveCustomers[vendor.QuickBooksOnlineId], vendor));
                 }
+            }
+            var paymentApplicator = new PaymentApplicator(qboClient);
+            foreach (var invoice in newInvoices)
+            {
+                paymentApplicator.ApplyUnappliedPaymentsToInvoice(invoice);
             }
             return newInvoices;
         }
 
-        public Invoice CreateInvoice(QuickBooksOnlineClient qboClient, DateTime date, Customer customer, DatabaseModel.Vendor vendor)
+        private Invoice CreateInvoice(QuickBooksOnlineClient qboClient, DateTime date, Customer customer, DatabaseModel.Vendor vendor)
         {
             decimal quantity = 1;
             decimal taxableAmount = vendor.RentPrice.GetValueOrDefault() / 1.068m;
@@ -58,7 +64,7 @@ namespace PropertyRentalManagement.BusinessLogic
                 PrivateNote = vendor.Memo,
                 SalesTermRef = new Reference { Value = Constants.QUICKBOOKS_TERMS_DUE_NOW.ToString() }
             };
-            return qboClient.Create("invoice", invoice);
+            return qboClient.Create(invoice);
         }
 
     }

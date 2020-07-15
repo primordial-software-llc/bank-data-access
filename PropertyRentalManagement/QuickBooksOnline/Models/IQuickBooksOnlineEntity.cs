@@ -6,5 +6,6 @@ namespace PropertyRentalManagement.QuickBooksOnline.Models
         string SyncToken { get; set; }
         int? Id { get; set; }
         string EntityName { get; }
+        bool? Sparse { get; set; }
     }
 }

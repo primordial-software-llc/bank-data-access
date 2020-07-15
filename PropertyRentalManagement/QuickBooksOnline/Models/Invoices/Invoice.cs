@@ -33,9 +33,12 @@ namespace PropertyRentalManagement.QuickBooksOnline.Models.Invoices
         public Reference SalesTermRef { get; set; }
 
         [JsonProperty("TotalAmt")]
-        public decimal TotalAmount { get; set; }
+        public decimal? TotalAmount { get; set; }
 
         [JsonProperty("Balance")]
-        public decimal Balance { get; set; }
+        public decimal? Balance { get; set; }
+
+        [JsonProperty("sparse")]
+        public bool? Sparse { get; set; }
     }
 }
