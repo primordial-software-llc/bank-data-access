@@ -17,7 +17,7 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
             var year = int.Parse(request.QueryStringParameters["year"]);
             var month = int.Parse(request.QueryStringParameters["month"]);
             var dayOfMonth = int.Parse(request.QueryStringParameters["dayOfMonth"]);
-            var frequency = (RecurringInvoices.Frequency) Enum.Parse(typeof (RecurringInvoices.Frequency), request.QueryStringParameters["frequency"]);
+            var frequency = (RecurringInvoices.Frequency) Enum.Parse(typeof (RecurringInvoices.Frequency), request.QueryStringParameters["frequency"], true);
             var date = new DateTime(year, month, dayOfMonth, 0, 0, 0, DateTimeKind.Utc);
             DateRange dateRange = frequency == RecurringInvoices.Frequency.Weekly
                 ? RecurringInvoices.GetWeekDateRange(date)
