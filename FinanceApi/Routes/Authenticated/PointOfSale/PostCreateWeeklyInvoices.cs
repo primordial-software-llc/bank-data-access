@@ -23,10 +23,8 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
             var day = JsonConvert.DeserializeObject<CalendarDay>(request.Body);
             var date = new DateTime(day.Year, day.Month, day.DayOfMonth, 0, 0, 0, DateTimeKind.Utc);
             Console.WriteLine($"{user.Email} is creating weekly invoices for {date:yyyy-MM-dd}");
-            var weeklyInvoices = new RecurringInvoices().CreateWeeklyInvoices(
-                date,
-                new VendorService(new AmazonDynamoDBClient()),
-                qboClient);
+            var recurringInvoices = new RecurringInvoices(new VendorService(new AmazonDynamoDBClient()), qboClient, Configuration.POLK_COUNTY_RENTAL_SALES_TAX_RATE);
+            var weeklyInvoices = recurringInvoices.CreateWeeklyInvoices(date);
             Console.WriteLine($"Created {weeklyInvoices.Count} weekly invoices for {JsonConvert.SerializeObject(day)}");
             foreach (var weeklyInvoice in weeklyInvoices)
             {

@@ -24,11 +24,8 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
             var date = new DateTime(day.Year, day.Month, day.DayOfMonth, 0, 0, 0, DateTimeKind.Utc)
                 .AddMonths(1);
             Console.WriteLine($"{user.Email} is creating monthly invoices for {date:yyyy-MM-dd}");
-            var monthlyInvoices = new RecurringInvoices()
-                .CreateMonthlyInvoices(
-                    date,
-                    new VendorService(new AmazonDynamoDBClient()),
-                    qboClient);
+            var recurringInvoices = new RecurringInvoices(new VendorService(new AmazonDynamoDBClient()), qboClient, Configuration.POLK_COUNTY_RENTAL_SALES_TAX_RATE);
+            var monthlyInvoices = recurringInvoices.CreateMonthlyInvoices(date);
             Console.WriteLine($"Created {monthlyInvoices.Count} monthly invoices for {JsonConvert.SerializeObject(day)}.");
             foreach (var invoice in monthlyInvoices)
             {

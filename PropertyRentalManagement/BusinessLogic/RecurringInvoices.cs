@@ -13,33 +13,43 @@ namespace PropertyRentalManagement.BusinessLogic
         private const string FREQUENCY_WEEKLY = "weekly";
         private const string FREQUENCY_MONTHLY = "monthly";
 
-        public List<Invoice> CreateWeeklyInvoices(DateTime date, VendorService vendorService,
-            QuickBooksOnlineClient quickBooksClient)
+        private VendorService VendorService { get; }
+        private QuickBooksOnlineClient QuickBooksClient { get; }
+        private decimal TaxRate { get; set; }
+
+        public RecurringInvoices(VendorService vendorService, QuickBooksOnlineClient quickBooksClient, decimal taxRate)
+        {
+            VendorService = vendorService;
+            QuickBooksClient = quickBooksClient;
+            TaxRate = taxRate;
+        }
+
+        public List<Invoice> CreateWeeklyInvoices(DateTime date)
         {
             var start = StartOfWeek(date, DayOfWeek.Monday);
             var end = EndOfWeek(date, DayOfWeek.Sunday);
-            return CreateInvoices(start, end, vendorService, quickBooksClient, FREQUENCY_WEEKLY);
+            return CreateInvoices(start, end, FREQUENCY_WEEKLY);
         }
 
-        public List<Invoice> CreateMonthlyInvoices(DateTime date, VendorService vendorService, QuickBooksOnlineClient quickBooksClient)
+        public List<Invoice> CreateMonthlyInvoices(DateTime date)
         {
-            var monthStart = StartOfMonth(date);
-            var monthEnd = new DateTime(monthStart.Year, monthStart.Month,
-                DateTime.DaysInMonth(monthStart.Year, monthStart.Month));
-            return new RecurringInvoices().CreateInvoices(
-                monthStart,
-                monthEnd,
-                vendorService,
-                quickBooksClient,
+            var start = StartOfMonth(date);
+            var end = new DateTime(start.Year, start.Month, DateTime.DaysInMonth(start.Year, start.Month));
+            return CreateInvoices(
+                start,
+                end,
                 FREQUENCY_MONTHLY);
         }
 
-        public List<Invoice> CreateInvoices(DateTime start, DateTime end, VendorService vendorService, QuickBooksOnlineClient quickBooksClient, string frequency)
+        public List<Invoice> CreateInvoices(DateTime start, DateTime end, string frequency)
         {
-            var allInvoices = new SalesReportService().GetInvoices(quickBooksClient, start, end);
-            var allActiveCustomers = quickBooksClient.QueryAll<Customer>("select * from customer")
+            var allInvoices = new SalesReportService().GetInvoices(QuickBooksClient, start, end);
+            var allActiveCustomers = QuickBooksClient.QueryAll<Customer>("select * from customer")
+
+                .Where(x => x.Id == 1945) // WARNING REMOVE
+
                 .ToDictionary(x => x.Id);
-            var vendors = new ActiveVendorSearch().GetActiveVendors(allActiveCustomers, vendorService, frequency);
+            var vendors = new ActiveVendorSearch().GetActiveVendors(allActiveCustomers, VendorService, frequency);
             var newInvoices = new List<Invoice>();
             foreach (var vendor in vendors.Values)
             {
@@ -47,10 +57,10 @@ namespace PropertyRentalManagement.BusinessLogic
                 if (!vendorInvoices.Any())
                 {
                     var invoiceDate = string.Equals(FREQUENCY_WEEKLY, frequency, StringComparison.OrdinalIgnoreCase) ? end : start;
-                    newInvoices.Add(CreateInvoice(quickBooksClient, invoiceDate, allActiveCustomers[vendor.QuickBooksOnlineId], vendor));
+                    newInvoices.Add(CreateInvoice(invoiceDate, allActiveCustomers[vendor.QuickBooksOnlineId], vendor));
                 }
             }
-            var paymentApplicator = new PaymentApplicator(quickBooksClient);
+            var paymentApplicator = new PaymentApplicator(QuickBooksClient);
             foreach (var invoice in newInvoices)
             {
                 paymentApplicator.ApplyUnappliedPaymentsToInvoice(invoice);
@@ -58,10 +68,10 @@ namespace PropertyRentalManagement.BusinessLogic
             return newInvoices;
         }
 
-        private Invoice CreateInvoice(QuickBooksOnlineClient qboClient, DateTime date, Customer customer, DatabaseModel.Vendor vendor)
+        private Invoice CreateInvoice(DateTime date, Customer customer, DatabaseModel.Vendor vendor)
         {
             decimal quantity = 1;
-            decimal taxableAmount = vendor.RentPrice.GetValueOrDefault() / 1.068m;
+            decimal taxableAmount = vendor.RentPrice.GetValueOrDefault() / (1 + TaxRate);
             var invoice = new Invoice
             {
                 TxnDate = date.ToString("yyyy-MM-dd"),
@@ -88,7 +98,7 @@ namespace PropertyRentalManagement.BusinessLogic
                 PrivateNote = vendor.Memo,
                 SalesTermRef = new Reference { Value = Constants.QUICKBOOKS_TERMS_DUE_NOW.ToString() }
             };
-            return qboClient.Create(invoice);
+            return QuickBooksClient.Create(invoice);
         }
 
         public static DateTime StartOfWeek(DateTime dt, DayOfWeek startOfWeek)

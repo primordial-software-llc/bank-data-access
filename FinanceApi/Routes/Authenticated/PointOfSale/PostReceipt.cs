@@ -29,7 +29,7 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
                 return;
             }
 
-            var receiptService = new ReceiptSave(receiptDbClient, qboClient);
+            var receiptService = new ReceiptSave(receiptDbClient, qboClient, Configuration.POLK_COUNTY_RENTAL_SALES_TAX_RATE);
             var receiptResult = receiptService.SaveReceipt(receipt);
             response.Body = JsonConvert.SerializeObject(receiptResult);
         }

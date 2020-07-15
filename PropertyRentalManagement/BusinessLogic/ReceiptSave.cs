@@ -14,11 +14,13 @@ namespace PropertyRentalManagement.BusinessLogic
     {
         private DatabaseClient<ReceiptSaveResult> ReceiptDbClient { get; }
         private QuickBooksOnlineClient QuickBooksClient { get; }
+        private decimal TaxRate { get; set; }
 
-        public ReceiptSave(DatabaseClient<ReceiptSaveResult> receiptDbClient, QuickBooksOnlineClient quickBooksClient)
+        public ReceiptSave(DatabaseClient<ReceiptSaveResult> receiptDbClient, QuickBooksOnlineClient quickBooksClient, decimal taxRate)
         {
             ReceiptDbClient = receiptDbClient;
             QuickBooksClient = quickBooksClient;
+            TaxRate = taxRate;
         }
 
         public ReceiptSaveResult SaveReceipt(Receipt receipt)
@@ -85,7 +87,7 @@ namespace PropertyRentalManagement.BusinessLogic
         private Invoice CreateInvoice(string customerId, decimal? rentalAmount, string transactionDate, string memo)
         {
             decimal quantity = 1;
-            decimal taxableAmount = rentalAmount.GetValueOrDefault() / 1.068m;
+            decimal taxableAmount = rentalAmount.GetValueOrDefault() / (1 + TaxRate);
             var invoice = new Invoice
             {
                 TxnDate = transactionDate,
