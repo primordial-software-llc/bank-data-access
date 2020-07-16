@@ -10,13 +10,6 @@ namespace PropertyRentalManagement.Reports
 {
     public class IncomeReport
     {
-        public const int CUSTOMER_PARKING_A = 1859;
-        public const int CUSTOMER_PARKING_B = 1861;
-        public const int CUSTOMER_BAR_A = 1862;
-        public const int CUSTOMER_BAR_B = 1863;
-        public const int CUSTOMER_RESTAURANT = 1864;
-        public const int CUSTOMER_VIRGIN_GUADALUPE = 1899;
-
         public static void PrintReport(DateTime start, DateTime end, ILogging logger, QuickBooksOnlineClient qboClient)
         {
             var payrollVendors = qboClient.QueryAll<Vendor>($"select * from Vendor where DisplayName LIKE 'Mi Pueblo%'");
@@ -33,29 +26,19 @@ namespace PropertyRentalManagement.Reports
                 vendorTotals.Add(new Tuple<Vendor, decimal?>(vendor, vendorTotal));
             }
 
-            var nonRentalCustomers = new List<int>
-            {
-                CUSTOMER_PARKING_A,
-                CUSTOMER_PARKING_B,
-                CUSTOMER_BAR_A,
-                CUSTOMER_BAR_B,
-                CUSTOMER_RESTAURANT,
-                CUSTOMER_VIRGIN_GUADALUPE
-            };
-
             var rentalSalesReport = new SalesReportService().GetSales(
                 qboClient,
                 start,
                 end,
                 null,
-                nonRentalCustomers);
+                Constants.NonRentalCustomerIds);
             rentalSalesReport.Payments = rentalSalesReport.Payments
                 .Where(x => x.MetaData.CreateTime >= start && x.MetaData.CreateTime < end.AddDays(1))
                 .ToList();
 
             List<Tuple<string, decimal?>> incomeTotals = new List<Tuple<string, decimal?>>();
             incomeTotals.Add(new Tuple<string, decimal?>("Rental Income", rentalSalesReport.Payments.Sum(x => x.TotalAmount)));
-            foreach (var nonRentalCustomerId in nonRentalCustomers)
+            foreach (var nonRentalCustomerId in Constants.NonRentalCustomerIds)
             {
                 var customer = qboClient.Query<Customer>($"select * from Customer where Id = '{nonRentalCustomerId}'").First();
                 var nonRentalSalesReport = new SalesReportService().GetSales(

@@ -22,7 +22,9 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
             var qboDbClient = new DatabaseClient<QuickBooksOnlineConnection>(dbClient);
             var qboClient = new QuickBooksOnlineClient(Configuration.RealmId, qboDbClient, new Logger());
             var vendorClient = new DatabaseClient<PropertyRentalManagement.DatabaseModel.Vendor>(dbClient);
+            var nonRentalCustomerIds = PropertyRentalManagement.Constants.NonRentalCustomerIds;
             var allActiveCustomers = qboClient.QueryAll<Customer>("select * from customer")
+                .Where(x => !nonRentalCustomerIds.Contains(x.Id.GetValueOrDefault()))
                 .ToDictionary(x => x.Id);
             var activeVendors = vendorClient.GetAll()
                 .Where(x => allActiveCustomers.ContainsKey(x.QuickBooksOnlineId))

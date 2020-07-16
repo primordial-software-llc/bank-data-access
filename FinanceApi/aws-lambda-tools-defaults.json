@@ -12,7 +12,7 @@
     "framework"     : "netcoreapp2.1",
     "function-runtime" : "dotnetcore2.1",
     "function-memory-size" : 1024,
-    "function-timeout"     : 90,
+    "function-timeout"     : 600,
     "function-handler"     : "FinanceApi::FinanceApi.Function::FunctionHandler",
     "function-name"        : "FinanceApi",
     "function-role"        : "arn:aws:iam::283733643774:role/lambda_exec_finance_api",
