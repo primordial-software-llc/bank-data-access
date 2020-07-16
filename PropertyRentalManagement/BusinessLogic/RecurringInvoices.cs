@@ -41,9 +41,6 @@ namespace PropertyRentalManagement.BusinessLogic
         {
             var allInvoices = new SalesReportService().GetInvoices(QuickBooksClient, dateRange.Start, dateRange.End);
             var allActiveCustomers = QuickBooksClient.QueryAll<Customer>("select * from customer")
-
-                .Where(x => x.Id == 1945) // WARNING REMOVE
-
                 .ToDictionary(x => x.Id);
             var vendors = new ActiveVendorSearch().GetActiveVendors(allActiveCustomers, VendorService, frequency);
             var newInvoices = new List<Invoice>();
