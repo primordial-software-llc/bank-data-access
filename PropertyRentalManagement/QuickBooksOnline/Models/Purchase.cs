@@ -32,6 +32,9 @@ namespace PropertyRentalManagement.QuickBooksOnline.Models
         [JsonProperty("EntityRef")]
         public Reference EntityRef { get; set; }
 
+        [JsonProperty("DocNumber")]
+        public string DocNumber { get; set; }
+
         [JsonIgnore]
         public string EntityName => "Purchase";
 
