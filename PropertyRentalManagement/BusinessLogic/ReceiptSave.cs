@@ -58,7 +58,7 @@ namespace PropertyRentalManagement.BusinessLogic
                         unpaidInvoice,
                         customerId,
                         payment,
-                        receipt.RentalDate,
+                        receipt.TransactionDate,
                         receipt.Memo);
                     result.Payments.Add(paymentAppliedToInvoice);
                     payment -= paymentAppliedToInvoice.TotalAmount.GetValueOrDefault();
@@ -73,7 +73,7 @@ namespace PropertyRentalManagement.BusinessLogic
                         null,
                         customerId,
                         payment,
-                        receipt.RentalDate,
+                        receipt.TransactionDate,
                         receipt.Memo
                     );
                     result.Payments.Add(unappliedPayment);

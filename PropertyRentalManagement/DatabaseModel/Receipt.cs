@@ -7,6 +7,9 @@ namespace PropertyRentalManagement.DatabaseModel
         [JsonProperty("rentalDate")]
         public string RentalDate { get; set; }
 
+        [JsonProperty("transactionDate")]
+        public string TransactionDate { get; set; }
+
         [JsonProperty("customer")]
         public Reference Customer { get; set; }
         

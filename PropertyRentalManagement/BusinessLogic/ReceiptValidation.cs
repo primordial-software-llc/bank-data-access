@@ -22,6 +22,15 @@ namespace PropertyRentalManagement.BusinessLogic
                 errors.Add("Rental date must be in the format YYYY-MM-DD e.g. 1989-16-06");
             }
 
+            if (string.IsNullOrWhiteSpace(receipt.TransactionDate))
+            {
+                errors.Add("Transaction date is required");
+            }
+            else if (!IsRentalDateValid(receipt.RentalDate))
+            {
+                errors.Add("Transaction date must be in the format YYYY-MM-DD e.g. 1989-16-06");
+            }
+
             if (string.IsNullOrWhiteSpace(customerId) && string.IsNullOrWhiteSpace(customerName))
             {
                 errors.Add("Customer id or customer name is required");
