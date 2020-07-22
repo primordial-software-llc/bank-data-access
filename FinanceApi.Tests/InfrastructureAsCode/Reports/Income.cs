@@ -17,8 +17,8 @@ namespace FinanceApi.Tests.InfrastructureAsCode.Reports
         [Fact]
         public void PrintDailyIncome()
         {
-            var start = new DateTime(2020, 6, 29);
-            var end = new DateTime(2020, 7, 5);
+            var start = new DateTime(2020, 7, 19);
+            var end = new DateTime(2020, 7, 19);
             IncomeReport.PrintReport(
                 start,
                 end, new XUnitLogger(Output),

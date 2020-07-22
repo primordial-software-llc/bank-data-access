@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
+using PropertyRentalManagement.DatabaseModel;
 
-namespace PropertyRentalManagement.DatabaseModel
+namespace FinanceApi.RequestModels
 {
     public class Receipt
     {

@@ -2,6 +2,7 @@
 using Amazon.DynamoDBv2;
 using Amazon.Lambda.APIGatewayEvents;
 using FinanceApi.DatabaseModel;
+using FinanceApi.RequestModels;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PropertyRentalManagement.BusinessLogic;

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using PropertyRentalManagement.DatabaseModel;
+using FinanceApi.RequestModels;
 
 namespace PropertyRentalManagement.BusinessLogic
 {

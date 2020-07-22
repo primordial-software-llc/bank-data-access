@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using FinanceApi.RequestModels;
 using Newtonsoft.Json;
 using PropertyRentalManagement.DatabaseModel;
 using PropertyRentalManagement.DataServices;

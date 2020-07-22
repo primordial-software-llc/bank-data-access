@@ -8,4 +8,8 @@
     <PackageReference Include="AwsTools" Version="1.0.18" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Accounting\Accounting.csproj" />
+  </ItemGroup>
+
 </Project>
