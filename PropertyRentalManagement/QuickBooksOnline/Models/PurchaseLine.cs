@@ -5,7 +5,7 @@ namespace PropertyRentalManagement.QuickBooksOnline.Models
     public class PurchaseLine
     {
         [JsonProperty("Amount")]
-        public decimal Amount { get; set; }
+        public decimal? Amount { get; set; }
 
         [JsonProperty("DetailType")]
         public string DetailType { get; set; }

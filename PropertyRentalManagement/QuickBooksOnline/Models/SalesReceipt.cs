@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
+using PropertyRentalManagement.QuickBooksOnline.Models.Invoices;
 
 namespace PropertyRentalManagement.QuickBooksOnline.Models
 {
@@ -19,8 +21,17 @@ namespace PropertyRentalManagement.QuickBooksOnline.Models
         [JsonProperty("TxnDate")]
         public string TxnDate { get; set; }
 
+        [JsonProperty("Line")]
+        public List<SalesLine> Line { get; set; }
+
+        [JsonProperty("TxnTaxDetail")]
+        public TxnTaxDetail TxnTaxDetail { get; set; }
+
         [JsonProperty("TotalAmt")]
-        public decimal TotalAmount { get; set; }
+        public decimal? TotalAmount { get; set; }
+
+        [JsonProperty("PrivateNote")]
+        public string PrivateNote { get; set; }
 
         [JsonProperty("MetaData")]
         public MetaData MetaData { get; set; }

@@ -2,7 +2,7 @@
 
 namespace PropertyRentalManagement.QuickBooksOnline.Models.Invoices
 {
-    public class InvoiceLine
+    public class SalesLine
     {
         [JsonProperty("DetailType")]
         public string DetailType { get; set; }
@@ -11,6 +11,6 @@ namespace PropertyRentalManagement.QuickBooksOnline.Models.Invoices
         public SalesItemLineDetail SalesItemLineDetail { get; set; }
 
         [JsonProperty("Amount")]
-        public decimal Amount { get; set; }
+        public decimal? Amount { get; set; }
     }
 }

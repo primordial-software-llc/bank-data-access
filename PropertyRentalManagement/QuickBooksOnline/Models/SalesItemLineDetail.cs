@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace PropertyRentalManagement.QuickBooksOnline.Models.Invoices
+namespace PropertyRentalManagement.QuickBooksOnline.Models
 {
     public class SalesItemLineDetail
     {
@@ -8,10 +8,10 @@ namespace PropertyRentalManagement.QuickBooksOnline.Models.Invoices
         public Reference TaxCodeRef { get; set; }
 
         [JsonProperty("Qty")]
-        public decimal Quantity { get; set; }
+        public decimal? Quantity { get; set; }
 
         [JsonProperty("UnitPrice")]
-        public decimal UnitPrice { get; set; }
+        public decimal? UnitPrice { get; set; }
 
         [JsonProperty("ItemRef")]
         public Reference ItemRef { get; set; }

@@ -93,9 +93,9 @@ namespace PropertyRentalManagement.BusinessLogic
             {
                 TxnDate = transactionDate,
                 CustomerRef = new QuickBooksOnline.Models.Reference { Value = customerId },
-                Line = new List<InvoiceLine>
+                Line = new List<SalesLine>
                 {
-                    new InvoiceLine
+                    new SalesLine
                     {
                         DetailType = "SalesItemLineDetail",
                         SalesItemLineDetail = new SalesItemLineDetail

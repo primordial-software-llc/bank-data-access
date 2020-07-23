@@ -69,9 +69,9 @@ namespace PropertyRentalManagement.BusinessLogic
             {
                 TxnDate = date.ToString("yyyy-MM-dd"),
                 CustomerRef = new Reference { Value = customer.Id.ToString() },
-                Line = new List<InvoiceLine>
+                Line = new List<SalesLine>
                 {
-                    new InvoiceLine
+                    new SalesLine
                     {
                         DetailType = "SalesItemLineDetail",
                         SalesItemLineDetail = new SalesItemLineDetail

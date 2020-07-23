@@ -49,7 +49,7 @@ namespace PropertyRentalManagement.Reports
                     new List<int>());
                 incomeTotals.Add(new Tuple<string, decimal?>(
                     customer.DisplayName,
-                    nonRentalSalesReport.Payments.Sum(x => x.TotalAmount) + nonRentalSalesReport.SalesReceipts.Sum(x => x.TotalAmount)));
+                    nonRentalSalesReport.Payments.Sum(x => x.TotalAmount) + nonRentalSalesReport.SalesReceipts.Sum(x => x.TotalAmount.GetValueOrDefault())));
             }
 
             logger.Log($"Income and Cash Payroll for {start:yyyy-MM-dd} to {end:yyyy-MM-dd}");

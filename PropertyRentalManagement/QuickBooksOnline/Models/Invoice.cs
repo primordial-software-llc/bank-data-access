@@ -21,7 +21,7 @@ namespace PropertyRentalManagement.QuickBooksOnline.Models.Invoices
         public Reference CustomerRef { get; set; }
 
         [JsonProperty("Line")]
-        public List<InvoiceLine> Line { get; set; }
+        public List<SalesLine> Line { get; set; }
 
         [JsonProperty("TxnTaxDetail")]
         public TxnTaxDetail TxnTaxDetail { get; set; }

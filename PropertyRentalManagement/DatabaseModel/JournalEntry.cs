@@ -17,6 +17,12 @@ namespace PropertyRentalManagement.DatabaseModel
         [JsonProperty("account")]
         public int? Account { get; set; }
 
+        [JsonProperty("product")]
+        public int? Product { get; set; }
+
+        [JsonProperty("taxCode")]
+        public int? TaxCode { get; set; }
+
         [JsonProperty("amount")]
         public decimal? Amount { get; set; }
 
@@ -25,5 +31,8 @@ namespace PropertyRentalManagement.DatabaseModel
 
         [JsonProperty("memo")]
         public string Memo { get; set; }
+
+        [JsonProperty("batch")]
+        public string Batch { get; set; }
     }
 }

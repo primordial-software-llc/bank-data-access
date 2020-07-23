@@ -15,6 +15,7 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\private-accounting\PrivateAccounting\PrivateAccounting.csproj" />
     <ProjectReference Include="..\FinanceApi\FinanceApi.csproj" />
     <ProjectReference Include="..\PropertyRentalManagement\PropertyRentalManagement.csproj" />
   </ItemGroup>
