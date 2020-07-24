@@ -22,7 +22,6 @@ namespace PropertyRentalManagement.QuickBooksOnline
             var expense = new Purchase
             {
                 TxnDate = DateTime.Parse(journalEntry.Date).ToString("yyyy-MM-dd"),
-                EntityRef = new Reference { Type = "Vendor", Value = journalEntry.Account.ToString() },
                 AccountRef = new Reference { Value = 66.ToString() },
                 PaymentType = "Cash",
                 Line = new List<PurchaseLine>
@@ -41,6 +40,10 @@ namespace PropertyRentalManagement.QuickBooksOnline
                 },
                 PrivateNote = journalEntry.Memo
             };
+            if (journalEntry.Account.GetValueOrDefault() > 0)
+            {
+                expense.EntityRef = new Reference {Type = "Vendor", Value = journalEntry.Account.ToString()};
+            }
             return QuickBooksClient.Create(expense).Id;
         }
 
