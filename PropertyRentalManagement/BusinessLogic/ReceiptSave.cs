@@ -24,13 +24,19 @@ namespace PropertyRentalManagement.BusinessLogic
             TaxRate = taxRate;
         }
 
-        public ReceiptSaveResult SaveReceipt(Receipt receipt)
+        public ReceiptSaveResult SaveReceipt(Receipt receipt, string firstName, string lastName, string email)
         {
             ReceiptSaveResult result = new ReceiptSaveResult
             {
                 Id = Guid.NewGuid().ToString(),
                 Timestamp = DateTime.UtcNow.ToString("O"),
-                Receipt = JsonConvert.DeserializeObject<Receipt>(JsonConvert.SerializeObject(receipt))
+                Receipt = JsonConvert.DeserializeObject<Receipt>(JsonConvert.SerializeObject(receipt)),
+                CreatedBy = new ReceiptSaveResultUser
+                {
+                    FirstName = firstName,
+                    LastName = lastName,
+                    Email = email
+                }
             };
             ReceiptDbClient.Create(result);
 

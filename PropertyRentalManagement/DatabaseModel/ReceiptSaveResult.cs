@@ -25,6 +25,9 @@ namespace PropertyRentalManagement.DatabaseModel
         [JsonProperty("payments")]
         public List<Payment> Payments { get; set; }
 
+        [JsonProperty("createdBy")]
+        public ReceiptSaveResultUser CreatedBy { get; set; }
+
         public Dictionary<string, AttributeValue> GetKey()
         {
             return new Dictionary<string, AttributeValue> { { "id", new AttributeValue { S = Id } } };

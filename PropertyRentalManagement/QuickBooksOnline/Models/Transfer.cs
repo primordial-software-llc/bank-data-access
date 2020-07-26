@@ -25,6 +25,9 @@ namespace PropertyRentalManagement.QuickBooksOnline.Models
         [JsonProperty("PrivateNote")]
         public string PrivateNote { get; set; }
 
+        [JsonProperty("MetaData")]
+        public MetaData MetaData { get; set; }
+
         [JsonIgnore]
         public string EntityName => "Transfer";
 

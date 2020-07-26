@@ -35,6 +35,9 @@ namespace PropertyRentalManagement.QuickBooksOnline.Models
         [JsonProperty("DocNumber")]
         public string DocNumber { get; set; }
 
+        [JsonProperty("MetaData")]
+        public MetaData MetaData { get; set; }
+
         [JsonIgnore]
         public string EntityName => "Purchase";
 
