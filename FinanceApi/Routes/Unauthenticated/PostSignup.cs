@@ -26,7 +26,7 @@ namespace FinanceApi.Routes.Unauthenticated
             var provider = new AmazonCognitoIdentityProviderClient(new AnonymousAWSCredentials(), RegionEndpoint.USEast1);
             var userPool = new CognitoUserPool(Configuration.FINANCE_API_COGNITO_USER_POOL_ID, Configuration.FINANCE_API_COGNITO_CLIENT_ID, provider);
             var result = userPool.SignUpAsync(
-                model.Email,
+                model.Email.ToLower(),
                 model.Password,
                 new Dictionary<string, string>(),
                 new Dictionary<string, string>());
