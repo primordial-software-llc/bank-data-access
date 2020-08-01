@@ -32,7 +32,11 @@ namespace FinanceApi.Routes.Unauthenticated
                 new Dictionary<string, string>());
             result.Wait();
             var userService = new UserService();
-            string ip = request.RequestContext.Identity.SourceIp; // WARNING IP IS WRONG NOW THAT I'M USING CLOUD FLARE.
+            var ip = request.RequestContext.Identity.SourceIp;
+            if (request.Headers.ContainsKey("CF-Connecting-IP"))
+            {
+                ip = request.Headers["CF-Connecting-IP"];
+            }
             userService.CreateUser(model.Email, model.AgreedToLicense, ip);
             var json = new JObject
             {
