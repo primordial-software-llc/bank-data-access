@@ -11,7 +11,7 @@ namespace FinanceApi
             {
                 ip = request.Headers["CF-Connecting-IP"];
             }
-            return ip
+            return ip;
         }
     }
 }
