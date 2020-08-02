@@ -42,14 +42,13 @@ namespace FinanceApi.Routes.Authenticated
                 return;
             }
             response.Body = JsonConvert.SerializeObject(subscription);
-            string ip = request.RequestContext.Identity.SourceIp; // WARNING IP IS WRONG NOW THAT I'M USING CLOUD FLARE.
             var jsonPatch = new JObject
             {
                 ["billingAgreement"] = JObject.FromObject(new BillingAgreement
                 {
                     AgreedToBillingTerms = model.AgreedToBillingTerms,
                     Date = DateTime.UtcNow.ToString("O"),
-                    IpAddress = ip
+                    IpAddress = IpLookup.GetIp(request)
                 })
             };
             new UserService().UpdateUser(user.Email, jsonPatch);

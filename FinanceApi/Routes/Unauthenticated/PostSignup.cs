@@ -32,12 +32,7 @@ namespace FinanceApi.Routes.Unauthenticated
                 new Dictionary<string, string>());
             result.Wait();
             var userService = new UserService();
-            var ip = request.RequestContext.Identity.SourceIp;
-            if (request.Headers.ContainsKey("CF-Connecting-IP"))
-            {
-                ip = request.Headers["CF-Connecting-IP"];
-            }
-            userService.CreateUser(model.Email, model.AgreedToLicense, ip);
+            userService.CreateUser(model.Email, model.AgreedToLicense, IpLookup.GetIp(request));
             var json = new JObject
             {
                 { "status", "Your user has successfully been created. " +
