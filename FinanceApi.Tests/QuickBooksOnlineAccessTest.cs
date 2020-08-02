@@ -29,12 +29,7 @@ namespace FinanceApi.Tests
         [Fact]
         public void GetCustomers()
         {
-
-            Output.WriteLine(JsonConvert.SerializeObject(new GetRecurringInvoiceDateRangeModel { Frequency = RecurringInvoices.Frequency.Monthly }));
-
-            return;
             var qboClient = Factory.CreateQuickBooksOnlineClient(new XUnitLogger(Output));
-
             var customers = qboClient.QueryAll<Customer>("select * from Customer");
             Output.WriteLine(customers.Count.ToString());
             //Output.WriteLine(JsonConvert.SerializeObject(customers));

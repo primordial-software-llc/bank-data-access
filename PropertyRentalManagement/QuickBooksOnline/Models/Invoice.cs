@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
+using PropertyRentalManagement.QuickBooksOnline.Models.Invoices;
 
-namespace PropertyRentalManagement.QuickBooksOnline.Models.Invoices
+namespace PropertyRentalManagement.QuickBooksOnline.Models
 {
     public class Invoice : IQuickBooksOnlineEntity
     {

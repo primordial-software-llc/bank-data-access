@@ -99,6 +99,7 @@ namespace FinanceApi
                     routes.Add(new Routes.Authenticated.PointOfSale.GetCustomers());
                     routes.Add(new Routes.Authenticated.PointOfSale.GetCustomerPaymentSettings());
                     routes.Add(new Routes.Authenticated.PointOfSale.GetCustomerPaymentSettingsById());
+                    routes.Add(new Routes.Authenticated.PointOfSale.GetCustomerInvoices());
                     routes.Add(new Routes.Authenticated.PointOfSale.PatchVendor());
                     routes.Add(new Routes.Authenticated.PointOfSale.PostReceipt());
                     routes.Add(new Routes.Authenticated.PointOfSale.PostCreateWeeklyInvoices());
