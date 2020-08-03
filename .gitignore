@@ -7,4 +7,5 @@
 packages/
 FinanceApi.Tests/PdfBankStatementProcessing/*
 FinanceApi.Tests/ExcelExpenseProcessing.cs
+FinanceApi.Tests/IncomeAndExpenses20200719.cs
 FinanceApi/FinanceApi.sln.DotSettings.user
