@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using FinanceApi.RequestModels;
+using System.Globalization;
+using System.Linq;
 using Newtonsoft.Json;
+using NodaTime;
+using NodaTime.Extensions;
 using PropertyRentalManagement.DatabaseModel;
 using PropertyRentalManagement.DataServices;
 using PropertyRentalManagement.QuickBooksOnline;
@@ -14,14 +17,21 @@ namespace PropertyRentalManagement.BusinessLogic
     public class ReceiptSave
     {
         private DatabaseClient<ReceiptSaveResult> ReceiptDbClient { get; }
+        private DatabaseClient<SpotReservation> SpotReservationDbClient { get; }
+
         private QuickBooksOnlineClient QuickBooksClient { get; }
         private decimal TaxRate { get; set; }
 
-        public ReceiptSave(DatabaseClient<ReceiptSaveResult> receiptDbClient, QuickBooksOnlineClient quickBooksClient, decimal taxRate)
+        public ReceiptSave(
+            DatabaseClient<ReceiptSaveResult> receiptDbClient,
+            QuickBooksOnlineClient quickBooksClient,
+            decimal taxRate,
+            DatabaseClient<SpotReservation> spotReservationDbClient)
         {
             ReceiptDbClient = receiptDbClient;
             QuickBooksClient = quickBooksClient;
             TaxRate = taxRate;
+            SpotReservationDbClient = spotReservationDbClient;
         }
 
         public ReceiptSaveResult SaveReceipt(Receipt receipt, string firstName, string lastName, string email)
@@ -48,10 +58,22 @@ namespace PropertyRentalManagement.BusinessLogic
                 customerId = customer.Id.ToString();
             }
 
+            var memo = receipt.Memo;
+            if (receipt.Spots != null && receipt.Spots.Any())
+            {
+                memo += Environment.NewLine;
+                memo += "Spots: " + string.Join(", ", receipt.Spots.Select(x => $"{x.Section?.Name} - {x.Name}"));
+            }
+
             if (receipt.RentalAmount > 0)
             {
-                result.Invoice = QuickBooksClient.Create(CreateInvoice(customerId, receipt.RentalAmount, receipt.RentalDate, receipt.Memo));
+                result.Invoice = QuickBooksClient.Create(CreateInvoice(customerId, receipt.RentalAmount, receipt.RentalDate, memo));
             }
+
+            DateTimeZone easternTimeZone = DateTimeZoneProviders.Tzdb["America/New_York"];
+            ZonedClock easternClock = SystemClock.Instance.InZone(easternTimeZone);
+            LocalDate easternToday = easternClock.GetCurrentDate();
+            string quickBooksTransactionDate = easternToday.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
 
             result.Payments = new List<Payment>();
             if (receipt.ThisPayment > 0)
@@ -65,8 +87,8 @@ namespace PropertyRentalManagement.BusinessLogic
                         unpaidInvoice,
                         customerId,
                         payment,
-                        receipt.TransactionDate,
-                        receipt.Memo);
+                        quickBooksTransactionDate,
+                        memo);
                     result.Payments.Add(paymentAppliedToInvoice);
                     payment -= paymentAppliedToInvoice.TotalAmount.GetValueOrDefault();
                     if (payment <= 0)
@@ -80,14 +102,27 @@ namespace PropertyRentalManagement.BusinessLogic
                         null,
                         customerId,
                         payment,
-                        receipt.TransactionDate,
-                        receipt.Memo
+                        quickBooksTransactionDate,
+                        memo
                     );
                     result.Payments.Add(unappliedPayment);
                 }
             }
 
             ReceiptDbClient.Create(result);
+
+            if (receipt.Spots != null)
+            {
+                foreach (var spot in receipt.Spots)
+                {
+                    SpotReservationDbClient.Create(new SpotReservation
+                    {
+                        SpotId = spot.Id,
+                        RentalDate = receipt.RentalDate
+                    });
+                }
+            }
+
             return result;
         }
 

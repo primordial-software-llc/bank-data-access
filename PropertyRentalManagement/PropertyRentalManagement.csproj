@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="AwsTools" Version="1.0.18" />
+    <PackageReference Include="NodaTime" Version="3.0.0" />
   </ItemGroup>
 
   <ItemGroup>

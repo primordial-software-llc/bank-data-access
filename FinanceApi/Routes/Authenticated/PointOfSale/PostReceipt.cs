@@ -2,9 +2,9 @@
 using Amazon.DynamoDBv2;
 using Amazon.Lambda.APIGatewayEvents;
 using FinanceApi.DatabaseModel;
-using FinanceApi.RequestModels;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using PropertyRentalManagement;
 using PropertyRentalManagement.BusinessLogic;
 using PropertyRentalManagement.DatabaseModel;
 using PropertyRentalManagement.DataServices;
@@ -21,16 +21,17 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
             var receipt = JsonConvert.DeserializeObject<Receipt>(request.Body);
             var databaseClient = new DatabaseClient<QuickBooksOnlineConnection>(new AmazonDynamoDBClient());
             var receiptDbClient = new DatabaseClient<ReceiptSaveResult>(new AmazonDynamoDBClient());
+            var spotReservationDbClient = new DatabaseClient<SpotReservation>(new AmazonDynamoDBClient());
             var qboClient = new QuickBooksOnlineClient(Configuration.RealmId, databaseClient, new Logger());
 
-            var validation = new ReceiptValidation().Validate(receipt);
+            var validation = new ReceiptValidation(spotReservationDbClient).Validate(receipt);
             if (validation.Any())
             {
                 response.Body = new JObject { { "error", JArray.FromObject(validation) } }.ToString();
                 return;
             }
 
-            var receiptService = new ReceiptSave(receiptDbClient, qboClient, Configuration.POLK_COUNTY_RENTAL_SALES_TAX_RATE);
+            var receiptService = new ReceiptSave(receiptDbClient, qboClient, Configuration.POLK_COUNTY_RENTAL_SALES_TAX_RATE, spotReservationDbClient);
             var receiptResult = receiptService.SaveReceipt(receipt, user.FirstName, user.LastName, user.Email);
             response.Body = JsonConvert.SerializeObject(receiptResult);
         }

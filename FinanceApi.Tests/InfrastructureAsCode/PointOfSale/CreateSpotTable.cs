@@ -11,7 +11,7 @@ namespace FinanceApi.Tests.InfrastructureAsCode.PointOfSale
     public class CreateSpotTable
     {
 
-        [Fact]
+        //[Fact]
         public void CreateSpotsBuilding7()
         {
             var client = Factory.CreateAmazonDynamoDbClient();
@@ -32,7 +32,7 @@ namespace FinanceApi.Tests.InfrastructureAsCode.PointOfSale
             }
         }
 
-        [Fact]
+        //[Fact]
         public void CreateSpotsBuilding6()
         {
             var client = Factory.CreateAmazonDynamoDbClient();
@@ -53,7 +53,7 @@ namespace FinanceApi.Tests.InfrastructureAsCode.PointOfSale
             }
         }
 
-        [Fact]
+        //[Fact]
         public void CreateSpotsBuilding5()
         {
             var client = Factory.CreateAmazonDynamoDbClient();
@@ -74,7 +74,7 @@ namespace FinanceApi.Tests.InfrastructureAsCode.PointOfSale
             }
         }
 
-        [Fact]
+        //[Fact]
         public void CreateSpotsBuilding4()
         {
             var client = Factory.CreateAmazonDynamoDbClient();
@@ -95,7 +95,7 @@ namespace FinanceApi.Tests.InfrastructureAsCode.PointOfSale
             }
         }
 
-        [Fact]
+        //[Fact]
         public void CreateSpotsBuilding3()
         {
             var client = Factory.CreateAmazonDynamoDbClient();
@@ -111,7 +111,7 @@ namespace FinanceApi.Tests.InfrastructureAsCode.PointOfSale
             }
         }
 
-        [Fact]
+        //[Fact]
         public void CreateSpotsBuilding2()
         {
             var client = Factory.CreateAmazonDynamoDbClient();
@@ -132,7 +132,7 @@ namespace FinanceApi.Tests.InfrastructureAsCode.PointOfSale
             }
         }
 
-        [Fact]
+        //[Fact]
         public void CreateSpotsBuilding1()
         {
             var client = Factory.CreateAmazonDynamoDbClient();

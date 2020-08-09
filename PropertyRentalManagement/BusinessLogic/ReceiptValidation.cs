@@ -1,11 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using FinanceApi.RequestModels;
+using System.Globalization;
+using System.Linq;
+using PropertyRentalManagement.DatabaseModel;
+using PropertyRentalManagement.DataServices;
 
 namespace PropertyRentalManagement.BusinessLogic
 {
     public class ReceiptValidation
     {
+        private DatabaseClient<SpotReservation> SpotReservationDbClient { get; }
+
+        public ReceiptValidation(DatabaseClient<SpotReservation> spotReservationDbClient)
+        {
+            SpotReservationDbClient = spotReservationDbClient;
+        }
+
         public List<string> Validate(Receipt receipt)
         {
             List<string> errors = new List<string>();
@@ -17,18 +27,16 @@ namespace PropertyRentalManagement.BusinessLogic
             {
                 errors.Add("Rental date is required");
             }
-            else if (!IsRentalDateValid(receipt.RentalDate))
+            else if (!DateTime.TryParseExact(receipt.RentalDate, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var rentalDate))
             {
-                errors.Add("Rental date must be in the format YYYY-MM-DD e.g. 1989-16-06");
+                errors.Add("Rental date must be in the format YYYY-MM-DD e.g. 1989-06-16");
             }
-
-            if (string.IsNullOrWhiteSpace(receipt.TransactionDate))
+            else
             {
-                errors.Add("Transaction date is required");
-            }
-            else if (!IsRentalDateValid(receipt.RentalDate))
-            {
-                errors.Add("Transaction date must be in the format YYYY-MM-DD e.g. 1989-16-06");
+                if (rentalDate.DayOfWeek != DayOfWeek.Sunday)
+                {
+                    errors.Add("Rental date must be a Sunday"); // Required for spot reservations.
+                }
             }
 
             if (string.IsNullOrWhiteSpace(customerId) && string.IsNullOrWhiteSpace(customerName))
@@ -67,41 +75,24 @@ namespace PropertyRentalManagement.BusinessLogic
                 errors.Add($"Memo must be less than or equal to {Constants.QUICKBOOKS_MEMO_MAX_LENGTH} characters");
             }
 
+            if (!errors.Any() && receipt.Spots != null)
+            {
+                foreach (var spot in receipt.Spots)
+                {
+                    var conflictingSpot = SpotReservationDbClient.Get(new SpotReservation
+                    {
+                        SpotId = spot.Id,
+                        RentalDate = receipt.RentalDate
+                    });
+                    if (conflictingSpot != null)
+                    {
+                        errors.Add($"Spot {spot.Section?.Name} - {spot.Name} is already reserved for {receipt.RentalDate}");
+                    }
+                }
+            }
+
             return errors;
         }
 
-        private bool IsRentalDateValid(string rentalDate)
-        {
-            var parts = rentalDate.Split("-");
-            if (parts.Length != 3)
-            {
-                return false;
-            }
-            if (!int.TryParse(parts[0], out int year))
-            {
-                return false;
-            }
-            if (!int.TryParse(parts[1], out int month))
-            {
-                return false;
-            }
-            if (!int.TryParse(parts[2], out int dayOfMonth))
-            {
-                return false;
-            }
-            try
-            {
-                var date = new DateTime(year, month, dayOfMonth);
-            }
-            catch (ArgumentOutOfRangeException)
-            {
-                return false;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-            return true;
-        }
     }
 }

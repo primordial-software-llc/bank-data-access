@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using Amazon.DynamoDBv2.Model;
 using AwsTools;
-using FinanceApi.RequestModels;
 using Newtonsoft.Json;
 using PropertyRentalManagement.QuickBooksOnline.Models;
 using PropertyRentalManagement.QuickBooksOnline.Models.Payments;

@@ -41,6 +41,10 @@ namespace PropertyRentalManagement.DataServices
         public T Get(T model)
         {
             var dbItem = Client.GetItemAsync(model.GetTable(), model.GetKey()).Result;
+            if (!dbItem.Item.Any())
+            {
+                return default;
+            }
             return JsonConvert.DeserializeObject<T>(Document.FromAttributeMap(dbItem.Item).ToJson());
         }
 

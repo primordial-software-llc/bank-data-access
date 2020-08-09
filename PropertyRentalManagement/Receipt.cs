@@ -1,15 +1,13 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 using PropertyRentalManagement.DatabaseModel;
 
-namespace FinanceApi.RequestModels
+namespace PropertyRentalManagement
 {
     public class Receipt
     {
         [JsonProperty("rentalDate")]
         public string RentalDate { get; set; }
-
-        [JsonProperty("transactionDate")]
-        public string TransactionDate { get; set; }
 
         [JsonProperty("customer")]
         public Reference Customer { get; set; }
@@ -25,5 +23,8 @@ namespace FinanceApi.RequestModels
         
         [JsonProperty("memo")]
         public string Memo { get; set; }
+
+        [JsonProperty("spots")]
+        public List<Spot> Spots { get; set; }
     }
 }
