@@ -13,6 +13,9 @@ namespace PropertyRentalManagement.DatabaseModel
         [JsonProperty("rentalDate")]
         public string RentalDate { get; set; }
 
+        [JsonProperty("quickBooksOnlineCustomerId")]
+        public int? QuickBooksOnlineCustomerId { get; set; }
+
         public Dictionary<string, AttributeValue> GetKey()
         {
             return new Dictionary<string, AttributeValue>

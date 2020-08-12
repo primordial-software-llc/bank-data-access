@@ -118,7 +118,8 @@ namespace PropertyRentalManagement.BusinessLogic
                     SpotReservationDbClient.Create(new SpotReservation
                     {
                         SpotId = spot.Id,
-                        RentalDate = receipt.RentalDate
+                        RentalDate = receipt.RentalDate,
+                        QuickBooksOnlineCustomerId = int.Parse(customerId)
                     });
                 }
             }

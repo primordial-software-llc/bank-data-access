@@ -22,6 +22,9 @@ namespace PropertyRentalManagement.DatabaseModel
         [JsonProperty("memo")]
         public string Memo { get; set; }
 
+        [JsonProperty("spots")]
+        public List<Spot> Spots { get; set; }
+
         public Dictionary<string, AttributeValue> GetKey()
         {
             return new Dictionary<string, AttributeValue> { { "id", new AttributeValue { S = Id } } };

@@ -2,18 +2,16 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using PropertyRentalManagement.DatabaseModel;
-using PropertyRentalManagement.DataServices;
 
 namespace PropertyRentalManagement.BusinessLogic
 {
     public class ReceiptValidation
     {
-        private DatabaseClient<SpotReservation> SpotReservationDbClient { get; }
+        private SpotReservationCheck SpotReservationCheck { get; }
 
-        public ReceiptValidation(DatabaseClient<SpotReservation> spotReservationDbClient)
+        public ReceiptValidation(SpotReservationCheck spotReservationCheck)
         {
-            SpotReservationDbClient = spotReservationDbClient;
+            SpotReservationCheck = spotReservationCheck;
         }
 
         public List<string> Validate(Receipt receipt)
@@ -23,19 +21,19 @@ namespace PropertyRentalManagement.BusinessLogic
             var customerId = receipt.Customer?.Id;
             var customerName = receipt.Customer?.Name;
 
-            if (string.IsNullOrWhiteSpace(receipt.RentalDate))
+            if (receipt.RentalAmount.GetValueOrDefault() > 0)
             {
-                errors.Add("Rental date is required");
-            }
-            else if (!DateTime.TryParseExact(receipt.RentalDate, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var rentalDate))
-            {
-                errors.Add("Rental date must be in the format YYYY-MM-DD e.g. 1989-06-16");
-            }
-            else
-            {
-                if (rentalDate.DayOfWeek != DayOfWeek.Sunday)
+                if (string.IsNullOrWhiteSpace(receipt.RentalDate))
                 {
-                    errors.Add("Rental date must be a Sunday"); // Required for spot reservations.
+                    errors.Add("Rental date is required");
+                }
+                else if (!DateTime.TryParseExact(receipt.RentalDate, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var rentalDate))
+                {
+                    errors.Add("Rental date must be in the format YYYY-MM-DD e.g. 1989-06-16");
+                }
+                else if(rentalDate.DayOfWeek != DayOfWeek.Sunday)
+                {
+                    errors.Add("Rental date must be a Sunday"); // Required for spot reservations to reduce complexity.
                 }
             }
 
@@ -75,20 +73,9 @@ namespace PropertyRentalManagement.BusinessLogic
                 errors.Add($"Memo must be less than or equal to {Constants.QUICKBOOKS_MEMO_MAX_LENGTH} characters");
             }
 
-            if (!errors.Any() && receipt.Spots != null)
+            if (!errors.Any())
             {
-                foreach (var spot in receipt.Spots)
-                {
-                    var conflictingSpot = SpotReservationDbClient.Get(new SpotReservation
-                    {
-                        SpotId = spot.Id,
-                        RentalDate = receipt.RentalDate
-                    });
-                    if (conflictingSpot != null)
-                    {
-                        errors.Add($"Spot {spot.Section?.Name} - {spot.Name} is already reserved for {receipt.RentalDate}");
-                    }
-                }
+                errors.AddRange(SpotReservationCheck.GetSpotConflicts(receipt.Spots, receipt.RentalDate));
             }
 
             return errors;

@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
+using PropertyRentalManagement.DatabaseModel;
 
 namespace FinanceApi.RequestModels
 {
@@ -30,5 +32,8 @@ namespace FinanceApi.RequestModels
 
         [JsonProperty("balance")]
         public decimal Balance { get; set; }
+
+        [JsonProperty("spots")]
+        public List<Spot> Spots { get; set; }
     }
 }

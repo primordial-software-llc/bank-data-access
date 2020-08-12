@@ -22,9 +22,11 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
             var databaseClient = new DatabaseClient<QuickBooksOnlineConnection>(new AmazonDynamoDBClient());
             var receiptDbClient = new DatabaseClient<ReceiptSaveResult>(new AmazonDynamoDBClient());
             var spotReservationDbClient = new DatabaseClient<SpotReservation>(new AmazonDynamoDBClient());
+            var vendorDbClient = new DatabaseClient<Vendor>(new AmazonDynamoDBClient());
             var qboClient = new QuickBooksOnlineClient(Configuration.RealmId, databaseClient, new Logger());
 
-            var validation = new ReceiptValidation(spotReservationDbClient).Validate(receipt);
+            var spotReservationCheck = new SpotReservationCheck(spotReservationDbClient, vendorDbClient, qboClient);
+            var validation = new ReceiptValidation(spotReservationCheck).Validate(receipt);
             if (validation.Any())
             {
                 response.Body = new JObject { { "error", JArray.FromObject(validation) } }.ToString();
