@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using PropertyRentalManagement.DatabaseModel;
 using PropertyRentalManagement.DataServices;
@@ -24,7 +25,7 @@ namespace PropertyRentalManagement.BusinessLogic
             QuickBooksClient = quickBooksClient;
         }
 
-        public List<string> GetSpotConflicts(List<Spot> spots, string rentalDate)
+        public List<string> GetSpotConflicts(List<Spot> spots, string rentalDate, string ignoredVendorId = null)
         {
             var conflicts = new List<string>();
             if (spots == null)
@@ -33,7 +34,10 @@ namespace PropertyRentalManagement.BusinessLogic
             }
             var allActiveVendors = new ActiveVendorSearch()
                 .GetActiveVendors(QuickBooksClient, VendorDbClient)
-                .Where(x => x.Spots != null && x.Spots.Any())
+                .Where(x =>
+                            x.Spots != null &&
+                            x.Spots.Any() &&
+                            !string.Equals(x.Id, ignoredVendorId, StringComparison.OrdinalIgnoreCase))
                 .ToList();
             foreach (var spot in spots)
             {
@@ -41,7 +45,16 @@ namespace PropertyRentalManagement.BusinessLogic
                 {
                     if (vendor.Spots.Any(vendorSpot => vendorSpot.Id == spot.Id))
                     {
-                        conflicts.Add(GetConflictDescription(spot, rentalDate, vendor.QuickBooksOnlineId));
+                        var conflictDescription = $"Spot {spot.Section?.Name} - {spot.Name} is reserved indefinitely";
+                        if (vendor.QuickBooksOnlineId > 0)
+                        {
+                            var customer = QuickBooksClient.Query<Customer>($"select * from Customer where Id = '{vendor.QuickBooksOnlineId}'").FirstOrDefault();
+                            if (customer != null)
+                            {
+                                conflictDescription += $" by {customer.DisplayName}";
+                            }
+                        }
+                        conflicts.Add(conflictDescription);
                     }
                 }
                 var conflictingSpot = SpotReservationDbClient.Get(new SpotReservation
@@ -51,24 +64,19 @@ namespace PropertyRentalManagement.BusinessLogic
                 });
                 if (conflictingSpot != null)
                 {
-                    conflicts.Add(GetConflictDescription(spot, rentalDate, conflictingSpot.QuickBooksOnlineCustomerId));
+                    var conflictDescription = $"Spot {spot.Section?.Name} - {spot.Name} is reserved on {rentalDate}";
+                    if (conflictingSpot.QuickBooksOnlineCustomerId > 0)
+                    {
+                        var customer = QuickBooksClient.Query<Customer>($"select * from Customer where Id = '{conflictingSpot.QuickBooksOnlineCustomerId}'").FirstOrDefault();
+                        if (customer != null)
+                        {
+                            conflictDescription += $" by {customer.DisplayName}";
+                        }
+                    }
+                    conflicts.Add(conflictDescription);
                 }
             }
             return conflicts;
-        }
-
-        private string GetConflictDescription(Spot spot, string rentalDate, int? quickBooksOnlineCustomerId)
-        {
-            var conflictDescription = $"Spot {spot.Section?.Name} - {spot.Name} is already reserved for {rentalDate}";
-            if (quickBooksOnlineCustomerId > 0)
-            {
-                var customer = QuickBooksClient.Query<Customer>($"select * from Customer where Id = '{quickBooksOnlineCustomerId}'").FirstOrDefault();
-                if (customer != null)
-                {
-                    conflictDescription += $" by {customer.DisplayName}";
-                }
-            }
-            return conflictDescription;
         }
 
     }

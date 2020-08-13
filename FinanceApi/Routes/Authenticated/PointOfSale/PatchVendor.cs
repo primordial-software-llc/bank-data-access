@@ -29,7 +29,6 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
 
             var vendorUpdates = JsonConvert.DeserializeObject<Vendor>(request.Body);
             var vendorId = vendorUpdates.GetKey();
-            vendorUpdates.Id = null;
             if (vendorUpdates.Memo != null && vendorUpdates.Memo.Length > 4000)
             {
                 errors.Add("Memo can't exceed 4,000 characters");
@@ -46,15 +45,16 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
                 easternToday = easternToday.PlusDays(1);
             }
             string easternRentalDate = easternToday.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
-            errors.AddRange(spotReservationCheck.GetSpotConflicts(vendorUpdates.Spots, easternRentalDate));
+            errors.AddRange(spotReservationCheck.GetSpotConflicts(vendorUpdates.Spots, easternRentalDate, vendorUpdates.Id));
 
             if (errors.Any())
             {
+                response.StatusCode = 400;
                 response.Body = new JObject { { "error", JArray.FromObject(errors) } }.ToString();
                 return;
             }
 
-            var updated = vendorDataClient.Update(vendorId, vendorUpdates);
+            var updated = vendorDataClient.Update(vendorUpdates);
             response.Body = JsonConvert.SerializeObject(updated);
         }
     }

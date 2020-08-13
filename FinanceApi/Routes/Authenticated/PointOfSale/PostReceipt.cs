@@ -29,6 +29,7 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
             var validation = new ReceiptValidation(spotReservationCheck).Validate(receipt);
             if (validation.Any())
             {
+                response.StatusCode = 400;
                 response.Body = new JObject { { "error", JArray.FromObject(validation) } }.ToString();
                 return;
             }

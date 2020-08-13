@@ -30,9 +30,9 @@ namespace PropertyRentalManagement.QuickBooksOnline
                 qboConnection.RefreshToken,
                 logger);
             dbClient.Update(
-                qboConnection.GetKey(),
                 new QuickBooksOnlineConnection
                 {
+                    RealmId = qboConnection.RealmId,
                     AccessToken = Token.AccessToken,
                     RefreshToken = Token.RefreshToken
                 });

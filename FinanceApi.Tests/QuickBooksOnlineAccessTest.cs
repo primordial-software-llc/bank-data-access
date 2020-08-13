@@ -14,6 +14,7 @@ using PropertyRentalManagement.QuickBooksOnline.Models.Invoices;
 using PropertyRentalManagement.QuickBooksOnline.Models.Payments;
 using Xunit;
 using Xunit.Abstractions;
+using Vendor = PropertyRentalManagement.DatabaseModel.Vendor;
 
 namespace FinanceApi.Tests
 {

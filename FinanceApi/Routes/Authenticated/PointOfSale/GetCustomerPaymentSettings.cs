@@ -51,7 +51,8 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
                     FirstName = customer.GivenName,
                     LastName = customer.FamilyName,
                     DisplayName = customer.DisplayName,
-                    Balance = customer.Balance
+                    Balance = customer.Balance,
+                    Spots = vendor.Spots
                 });
             }
             response.Body = JsonConvert.SerializeObject(json);

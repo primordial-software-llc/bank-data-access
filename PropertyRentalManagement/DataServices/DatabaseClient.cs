@@ -57,10 +57,15 @@ namespace PropertyRentalManagement.DataServices
             ).Wait();
         }
 
-        public T Update(Dictionary<string, AttributeValue> key, T model)
+        public T Update(T model)
         {
-            var update = JObject.FromObject(model, new JsonSerializer { NullValueHandling = NullValueHandling.Ignore });
-            var updates = Document.FromJson(update.ToString()).ToAttributeUpdateMap(false);
+            Dictionary<string, AttributeValue> key = model.GetKey();
+            var updateJson = JObject.FromObject(model, new JsonSerializer { NullValueHandling = NullValueHandling.Ignore });
+            foreach (var keyPart in key.Keys)
+            {
+                updateJson.Remove(keyPart);
+            }
+            var updates = Document.FromJson(updateJson.ToString()).ToAttributeUpdateMap(false);
             var result = Client.UpdateItemAsync(
                 new T().GetTable(),
                 key,
