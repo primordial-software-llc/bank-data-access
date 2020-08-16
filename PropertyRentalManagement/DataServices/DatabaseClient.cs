@@ -18,6 +18,25 @@ namespace PropertyRentalManagement.DataServices
             Client = client;
         }
 
+        public List<T> QueryAll(QueryRequest queryRequest)
+        {
+            QueryResponse queryResponse = null;
+            var items = new List<T>();
+            do
+            {
+                if (queryResponse != null)
+                {
+                    queryRequest.ExclusiveStartKey = queryResponse.LastEvaluatedKey;
+                }
+                queryResponse = Client.QueryAsync(queryRequest).Result;
+                foreach (var item in queryResponse.Items)
+                {
+                    items.Add(JsonConvert.DeserializeObject<T>(Document.FromAttributeMap(item).ToJson()));
+                }
+            } while (queryResponse.LastEvaluatedKey.Any());
+            return items;
+        }
+
         public List<T> GetAll()
         {
             var scanRequest = new ScanRequest(new T().GetTable());

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
+using PropertyRentalManagement.DatabaseModel;
 using Xunit;
 
 namespace FinanceApi.Tests.InfrastructureAsCode.PointOfSale
@@ -8,21 +9,21 @@ namespace FinanceApi.Tests.InfrastructureAsCode.PointOfSale
     public class CreateSpotReservationTable
     {
         //[Fact]
-        public void Create()
+        public void A_Create()
         {
             var request = new CreateTableRequest
             {
-                TableName = "lakeland-mi-pueblo-spot-reservation",
+                TableName = new SpotReservation().GetTable(),
                 KeySchema = new List<KeySchemaElement>
                 {
                     new KeySchemaElement
                     {
-                        AttributeName = "spotId",
+                        AttributeName = "rentalDate",
                         KeyType = "HASH"
                     },
                     new KeySchemaElement
                     {
-                        AttributeName = "rentalDate",
+                        AttributeName = "spotId",
                         KeyType = "RANGE"
                     }
                 },

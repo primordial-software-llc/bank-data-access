@@ -14,6 +14,24 @@ namespace PropertyRentalManagement.BusinessLogic
             SpotReservationCheck = spotReservationCheck;
         }
 
+        public static List<string> GetRentalDateValidation(string rentalDate)
+        {
+            var validation = new List<string>();
+            if (string.IsNullOrWhiteSpace(rentalDate))
+            {
+                validation.Add("Rental date is required");
+            }
+            else if (!DateTime.TryParseExact(rentalDate, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedRentalDate))
+            {
+                validation.Add("Rental date must be in the format YYYY-MM-DD e.g. 1989-06-16");
+            }
+            else if (parsedRentalDate.DayOfWeek != DayOfWeek.Sunday)
+            {
+                validation.Add("Rental date must be a Sunday"); // Required for spot reservations to reduce complexity.
+            }
+            return validation;
+        }
+
         public List<string> Validate(Receipt receipt)
         {
             List<string> errors = new List<string>();
@@ -21,20 +39,9 @@ namespace PropertyRentalManagement.BusinessLogic
             var customerId = receipt.Customer?.Id;
             var customerName = receipt.Customer?.Name;
 
-            if (receipt.RentalAmount.GetValueOrDefault() > 0)
+            if (receipt.RentalAmount.GetValueOrDefault() > 0 || receipt.Spots.Any())
             {
-                if (string.IsNullOrWhiteSpace(receipt.RentalDate))
-                {
-                    errors.Add("Rental date is required");
-                }
-                else if (!DateTime.TryParseExact(receipt.RentalDate, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var rentalDate))
-                {
-                    errors.Add("Rental date must be in the format YYYY-MM-DD e.g. 1989-06-16");
-                }
-                else if(rentalDate.DayOfWeek != DayOfWeek.Sunday)
-                {
-                    errors.Add("Rental date must be a Sunday"); // Required for spot reservations to reduce complexity.
-                }
+                errors.AddRange(GetRentalDateValidation(receipt.RentalDate));
             }
 
             if (string.IsNullOrWhiteSpace(customerId) && string.IsNullOrWhiteSpace(customerName))
@@ -53,11 +60,16 @@ namespace PropertyRentalManagement.BusinessLogic
                 errors.Add($"Customer name can't exceed {Constants.QUICKBOOKS_CUSTOMER_DISPLAY_NAME_MAX_LENGTH} characters");
             }
 
+            if (receipt.RentalAmount.GetValueOrDefault() == 0 && receipt.Spots.Any())
+            {
+                errors.Add("Rental amount is required in order to reserve a spot");
+            }
+            
             if (receipt.RentalAmount.GetValueOrDefault() == 0 && receipt.ThisPayment.GetValueOrDefault() == 0)
             {
                 errors.Add("Rental amount or payment is required");
             }
-            
+
             if (receipt.RentalAmount.HasValue && receipt.RentalAmount < 0)
             {
                 errors.Add("Rental amount must be greater or equal to zero");

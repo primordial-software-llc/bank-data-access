@@ -65,9 +65,9 @@ namespace PropertyRentalManagement.BusinessLogic
                 if (conflictingSpot != null)
                 {
                     var conflictDescription = $"Spot {spot.Section?.Name} - {spot.Name} is reserved on {rentalDate}";
-                    if (conflictingSpot.QuickBooksOnlineCustomerId > 0)
+                    if (conflictingSpot.QuickBooksOnlineId > 0)
                     {
-                        var customer = QuickBooksClient.Query<Customer>($"select * from Customer where Id = '{conflictingSpot.QuickBooksOnlineCustomerId}'").FirstOrDefault();
+                        var customer = QuickBooksClient.Query<Customer>($"select * from Customer where Id = '{conflictingSpot.QuickBooksOnlineId}'").FirstOrDefault();
                         if (customer != null)
                         {
                             conflictDescription += $" by {customer.DisplayName}";

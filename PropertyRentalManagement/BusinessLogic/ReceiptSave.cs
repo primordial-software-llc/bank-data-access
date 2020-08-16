@@ -18,7 +18,6 @@ namespace PropertyRentalManagement.BusinessLogic
     {
         private DatabaseClient<ReceiptSaveResult> ReceiptDbClient { get; }
         private DatabaseClient<SpotReservation> SpotReservationDbClient { get; }
-
         private QuickBooksOnlineClient QuickBooksClient { get; }
         private decimal TaxRate { get; set; }
 
@@ -119,7 +118,7 @@ namespace PropertyRentalManagement.BusinessLogic
                     {
                         SpotId = spot.Id,
                         RentalDate = receipt.RentalDate,
-                        QuickBooksOnlineCustomerId = int.Parse(customerId)
+                        QuickBooksOnlineId = int.Parse(customerId)
                     });
                 }
             }

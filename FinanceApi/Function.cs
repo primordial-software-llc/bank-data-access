@@ -98,6 +98,7 @@ namespace FinanceApi
                 {
                     routes.Add(new Routes.Authenticated.PointOfSale.GetCustomers());
                     routes.Add(new Routes.Authenticated.PointOfSale.GetSpots());
+                    routes.Add(new Routes.Authenticated.PointOfSale.GetSpotReservations());
                     routes.Add(new Routes.Authenticated.PointOfSale.GetCustomerPaymentSettings());
                     routes.Add(new Routes.Authenticated.PointOfSale.GetCustomerPaymentSettingsById());
                     routes.Add(new Routes.Authenticated.PointOfSale.GetCustomerInvoices());
