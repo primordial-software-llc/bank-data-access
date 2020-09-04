@@ -69,14 +69,12 @@ namespace PropertyRentalManagement.BusinessLogic
                 result.Invoice = QuickBooksClient.Create(CreateInvoice(customerId, receipt.RentalAmount, receipt.RentalDate, memo));
             }
 
-            DateTimeZone easternTimeZone = DateTimeZoneProviders.Tzdb["America/New_York"];
-            ZonedClock easternClock = SystemClock.Instance.InZone(easternTimeZone);
-            LocalDate easternToday = easternClock.GetCurrentDate();
-            string quickBooksTransactionDate = easternToday.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
-
             result.Payments = new List<Payment>();
             if (receipt.ThisPayment > 0)
             {
+                ZonedClock easternClock = SystemClock.Instance.InZone(DateTimeZoneProviders.Tzdb["America/New_York"]);
+                var paymentMemo = $"True Payment Date: {easternClock.GetCurrentDate():yyyy-MM-dd}{Environment.NewLine}{memo}";
+
                 var unpaidInvoices = QuickBooksClient.QueryAll<Invoice>($"select * from Invoice where Balance != '0' and CustomerRef = '{customerId}' ORDERBY TxnDate");
                 decimal payment = receipt.ThisPayment.GetValueOrDefault();
                 var paymentApplicator = new PaymentApplicator(QuickBooksClient);
@@ -86,8 +84,8 @@ namespace PropertyRentalManagement.BusinessLogic
                         unpaidInvoice,
                         customerId,
                         payment,
-                        quickBooksTransactionDate,
-                        memo);
+                        receipt.RentalDate,
+                        paymentMemo);
                     result.Payments.Add(paymentAppliedToInvoice);
                     payment -= paymentAppliedToInvoice.TotalAmount.GetValueOrDefault();
                     if (payment <= 0)
@@ -101,8 +99,8 @@ namespace PropertyRentalManagement.BusinessLogic
                         null,
                         customerId,
                         payment,
-                        quickBooksTransactionDate,
-                        memo
+                        receipt.RentalDate,
+                        paymentMemo
                     );
                     result.Payments.Add(unappliedPayment);
                 }
