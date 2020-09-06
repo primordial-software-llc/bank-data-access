@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using Amazon.DynamoDBv2;
+using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
-using AwsTools;
+using Newtonsoft.Json;
 using PropertyRentalManagement.BusinessLogic;
 using PropertyRentalManagement.DatabaseModel;
 
@@ -56,8 +57,7 @@ namespace PropertyRentalManagement.DataServices
             };
 
             ScanResponse scanResponse = null;
-
-            var allMatches = new List<Dictionary<string, AttributeValue>>();
+            var items = new List<Vendor>();
             do
             {
                 if (scanResponse != null)
@@ -65,13 +65,13 @@ namespace PropertyRentalManagement.DataServices
                     scanRequest.ExclusiveStartKey = scanResponse.LastEvaluatedKey;
                 }
                 scanResponse = DbClient.ScanAsync(scanRequest).Result;
-                if (scanResponse.Items.Any())
+                foreach (var item in scanResponse.Items)
                 {
-                    allMatches.AddRange(scanResponse.Items);
+                    items.Add(JsonConvert.DeserializeObject<Vendor>(Document.FromAttributeMap(item).ToJson()));
                 }
             } while (scanResponse.LastEvaluatedKey.Any());
 
-            return Conversion<Vendor>.ConvertToPoco(allMatches);
+            return items;
         }
     }
 }

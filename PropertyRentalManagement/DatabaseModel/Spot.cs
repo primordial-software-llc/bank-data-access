@@ -16,6 +16,12 @@ namespace PropertyRentalManagement.DatabaseModel
         [JsonProperty("section")]
         public Section Section { get; set; }
 
+        [JsonProperty("right")]
+        public string Right { get; set; }
+
+        [JsonProperty("bottom")]
+        public string Bottom { get; set; }
+
         public Dictionary<string, AttributeValue> GetKey()
         {
             return new Dictionary<string, AttributeValue> { { "id", new AttributeValue { S = Id } } };
