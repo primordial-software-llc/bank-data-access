@@ -28,7 +28,6 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
             var qboClient = new QuickBooksOnlineClient(Configuration.RealmId, databaseClient, new Logger());
 
             var vendorUpdates = JsonConvert.DeserializeObject<Vendor>(request.Body);
-            var vendorId = vendorUpdates.GetKey();
             if (vendorUpdates.Memo != null && vendorUpdates.Memo.Length > 4000)
             {
                 errors.Add("Memo can't exceed 4,000 characters");

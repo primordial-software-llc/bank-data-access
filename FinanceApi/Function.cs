@@ -59,7 +59,7 @@ namespace FinanceApi
                     user = databaseClient.Get(new FinanceUser { Email = email });
                     if (user == null)
                     {
-                        throw new Exception($"User not found {email}. Use the correct signup form at https://www.primordial-software.com/pages/login-signup.html");
+                        throw new Exception($"User not found {email}. Use the correct sign up form at https://www.primordial-software.com/pages/login-signup.html");
                     }
                 }
                 catch (Exception exception)
@@ -103,6 +103,7 @@ namespace FinanceApi
                     routes.Add(new Routes.Authenticated.PointOfSale.GetCustomerPaymentSettingsById());
                     routes.Add(new Routes.Authenticated.PointOfSale.GetCustomerInvoices());
                     routes.Add(new Routes.Authenticated.PointOfSale.PatchVendor());
+                    routes.Add(new Routes.Authenticated.PointOfSale.PatchSpot());
                     routes.Add(new Routes.Authenticated.PointOfSale.PostReceipt());
                     routes.Add(new Routes.Authenticated.PointOfSale.PostCreateWeeklyInvoices());
                     routes.Add(new Routes.Authenticated.PointOfSale.PostCreateMonthlyInvoices());
