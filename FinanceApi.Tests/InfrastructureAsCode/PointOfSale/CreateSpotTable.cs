@@ -4,12 +4,270 @@ using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
 using PropertyRentalManagement.DatabaseModel;
 using PropertyRentalManagement.DataServices;
-using Xunit;
+using Xunit.Abstractions;
 
 namespace FinanceApi.Tests.InfrastructureAsCode.PointOfSale
 {
     public class CreateSpotTable
     {
+        private ITestOutputHelper Output { get; }
+
+        public CreateSpotTable(ITestOutputHelper output)
+        {
+            Output = output;
+        }
+
+        //[Fact]
+        public void CreateSpotsFieldL()
+        {
+            var client = Factory.CreateAmazonDynamoDbClient();
+            var dbClient = new DatabaseClient<Spot>(client);
+            var section = new Section
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Field L"
+            };
+            for (var ct = 1; ct <= 12; ct += 1)
+            {
+                dbClient.Create(new Spot
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Name = ct.ToString(),
+                    Section = section
+                });
+            }
+        }
+
+        //[Fact]
+        public void CreateSpotsFieldK()
+        {
+            var client = Factory.CreateAmazonDynamoDbClient();
+            var dbClient = new DatabaseClient<Spot>(client);
+            var section = new Section
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Field K"
+            };
+            for (var ct = 1; ct <= 11; ct += 1)
+            {
+                dbClient.Create(new Spot
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Name = ct.ToString(),
+                    Section = section
+                });
+            }
+        }
+
+        //[Fact]
+        public void CreateSpotsFieldJ()
+        {
+            var client = Factory.CreateAmazonDynamoDbClient();
+            var dbClient = new DatabaseClient<Spot>(client);
+            var section = new Section
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Field J"
+            };
+            for (var ct = 1; ct <= 11; ct += 1)
+            {
+                dbClient.Create(new Spot
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Name = ct.ToString(),
+                    Section = section
+                });
+            }
+        }
+
+        //[Fact]
+        public void CreateSpotsFieldI()
+        {
+            var client = Factory.CreateAmazonDynamoDbClient();
+            var dbClient = new DatabaseClient<Spot>(client);
+            var section = new Section
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Field I"
+            };
+            for (var ct = 1; ct <= 11; ct += 1)
+            {
+                dbClient.Create(new Spot
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Name = ct.ToString(),
+                    Section = section
+                });
+            }
+        }
+
+        //[Fact]
+        public void CreateSpotsFieldH()
+        {
+            var client = Factory.CreateAmazonDynamoDbClient();
+            var dbClient = new DatabaseClient<Spot>(client);
+            var section = new Section
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Field H"
+            };
+            for (var ct = 1; ct <= 6; ct += 1)
+            {
+                dbClient.Create(new Spot
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Name = ct.ToString(),
+                    Section = section
+                });
+            }
+        }
+
+        //[Fact]
+        public void CreateSpotsFieldG()
+        {
+            var client = Factory.CreateAmazonDynamoDbClient();
+            var dbClient = new DatabaseClient<Spot>(client);
+            var section = new Section
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Field G"
+            };
+            for (var ct = 1; ct <= 8; ct += 1)
+            {
+                dbClient.Create(new Spot
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Name = ct.ToString(),
+                    Section = section
+                });
+            }
+        }
+
+        //[Fact]
+        public void CreateSpotsFieldF()
+        {
+            var client = Factory.CreateAmazonDynamoDbClient();
+            var dbClient = new DatabaseClient<Spot>(client);
+            var section = new Section
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Field F"
+            };
+            for (var ct = 1; ct <= 8; ct += 1)
+            {
+                dbClient.Create(new Spot
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Name = ct.ToString(),
+                    Section = section
+                });
+            }
+        }
+
+        //[Fact]
+        public void CreateSpotsFieldE()
+        {
+            var client = Factory.CreateAmazonDynamoDbClient();
+            var dbClient = new DatabaseClient<Spot>(client);
+            var section = new Section
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Field E"
+            };
+            for (var ct = 1; ct <= 8; ct += 1)
+            {
+                dbClient.Create(new Spot
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Name = ct.ToString(),
+                    Section = section
+                });
+            }
+        }
+
+        //[Fact]
+        public void CreateSpotsFieldD()
+        {
+            var client = Factory.CreateAmazonDynamoDbClient();
+            var dbClient = new DatabaseClient<Spot>(client);
+            var section = new Section
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Field D"
+            };
+            for (var ct = 1; ct <= 8; ct += 1)
+            {
+                dbClient.Create(new Spot
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Name = ct.ToString(),
+                    Section = section
+                });
+            }
+        }
+
+        //[Fact]
+        public void CreateSpotsFieldC()
+        {
+            var client = Factory.CreateAmazonDynamoDbClient();
+            var dbClient = new DatabaseClient<Spot>(client);
+            var section = new Section
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Field C"
+            };
+            for (var ct = 1; ct <= 8; ct += 1)
+            {
+                dbClient.Create(new Spot
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Name = ct.ToString(),
+                    Section = section
+                });
+            }
+        }
+
+        //[Fact]
+        public void CreateSpotsFieldB()
+        {
+            var client = Factory.CreateAmazonDynamoDbClient();
+            var dbClient = new DatabaseClient<Spot>(client);
+            var section = new Section
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Field B"
+            };
+            for (var ct = 1; ct <= 8; ct += 1)
+            {
+                dbClient.Create(new Spot
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Name = ct.ToString(),
+                    Section = section
+                });
+            }
+        }
+
+        //[Fact]
+        public void CreateSpotsFieldA()
+        {
+            var client = Factory.CreateAmazonDynamoDbClient();
+            var dbClient = new DatabaseClient<Spot>(client);
+            var section = new Section
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Field A"
+            };
+            for (var ct = 1; ct <= 8; ct += 1)
+            {
+                dbClient.Create(new Spot
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Name = ct.ToString(),
+                    Section = section
+                });
+            }
+        }
 
         //[Fact]
         public void CreateSpotsBuilding7()

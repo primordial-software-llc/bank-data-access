@@ -39,7 +39,8 @@ namespace PropertyRentalManagement.BusinessLogic
 
         public List<Invoice> CreateInvoices(DateRange dateRange, Frequency frequency)
         {
-            var allInvoices = new SalesReportService().GetInvoices(QuickBooksClient, dateRange.Start, dateRange.End);
+            var invoiceQuery = $"select * from Invoice Where TxnDate >= '{dateRange.Start:yyyy-MM-dd}' and TxnDate <= '{dateRange.End:yyyy-MM-dd}'";
+            var allInvoices = QuickBooksClient.QueryAll<Invoice>(invoiceQuery);
             var allActiveCustomers = QuickBooksClient.QueryAll<Customer>("select * from customer")
                 .ToDictionary(x => x.Id);
             var vendors = new ActiveVendorSearch().GetActiveVendors(allActiveCustomers, VendorService, frequency);
