@@ -16,7 +16,7 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
         {
             var databaseClient = new DatabaseClient<Spot>(new AmazonDynamoDBClient());
             var spots = databaseClient.GetAll()
-                .OrderBy(x => x.Section.Name)
+                .OrderBy(x => x.Section?.Name)
                 .ThenBy(x => x.Name)
                 .ToList();
             response.Body = JsonConvert.SerializeObject(spots);
