@@ -4,6 +4,7 @@ using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
 using PropertyRentalManagement.DatabaseModel;
 using PropertyRentalManagement.DataServices;
+using Xunit;
 using Xunit.Abstractions;
 
 namespace FinanceApi.Tests.InfrastructureAsCode.PointOfSale
@@ -57,6 +58,16 @@ namespace FinanceApi.Tests.InfrastructureAsCode.PointOfSale
                     Section = section
                 });
             }
+            dbClient.Create(new Spot
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "East/West South Walkway",
+                Section = new Section
+                {
+                    Id = "e8651c71-e5dd-4706-a18c-d2ee0e0da00c",
+                    Name = "Field K"
+                }
+            });
         }
 
         //[Fact]
@@ -78,6 +89,16 @@ namespace FinanceApi.Tests.InfrastructureAsCode.PointOfSale
                     Section = section
                 });
             }
+            dbClient.Create(new Spot
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "East/West South Walkway",
+                Section = new Section
+                {
+                    Id = "596c8ac6-ebf9-4438-9973-4a516288d7b9",
+                    Name = "Field J"
+                }
+            });
         }
 
         //[Fact]
@@ -99,6 +120,16 @@ namespace FinanceApi.Tests.InfrastructureAsCode.PointOfSale
                     Section = section
                 });
             }
+            dbClient.Create(new Spot
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "East/West South Walkway",
+                Section = new Section
+                {
+                    Id = "2d2fa812-3bcb-4955-9a7c-63922e7392fa",
+                    Name = "Field I"
+                }
+            });
         }
 
         //[Fact]
@@ -120,6 +151,36 @@ namespace FinanceApi.Tests.InfrastructureAsCode.PointOfSale
                     Section = section
                 });
             }
+            dbClient.Create(new Spot
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "East/West South Walkway",
+                Section = new Section
+                {
+                    Id = "47afac0b-67c2-4807-a88d-3ea9e1775661",
+                    Name = "Field H"
+                }
+            });
+            dbClient.Create(new Spot
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "7 - North Walkway",
+                Section = new Section
+                {
+                    Id = "47afac0b-67c2-4807-a88d-3ea9e1775661",
+                    Name = "Field H"
+                }
+            });
+            dbClient.Create(new Spot
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "8 - North Walkway",
+                Section = new Section
+                {
+                    Id = "47afac0b-67c2-4807-a88d-3ea9e1775661",
+                    Name = "Field H"
+                }
+            });
         }
 
         //[Fact]
@@ -141,6 +202,16 @@ namespace FinanceApi.Tests.InfrastructureAsCode.PointOfSale
                     Section = section
                 });
             }
+            dbClient.Create(new Spot
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "East/West South Walkway",
+                Section = new Section
+                {
+                    Id = "acddb4d0-1983-46b4-8d3c-e390f070bf0c",
+                    Name = "Field G"
+                }
+            });
         }
 
         //[Fact]
@@ -162,6 +233,16 @@ namespace FinanceApi.Tests.InfrastructureAsCode.PointOfSale
                     Section = section
                 });
             }
+            dbClient.Create(new Spot
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "East/West South Walkway",
+                Section = new Section
+                {
+                    Id = "cd7587ed-e3f5-4e81-b512-881a67f57ab8",
+                    Name = "Field F"
+                }
+            });
         }
 
         //[Fact]
@@ -183,6 +264,16 @@ namespace FinanceApi.Tests.InfrastructureAsCode.PointOfSale
                     Section = section
                 });
             }
+            dbClient.Create(new Spot
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "East/West South Walkway",
+                Section = new Section
+                {
+                    Id = "469c1c7c-f2f9-4c64-9857-8567821b8adf",
+                    Name = "Field E"
+                }
+            });
         }
 
         //[Fact]
@@ -204,6 +295,16 @@ namespace FinanceApi.Tests.InfrastructureAsCode.PointOfSale
                     Section = section
                 });
             }
+            dbClient.Create(new Spot
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "East/West South Walkway",
+                Section = new Section
+                {
+                    Id = "dc55ee40-e618-4016-9ec3-b003d8e8fe52",
+                    Name = "Field D"
+                }
+            });
         }
 
         //[Fact]
@@ -225,6 +326,16 @@ namespace FinanceApi.Tests.InfrastructureAsCode.PointOfSale
                     Section = section
                 });
             }
+            dbClient.Create(new Spot
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "East/West South Walkway",
+                Section = new Section
+                {
+                    Id = "2f62d887-39f4-44b7-92a2-4fd9bbecd423",
+                    Name = "Field C"
+                }
+            });
         }
 
         //[Fact]
@@ -246,6 +357,16 @@ namespace FinanceApi.Tests.InfrastructureAsCode.PointOfSale
                     Section = section
                 });
             }
+            dbClient.Create(new Spot
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "East/West South Walkway",
+                Section = new Section
+                {
+                    Id = "3c27b448-514c-4d4b-bdd5-def1414e8d3b",
+                    Name = "Field B"
+                }
+            });
         }
 
         //[Fact]
@@ -267,6 +388,16 @@ namespace FinanceApi.Tests.InfrastructureAsCode.PointOfSale
                     Section = section
                 });
             }
+            dbClient.Create(new Spot
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "East/West South Walkway",
+                Section = new Section
+                {
+                    Id = "96be73ae-cd0e-49ce-8dd2-ccf02fba1c30",
+                    Name = "Field A"
+                }
+            });
         }
 
         //[Fact]
