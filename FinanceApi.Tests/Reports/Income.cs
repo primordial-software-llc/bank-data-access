@@ -62,8 +62,8 @@ namespace FinanceApi.Tests.Reports
         [Fact]
         public void PrintDailyCash()
         {
-            var start = new DateTime(2020, 9, 5);
-            var end = new DateTime(2020, 9, 6);
+            var start = new DateTime(2020, 9, 19);
+            var end = new DateTime(2020, 9, 20);
             IncomeReport.PrintReport(
                 start,
                 end,
