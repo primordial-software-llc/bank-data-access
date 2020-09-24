@@ -3,7 +3,7 @@ using Xunit.Abstractions;
 
 namespace FinanceApi.Tests.InfrastructureAsCode
 {
-    class XUnitLogger : ILogging
+    public class XUnitLogger : ILogging
     {
         private ITestOutputHelper Output { get; }
 
