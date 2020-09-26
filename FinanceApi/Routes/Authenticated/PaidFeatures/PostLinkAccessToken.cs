@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Amazon.Lambda.APIGatewayEvents;
 using FinanceApi.DatabaseModel;
 using FinanceApi.RequestModels;
@@ -15,13 +14,21 @@ namespace FinanceApi.Routes.Authenticated.PaidFeatures
         public void Run(APIGatewayProxyRequest request, APIGatewayProxyResponse response, FinanceUser user)
         {
             var model = JsonConvert.DeserializeObject<LinkAccessTokenModel>(request.Body);
-            var client = new BankAccessClient(Configuration.PLAID_URL, new Logger());
-            var accessTokenJson = client.GetAccessToken(model.PublicToken);
+            var client = new BankAccessClient(
+                Configuration.PLAID_URL,
+                Configuration.PLAID_CLIENT_ID,
+                Configuration.PLAID_SECRET,
+                Configuration.PLAID_PUBLIC_KEY,
+                new Logger());
+            var exchangeAccessToken = client.GetAccessToken(model.PublicToken);
+            var item = client.GetItem(exchangeAccessToken.AccessToken)["item"];
+            var institutionResponse = client.GetInstitution(item["institution_id"].Value<string>());
             var updatedBankLinks = user.BankLinks ?? new List<BankLink>();
             updatedBankLinks.Add(new BankLink
             {
-                AccessToken = accessTokenJson["access_token"].Value<string>(),
-                ItemId = accessTokenJson["item_id"].Value<string>()
+                AccessToken = exchangeAccessToken.AccessToken,
+                ItemId = exchangeAccessToken.ItemId,
+                InstitutionName = institutionResponse["institution"]["name"].Value<string>()
             });
             var update = new JObject { { "bankLinks", JToken.FromObject(updatedBankLinks) } };
             var updateItemResponse = new UserService().UpdateUser(user.Email, update);

@@ -11,13 +11,24 @@ namespace FinanceApi
     public class BankAccessClient
     {
         private string BaseUrl { get; }
+        private string ClientId { get; }
+        private string Secret { get; }
+        private string PublicKey { get; }
         private ILogging Logger { get; }
         private readonly HttpClient Client = new HttpClient();
         
 
-        public BankAccessClient(string baseUrl, ILogging logger)
+        public BankAccessClient(
+            string baseUrl,
+            string clientId,
+            string secret,
+            string publicKey,
+            ILogging logger)
         {
             BaseUrl = baseUrl;
+            ClientId = clientId;
+            Secret = secret;
+            PublicKey = publicKey;
             Logger = logger;
         }
 
@@ -25,8 +36,8 @@ namespace FinanceApi
         {
             var data = new JObject
             {
-                { "client_id", Configuration.PLAID_CLIENT_ID },
-                { "secret", Configuration.PLAID_SECRET },
+                { "client_id", ClientId },
+                { "secret", Secret },
                 { "access_token", accessToken }
             };
             var json = Send("/accounts/balance/get", data);
@@ -38,7 +49,7 @@ namespace FinanceApi
             var data = new JObject
             {
                 { "institution_id", institutionId },
-                { "public_key", Configuration.PLAID_PUBLIC_KEY }
+                { "public_key", PublicKey }
             };
             return Send("/institutions/get_by_id", data);
         }
@@ -47,8 +58,8 @@ namespace FinanceApi
         {
             var data = new JObject
             {
-                { "client_id", Configuration.PLAID_CLIENT_ID },
-                { "secret", Configuration.PLAID_SECRET },
+                { "client_id", ClientId },
+                { "secret", Secret },
                 { "access_token", accessToken }
             };
             return Send("/item/get", data);
@@ -58,8 +69,8 @@ namespace FinanceApi
         {
             var data = new JObject
             {
-                { "client_id", Configuration.PLAID_CLIENT_ID },
-                { "secret", Configuration.PLAID_SECRET },
+                { "client_id", ClientId },
+                { "secret", Secret },
                 { "access_token", accessToken }
             };
             var result = Send("/item/remove", data);
@@ -74,22 +85,23 @@ namespace FinanceApi
         {
             var data = new JObject
             {
-                { "client_id", Configuration.PLAID_CLIENT_ID },
+                { "client_id", ClientId },
                 { "access_token", accessToken },
-                { "secret", Configuration.PLAID_SECRET }
+                { "secret", Secret }
             };
             return Send("/item/public_token/create", data);
         }
 
-        public JObject GetAccessToken(string publicToken)
+        public ExchangeAccessToken GetAccessToken(string publicToken)
         {
             var data = new JObject
             {
-                { "client_id", Configuration.PLAID_CLIENT_ID },
+                { "client_id", ClientId },
                 { "public_token", publicToken },
-                { "secret", Configuration.PLAID_SECRET }
+                { "secret", Secret }
             };
-            return Send("/item/public_token/exchange", data);
+            var response = Send("/item/public_token/exchange", data);
+            return JsonConvert.DeserializeObject<ExchangeAccessToken>(response.ToString());
         }
 
         private JObject Send(string path, JObject data)

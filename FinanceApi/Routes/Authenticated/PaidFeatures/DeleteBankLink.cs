@@ -17,7 +17,12 @@ namespace FinanceApi.Routes.Authenticated.PaidFeatures
         {
             var model = JsonConvert.DeserializeObject<DeleteBankLinkModel>(request.Body);
             var link = user.BankLinks.First(x =>string.Equals(x.ItemId, model.ItemId, StringComparison.OrdinalIgnoreCase));
-            var bankClient = new BankAccessClient(Configuration.PLAID_URL, new Logger());
+            var bankClient = new BankAccessClient(
+                Configuration.PLAID_URL,
+                Configuration.PLAID_CLIENT_ID,
+                Configuration.PLAID_SECRET,
+                Configuration.PLAID_PUBLIC_KEY,
+                new Logger());
             bankClient.RemoveItem(link.AccessToken);
             user.BankLinks.Remove(link);
             var update = new JObject { { "bankLinks", JToken.FromObject(user.BankLinks) } };

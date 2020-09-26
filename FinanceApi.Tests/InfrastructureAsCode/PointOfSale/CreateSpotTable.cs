@@ -19,6 +19,158 @@ namespace FinanceApi.Tests.InfrastructureAsCode.PointOfSale
         }
 
         //[Fact]
+        public void CreateSouthWalkwaySpots()
+        {
+            var client = Factory.CreateAmazonDynamoDbClient();
+            var dbClient = new DatabaseClient<Spot>(client);
+            var section = new Section
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "South Walkway"
+            };
+
+            dbClient.Create(new Spot
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "South Walkway",
+                Section = section
+            });
+
+            dbClient.Create(new Spot
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "South Walkway",
+                Section = section
+            });
+
+            dbClient.Create(new Spot
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "South Walkway",
+                Section = section
+            });
+
+            dbClient.Create(new Spot
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "South Walkway",
+                Section = section
+            });
+
+            dbClient.Create(new Spot
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "South Walkway",
+                Section = section
+            });
+
+            dbClient.Create(new Spot
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "South Walkway",
+                Section = section
+            });
+
+            dbClient.Create(new Spot
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "South Walkway",
+                Section = section
+            });
+
+            dbClient.Create(new Spot
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Office",
+                Section = section
+            });
+
+            dbClient.Create(new Spot
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Office",
+                Section = section
+            });
+
+            dbClient.Create(new Spot
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Office",
+                Section = section
+            });
+
+            dbClient.Create(new Spot
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Mobile Home",
+                Section = section
+            });
+
+            dbClient.Create(new Spot
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Mobile Home",
+                Section = section
+            });
+
+            dbClient.Create(new Spot
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Mobile Home",
+                Section = section
+            });
+
+            dbClient.Create(new Spot
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "South Walkway",
+                Section = section
+            });
+
+            dbClient.Create(new Spot
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "South Walkway",
+                Section = section
+            });
+
+            dbClient.Create(new Spot
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "South Walkway",
+                Section = section
+            });
+
+            dbClient.Create(new Spot
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "South Walkway",
+                Section = section
+            });
+
+            dbClient.Create(new Spot
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "South Walkway",
+                Section = section
+            });
+
+            dbClient.Create(new Spot
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "South Walkway",
+                Section = section
+            });
+
+            dbClient.Create(new Spot
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Red Barn",
+                Section = section
+            });
+        }
+
+        //[Fact]
         public void CreateSpotsFieldL()
         {
             var client = Factory.CreateAmazonDynamoDbClient();
@@ -92,7 +244,7 @@ namespace FinanceApi.Tests.InfrastructureAsCode.PointOfSale
             dbClient.Create(new Spot
             {
                 Id = Guid.NewGuid().ToString(),
-                Name = "East/West South Walkway",
+                Name = "South Walkway",
                 Section = new Section
                 {
                     Id = "e8651c71-e5dd-4706-a18c-d2ee0e0da00c",
@@ -153,7 +305,7 @@ namespace FinanceApi.Tests.InfrastructureAsCode.PointOfSale
             dbClient.Create(new Spot
             {
                 Id = Guid.NewGuid().ToString(),
-                Name = "East/West South Walkway",
+                Name = "South Walkway",
                 Section = new Section
                 {
                     Id = "596c8ac6-ebf9-4438-9973-4a516288d7b9",
@@ -214,7 +366,7 @@ namespace FinanceApi.Tests.InfrastructureAsCode.PointOfSale
             dbClient.Create(new Spot
             {
                 Id = Guid.NewGuid().ToString(),
-                Name = "East/West South Walkway",
+                Name = "South Walkway",
                 Section = new Section
                 {
                     Id = "2d2fa812-3bcb-4955-9a7c-63922e7392fa",
@@ -275,7 +427,7 @@ namespace FinanceApi.Tests.InfrastructureAsCode.PointOfSale
             dbClient.Create(new Spot
             {
                 Id = Guid.NewGuid().ToString(),
-                Name = "East/West South Walkway",
+                Name = "South Walkway",
                 Section = new Section
                 {
                     Id = "47afac0b-67c2-4807-a88d-3ea9e1775661",
@@ -326,7 +478,7 @@ namespace FinanceApi.Tests.InfrastructureAsCode.PointOfSale
             dbClient.Create(new Spot
             {
                 Id = Guid.NewGuid().ToString(),
-                Name = "East/West South Walkway",
+                Name = "South Walkway",
                 Section = new Section
                 {
                     Id = "acddb4d0-1983-46b4-8d3c-e390f070bf0c",
@@ -357,7 +509,7 @@ namespace FinanceApi.Tests.InfrastructureAsCode.PointOfSale
             dbClient.Create(new Spot
             {
                 Id = Guid.NewGuid().ToString(),
-                Name = "East/West South Walkway",
+                Name = "South Walkway",
                 Section = new Section
                 {
                     Id = "cd7587ed-e3f5-4e81-b512-881a67f57ab8",
@@ -388,7 +540,7 @@ namespace FinanceApi.Tests.InfrastructureAsCode.PointOfSale
             dbClient.Create(new Spot
             {
                 Id = Guid.NewGuid().ToString(),
-                Name = "East/West South Walkway",
+                Name = "South Walkway",
                 Section = new Section
                 {
                     Id = "469c1c7c-f2f9-4c64-9857-8567821b8adf",
@@ -419,7 +571,7 @@ namespace FinanceApi.Tests.InfrastructureAsCode.PointOfSale
             dbClient.Create(new Spot
             {
                 Id = Guid.NewGuid().ToString(),
-                Name = "East/West South Walkway",
+                Name = "South Walkway",
                 Section = new Section
                 {
                     Id = "dc55ee40-e618-4016-9ec3-b003d8e8fe52",
@@ -450,7 +602,7 @@ namespace FinanceApi.Tests.InfrastructureAsCode.PointOfSale
             dbClient.Create(new Spot
             {
                 Id = Guid.NewGuid().ToString(),
-                Name = "East/West South Walkway",
+                Name = "South Walkway",
                 Section = new Section
                 {
                     Id = "2f62d887-39f4-44b7-92a2-4fd9bbecd423",
@@ -481,7 +633,7 @@ namespace FinanceApi.Tests.InfrastructureAsCode.PointOfSale
             dbClient.Create(new Spot
             {
                 Id = Guid.NewGuid().ToString(),
-                Name = "East/West South Walkway",
+                Name = "South Walkway",
                 Section = new Section
                 {
                     Id = "3c27b448-514c-4d4b-bdd5-def1414e8d3b",
@@ -512,7 +664,7 @@ namespace FinanceApi.Tests.InfrastructureAsCode.PointOfSale
             dbClient.Create(new Spot
             {
                 Id = Guid.NewGuid().ToString(),
-                Name = "East/West South Walkway",
+                Name = "South Walkway",
                 Section = new Section
                 {
                     Id = "96be73ae-cd0e-49ce-8dd2-ccf02fba1c30",

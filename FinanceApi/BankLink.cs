@@ -6,7 +6,11 @@ namespace FinanceApi
     {
         [JsonProperty("accessToken")]
         public string AccessToken { get; set; }
+
         [JsonProperty("itemId")]
         public string ItemId { get; set; }
+
+        [JsonProperty("institutionName")]
+        public string InstitutionName { get; set; }
     }
 }

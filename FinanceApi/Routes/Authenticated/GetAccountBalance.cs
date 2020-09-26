@@ -38,7 +38,12 @@ namespace FinanceApi.Routes.Authenticated
             var accounts = new ConcurrentBag<AccountBalance>();
             var institutionsDictionary = new ConcurrentDictionary<string, string>();
             user.BankLinks = user.BankLinks ?? new List<BankLink>();
-            var client = new BankAccessClient(Configuration.PLAID_URL, new Logger());
+            var client = new BankAccessClient(
+                Configuration.PLAID_URL,
+                Configuration.PLAID_CLIENT_ID,
+                Configuration.PLAID_SECRET,
+                Configuration.PLAID_PUBLIC_KEY,
+                new Logger());
             Parallel.ForEach(user.BankLinks, new ParallelOptions { MaxDegreeOfParallelism = 10 }, (bankLink) =>
             {
                 try
@@ -54,10 +59,10 @@ namespace FinanceApi.Routes.Authenticated
                     failedAccounts.Add(new JObject
                     {
                         { "itemId", bankLink.ItemId },
-                        { "errorDescription",  e.ToString()}
+                        { "errorDescription",  e.ToString()},
+                        { "institutionName", bankLink.InstitutionName }
                     });
                 }
-
             });
             var institutionDetails = new ConcurrentBag<JObject>();
             Parallel.ForEach(institutionsDictionary.Keys, new ParallelOptions { MaxDegreeOfParallelism = 10 }, institution =>
