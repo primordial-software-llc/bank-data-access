@@ -16,12 +16,7 @@ namespace FinanceApi.Routes.Authenticated.PaidFeatures
             var itemJson = new JArray();
             var institutionsJson = new JArray();
             var institutions = new HashSet<string>();
-            var bankClient = new BankAccessClient(
-                Configuration.PLAID_URL,
-                Configuration.PLAID_CLIENT_ID,
-                Configuration.PLAID_SECRET,
-                Configuration.PLAID_PUBLIC_KEY,
-                new Logger());
+            var bankClient = Configuration.BankClient;
             foreach (var bankLink in user.BankLinks ?? new List<BankLink>())
             {
                 var item = bankClient.GetItem(bankLink.AccessToken)["item"];

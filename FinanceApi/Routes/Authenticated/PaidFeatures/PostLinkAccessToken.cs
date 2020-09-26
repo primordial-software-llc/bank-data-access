@@ -14,12 +14,7 @@ namespace FinanceApi.Routes.Authenticated.PaidFeatures
         public void Run(APIGatewayProxyRequest request, APIGatewayProxyResponse response, FinanceUser user)
         {
             var model = JsonConvert.DeserializeObject<LinkAccessTokenModel>(request.Body);
-            var client = new BankAccessClient(
-                Configuration.PLAID_URL,
-                Configuration.PLAID_CLIENT_ID,
-                Configuration.PLAID_SECRET,
-                Configuration.PLAID_PUBLIC_KEY,
-                new Logger());
+            var client = Configuration.BankClient;
             var exchangeAccessToken = client.GetAccessToken(model.PublicToken);
             var item = client.GetItem(exchangeAccessToken.AccessToken)["item"];
             var institutionResponse = client.GetInstitution(item["institution_id"].Value<string>());

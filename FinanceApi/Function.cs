@@ -85,6 +85,7 @@ namespace FinanceApi
                     routes.Add(new Routes.Authenticated.PaidFeatures.GetBankLink());
                     routes.Add(new Routes.Authenticated.PaidFeatures.DeleteBankLink());
                     routes.Add(new Routes.Authenticated.PaidFeatures.PostCreatePublicToken());
+                    routes.Add(new Routes.Authenticated.PaidFeatures.GetBankTransactions());
                 }
                 if (isAuthenticated)
                 {

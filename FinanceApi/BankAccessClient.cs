@@ -32,6 +32,20 @@ namespace FinanceApi
             Logger = logger;
         }
 
+        public TransactionsResponse GetTransactions(string accessToken, string startDate, string endDate)
+        {
+            var data = new JObject
+            {
+                { "client_id", ClientId },
+                { "secret", Secret },
+                { "access_token", accessToken },
+                { "start_date", startDate },
+                { "end_date", endDate }
+            };
+            var json = Send("/transactions/get", data);
+            return JsonConvert.DeserializeObject<TransactionsResponse>(json.ToString());
+        }
+
         public AccountBalance GetAccountBalance(string accessToken)
         {
             var data = new JObject
