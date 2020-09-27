@@ -28,7 +28,7 @@ namespace FinanceApi.BusinessLogic
                         startDate,
                         endDate));
                 });
-            return transactions;
+            return transactions.OrderBy(x => x.TransactionDetail["date"].Value<string>()).ToList();
         }
 
         private List<InstitutionAccountTransaction> GetTransactionsForBank(
