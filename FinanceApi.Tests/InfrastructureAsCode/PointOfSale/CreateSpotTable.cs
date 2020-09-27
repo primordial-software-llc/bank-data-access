@@ -683,6 +683,7 @@ namespace FinanceApi.Tests.InfrastructureAsCode.PointOfSale
                 Id = "734541c3-e863-4b4f-9dd6-2bcf606a691d",
                 Name = "Rear Sheds"
             };
+            
             for (var ct = 1; ct <= 24; ct += 1)
             {
                 dbClient.Create(new Spot
@@ -734,6 +735,27 @@ namespace FinanceApi.Tests.InfrastructureAsCode.PointOfSale
             {
                 Id = Guid.NewGuid().ToString(),
                 Name = "S11 - 3",
+                Section = section
+            });
+            
+            dbClient.Create(new Spot
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "S11 - 4",
+                Section = section
+            });
+            
+            dbClient.Create(new Spot
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "S9 - 2",
+                Section = section
+            });
+
+            dbClient.Create(new Spot
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "S12 - 2",
                 Section = section
             });
         }
