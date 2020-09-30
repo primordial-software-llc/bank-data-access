@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace FinanceApi.PlaidModel
 {
@@ -16,6 +15,6 @@ namespace FinanceApi.PlaidModel
         public int TotalTransactions { get; set; }
 
         [JsonProperty("transactions")]
-        public List<JObject> Transactions { get; set; }
+        public List<Transaction> Transactions { get; set; }
     }
 }

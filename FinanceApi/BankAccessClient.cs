@@ -32,7 +32,7 @@ namespace FinanceApi
             Logger = logger;
         }
 
-        public TransactionsResponse GetTransactions(string accessToken, string startDate, string endDate)
+        public TransactionsResponse GetTransactions(string accessToken, string startDate, string endDate, int count, int offset)
         {
             var data = new JObject
             {
@@ -40,7 +40,14 @@ namespace FinanceApi
                 { "secret", Secret },
                 { "access_token", accessToken },
                 { "start_date", startDate },
-                { "end_date", endDate }
+                { "end_date", endDate },
+                {
+                    "options", new JObject
+                    {
+                        { "count", count },
+                        { "offset", offset }
+                    }
+                }
             };
             var json = Send("/transactions/get", data);
             return JsonConvert.DeserializeObject<TransactionsResponse>(json.ToString());

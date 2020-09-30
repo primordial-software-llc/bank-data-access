@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FinanceApi.DatabaseModel;
@@ -9,7 +10,6 @@ namespace FinanceApi.BusinessLogic
 {
     public class TransactionAggregator
     {
-
         public List<InstitutionAccountTransaction> GetTransactions(
             BankAccessClient client,
             FinanceUser user,
@@ -21,14 +21,14 @@ namespace FinanceApi.BusinessLogic
                 user.BankLinks ?? new List<BankLink>(),
                 new ParallelOptions {MaxDegreeOfParallelism = 10},
                 bankLink =>
-                {
+            {
                     transactions.AddRange(GetTransactionsForBank(
                         client,
                         bankLink.AccessToken,
                         startDate,
                         endDate));
-                });
-            return transactions.OrderBy(x => x.TransactionDetail["date"].Value<string>()).ToList();
+            });
+            return transactions.OrderBy(x => x.TransactionDetail.Date).ToList();
         }
 
         private List<InstitutionAccountTransaction> GetTransactionsForBank(
@@ -37,21 +37,36 @@ namespace FinanceApi.BusinessLogic
             string startDate,
             string endDate)
         {
-            var transactions = client.GetTransactions(accessToken, startDate, endDate);
-            var institution = client.GetInstitution(transactions.Item.InstitutionId);
             var transactionResponses = new List<InstitutionAccountTransaction>();
-            foreach (var transaction in transactions.Transactions)
+            int count = 100;
+            int offset = 0;
+            int currentPage = 0;
+            int pages;
+            JObject institution = null;
+            do
             {
-                var transactionResponse = new InstitutionAccountTransaction
+                var transactions = client.GetTransactions(accessToken, startDate, endDate, count, offset);
+                double exactPages = transactions.TotalTransactions / (double) count;
+                pages = (int) Math.Ceiling(Convert.ToDouble(exactPages));
+                if (institution == null)
                 {
-                    InstitutionName = institution["institution"]["name"].Value<string>(),
-                    TransactionDetail = transaction,
-                    Account = transactions
-                        .Accounts
-                        .First(x => x.AccountId == transaction["account_id"].Value<string>())
-                };
-                transactionResponses.Add(transactionResponse);
-            }
+                    institution = client.GetInstitution(transactions.Item.InstitutionId);
+                }
+                foreach (var transaction in transactions.Transactions)
+                {
+                    var transactionResponse = new InstitutionAccountTransaction
+                    {
+                        InstitutionName = institution["institution"]["name"].Value<string>(),
+                        TransactionDetail = transaction,
+                        Account = transactions
+                            .Accounts
+                            .First(x => x.AccountId == transaction.AccountId)
+                    };
+                    transactionResponses.Add(transactionResponse);
+                }
+                offset += count;
+                currentPage += 1;
+            } while (currentPage < pages);
             return transactionResponses;
         }
     }
