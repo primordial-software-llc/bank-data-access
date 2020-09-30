@@ -18,17 +18,152 @@ namespace FinanceApi.Tests.InfrastructureAsCode.PointOfSale
             Output = output;
         }
 
-        //[Fact]
+        [Fact]
         public void CreateSouthWalkwaySpots()
         {
             var client = Factory.CreateAmazonDynamoDbClient();
             var dbClient = new DatabaseClient<Spot>(client);
+            
             var section = new Section
             {
-                Id = Guid.NewGuid().ToString(),
+                Id = "da9c786d-ec9a-4678-a313-60f4e44a05ec",
                 Name = "South Walkway"
             };
 
+            dbClient.Create(new Spot
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "South Walkway",
+                Section = section
+            });
+            return;
+            dbClient.Create(new Spot
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Pavillion",
+                Section = section
+            });
+
+            dbClient.Create(new Spot
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Pavillion",
+                Section = section
+            });
+
+            dbClient.Create(new Spot
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Shed",
+                Section = section
+            });
+
+            dbClient.Create(new Spot
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Shed",
+                Section = section
+            });
+
+            dbClient.Create(new Spot
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Shed",
+                Section = section
+            });
+
+            dbClient.Create(new Spot
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Pavillion",
+                Section = section
+            });
+
+            dbClient.Create(new Spot
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Shed",
+                Section = section
+            });
+
+            dbClient.Create(new Spot
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Pavillion",
+                Section = section
+            });
+
+            dbClient.Create(new Spot
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Field",
+                Section = section
+            });
+
+            dbClient.Create(new Spot
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Field",
+                Section = section
+            });
+
+            dbClient.Create(new Spot
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Field",
+                Section = section
+            });
+
+            dbClient.Create(new Spot
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Field",
+                Section = section
+            });
+
+            dbClient.Create(new Spot
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Road",
+                Section = section
+            });
+
+            dbClient.Create(new Spot
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Field",
+                Section = section
+            });
+
+            dbClient.Create(new Spot
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Field",
+                Section = section
+            });
+
+            dbClient.Create(new Spot
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Field",
+                Section = section
+            });
+
+            dbClient.Create(new Spot
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Road",
+                Section = section
+            });
+
+            dbClient.Create(new Spot
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Field",
+                Section = section
+            });
+
+            return;
             dbClient.Create(new Spot
             {
                 Id = Guid.NewGuid().ToString(),
