@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Amazon.DynamoDBv2;
 using Amazon.Lambda.APIGatewayEvents;
 using FinanceApi.DatabaseModel;
 using FinanceApi.ResponseModels;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using PropertyRentalManagement.BusinessLogic;
 using PropertyRentalManagement.DatabaseModel;
 using PropertyRentalManagement.DataServices;
@@ -14,9 +17,9 @@ using Vendor = PropertyRentalManagement.DatabaseModel.Vendor;
 
 namespace FinanceApi.Routes.Unauthenticated.PointOfSale
 {
-    public class GetSpotsForPublic
+    public class GetSpotsForPublic : IRoute
     {
-        public string HttpMethod => "POST";
+        public string HttpMethod => "GET";
         public string Path => "/unauthenticated/point-of-sale/spots";
 
         public void Run(APIGatewayProxyRequest request, APIGatewayProxyResponse response, FinanceUser user)
@@ -30,15 +33,37 @@ namespace FinanceApi.Routes.Unauthenticated.PointOfSale
             var allActiveCustomers = qboClient
                 .QueryAll<Customer>("select * from customer")
                 .ToDictionary(x => x.Id);
-
             var spotReservationCheck = new SpotReservationCheck(
                 new DatabaseClient<SpotReservation>(new AmazonDynamoDBClient()),
                 new DatabaseClient<Vendor>(new AmazonDynamoDBClient()),
                 allActiveCustomers
             );
-
-            var rentalDate = request.QueryStringParameters["rentalDate"];
-
+            var rentalDate = request.QueryStringParameters.ContainsKey("rentalDate")
+                ? request.QueryStringParameters["rentalDate"]
+                : string.Empty;
+            var validation = ReceiptValidation.GetRentalDateValidation(rentalDate);
+            if (validation.Any())
+            {
+                response.StatusCode = 400;
+                response.Body = new JObject { { "error", JArray.FromObject(validation) } }.ToString();
+                return;
+            }
+            validation = new List<string>();
+            DateTime.TryParseExact(rentalDate, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedRentalDate);
+            if (parsedRentalDate - DateTime.UtcNow > TimeSpan.FromDays(91)) // Endpoint is cached. The date constraint prevents denial of service causing the cache to be hit and database hits to plateau quickly.
+            {
+                validation.Add("rentalDate can't be greater than 90 days in the future");
+            }
+            if (parsedRentalDate - DateTime.UtcNow < TimeSpan.FromDays(-1))
+            {
+                validation.Add("rentalDate can't be in the past");
+            }
+            if (validation.Any())
+            {
+                response.StatusCode = 400;
+                response.Body = new JObject { { "error", JArray.FromObject(validation) } }.ToString();
+                return;
+            }
             var jsonResponse = new List<PublicSpot>();
             foreach (var spot in spots)
             {

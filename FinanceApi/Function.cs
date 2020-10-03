@@ -77,7 +77,8 @@ namespace FinanceApi
                 {
                     new Routes.Unauthenticated.PostSetToken(),
                     new Routes.Unauthenticated.PostRefreshToken(),
-                    new Routes.Unauthenticated.PostSignup()
+                    new Routes.Unauthenticated.PostSignup(),
+                    new Routes.Unauthenticated.PointOfSale.GetSpotsForPublic()
                 };
                 if ((user?.BillingAgreement?.AgreedToBillingTerms).GetValueOrDefault())
                 {
