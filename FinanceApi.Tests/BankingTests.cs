@@ -26,7 +26,7 @@ namespace FinanceApi.Tests
         [Fact]
         public void Create()
         {
-
+            /*
             var client = Factory.CreateAmazonDynamoDbClientForBanking();
             var userClient = new DatabaseClient<FinanceUser>(client);
             var user = userClient.Get(new FinanceUser { Email = "timg456789@yahoo.com" });
@@ -46,6 +46,7 @@ namespace FinanceApi.Tests
             {
                 Output.WriteLine($"{transaction.InstitutionName} - {transaction.TransactionDetail.Name} - {transaction.TransactionDetail.Amount}");
             }
+            */
         }
     }
 }

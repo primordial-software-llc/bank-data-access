@@ -12,6 +12,8 @@ using PropertyRentalManagement.BusinessLogic;
 using PropertyRentalManagement.DatabaseModel;
 using PropertyRentalManagement.DataServices;
 using PropertyRentalManagement.QuickBooksOnline;
+using PropertyRentalManagement.QuickBooksOnline.Models;
+using Vendor = PropertyRentalManagement.DatabaseModel.Vendor;
 
 namespace FinanceApi.Routes.Authenticated.PointOfSale
 {
@@ -34,7 +36,11 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
             }
 
             var spotReservationDbClient = new DatabaseClient<SpotReservation>(new AmazonDynamoDBClient());
-            var spotReservationCheck = new SpotReservationCheck(spotReservationDbClient, vendorDataClient, qboClient);
+
+            var allActiveCustomers = qboClient
+                .QueryAll<Customer>("select * from customer")
+                .ToDictionary(x => x.Id);
+            var spotReservationCheck = new SpotReservationCheck(spotReservationDbClient, vendorDataClient, allActiveCustomers);
 
             DateTimeZone easternTimeZone = DateTimeZoneProviders.Tzdb["America/New_York"];
             ZonedClock easternClock = SystemClock.Instance.InZone(easternTimeZone);

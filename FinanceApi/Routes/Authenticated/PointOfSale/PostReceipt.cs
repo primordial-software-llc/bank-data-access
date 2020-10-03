@@ -9,6 +9,8 @@ using PropertyRentalManagement.BusinessLogic;
 using PropertyRentalManagement.DatabaseModel;
 using PropertyRentalManagement.DataServices;
 using PropertyRentalManagement.QuickBooksOnline;
+using PropertyRentalManagement.QuickBooksOnline.Models;
+using Vendor = PropertyRentalManagement.DatabaseModel.Vendor;
 
 namespace FinanceApi.Routes.Authenticated.PointOfSale
 {
@@ -19,13 +21,15 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
         public void Run(APIGatewayProxyRequest request, APIGatewayProxyResponse response, FinanceUser user)
         {
             var receipt = JsonConvert.DeserializeObject<Receipt>(request.Body);
-            var databaseClient = new DatabaseClient<QuickBooksOnlineConnection>(new AmazonDynamoDBClient());
             var receiptDbClient = new DatabaseClient<ReceiptSaveResult>(new AmazonDynamoDBClient());
             var spotReservationDbClient = new DatabaseClient<SpotReservation>(new AmazonDynamoDBClient());
             var vendorDbClient = new DatabaseClient<Vendor>(new AmazonDynamoDBClient());
-            var qboClient = new QuickBooksOnlineClient(Configuration.RealmId, databaseClient, new Logger());
+            var qboClient = new QuickBooksOnlineClient(Configuration.RealmId, new DatabaseClient<QuickBooksOnlineConnection>(new AmazonDynamoDBClient()), new Logger());
 
-            var spotReservationCheck = new SpotReservationCheck(spotReservationDbClient, vendorDbClient, qboClient);
+            var allActiveCustomers = qboClient
+                .QueryAll<Customer>("select * from customer")
+                .ToDictionary(x => x.Id);
+            var spotReservationCheck = new SpotReservationCheck(spotReservationDbClient, vendorDbClient, allActiveCustomers);
             var validation = new ReceiptValidation(spotReservationCheck).Validate(receipt);
             if (validation.Any())
             {

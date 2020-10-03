@@ -9,11 +9,11 @@ using Xunit.Abstractions;
 
 namespace FinanceApi.Tests.Reports
 {
-    public class Income
+    public class IncomeReport
     {
         private ITestOutputHelper Output { get; }
 
-        public Income(ITestOutputHelper output)
+        public IncomeReport(ITestOutputHelper output)
         {
             Output = output;
         }
@@ -62,9 +62,9 @@ namespace FinanceApi.Tests.Reports
         [Fact]
         public void PrintDailyCash()
         {
-            var start = new DateTime(2020, 9, 19);
-            var end = new DateTime(2020, 9, 20);
-            IncomeReport.PrintReport(
+            var start = new DateTime(2020, 9, 21);
+            var end = new DateTime(2020, 9, 27);
+            PropertyRentalManagement.Reports.IncomeReport.PrintReport(
                 start,
                 end,
                 new XUnitLogger(Output),
