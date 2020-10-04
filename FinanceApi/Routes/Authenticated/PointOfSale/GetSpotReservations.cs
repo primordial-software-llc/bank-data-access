@@ -22,27 +22,30 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
             var rentalDate = request.QueryStringParameters != null && request.QueryStringParameters.ContainsKey("rentalDate")
                 ? request.QueryStringParameters["rentalDate"]
                 : string.Empty;
-            validation.AddRange(ReceiptValidation.GetRentalDateValidation(rentalDate));
-            if (validation.Any())
-            {
-                response.StatusCode = 400;
-                response.Body = new JObject { { "error", JArray.FromObject(validation) } }.ToString();
-                return;
-            }
-            var queryRequest = new QueryRequest(new SpotReservation().GetTable())
-            {
-                ExpressionAttributeValues = new Dictionary<string, AttributeValue>
-                {
-                    {":rentalDate", new AttributeValue {S = rentalDate}}
-                },
-                ExpressionAttributeNames = new Dictionary<string, string>
-                {
-                    { "#rentalDate", "rentalDate" }
-                },
-                KeyConditionExpression = "#rentalDate = :rentalDate"
-            };
             var databaseClient = new DatabaseClient<SpotReservation>(new AmazonDynamoDBClient());
-            var spotReservations = databaseClient.QueryAll(queryRequest);
+            var service = new SpotReservationService(databaseClient);
+
+            List<SpotReservation> spotReservations;
+            if (!string.IsNullOrWhiteSpace(rentalDate))
+            {
+                validation.AddRange(ReceiptValidation.GetRentalDateValidation(rentalDate));
+                if (validation.Any())
+                {
+                    response.StatusCode = 400;
+                    response.Body = new JObject { { "error", JArray.FromObject(validation) } }.ToString();
+                    return;
+                }
+
+                spotReservations = service.GetSpotReservations(rentalDate);
+            }
+            else
+            {
+                var vendorId = request.QueryStringParameters != null && request.QueryStringParameters.ContainsKey("vendorId")
+                    ? request.QueryStringParameters["vendorId"]
+                    : string.Empty;
+                spotReservations = service.GetSpotReservationsByVendor(vendorId);
+            }
+
             response.Body = JsonConvert.SerializeObject(spotReservations);
         }
     }

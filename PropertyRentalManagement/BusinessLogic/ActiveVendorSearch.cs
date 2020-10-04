@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Amazon.DynamoDBv2.Model;
 using PropertyRentalManagement.DataServices;
 using PropertyRentalManagement.QuickBooksOnline.Models;
 
@@ -15,9 +16,11 @@ namespace PropertyRentalManagement.BusinessLogic
             return activeVendors;
         }
 
-        public List<DatabaseModel.Vendor> GetActiveVendors(Dictionary<int?, Customer> allActiveCustomers, DatabaseClient<DatabaseModel.Vendor> vendorDbClient)
+        public List<DatabaseModel.Vendor> GetActiveVendors(
+            Dictionary<int?, Customer> allActiveCustomers,
+            DatabaseClient<DatabaseModel.Vendor> vendorDbClient)
         {
-            var activeVendors = vendorDbClient.GetAll()
+            var activeVendors = vendorDbClient.ScanAll(new ScanRequest(new DatabaseModel.Vendor().GetTable()))
                 .Where(x => allActiveCustomers.ContainsKey(x.QuickBooksOnlineId))
                 .ToList();
             return activeVendors;

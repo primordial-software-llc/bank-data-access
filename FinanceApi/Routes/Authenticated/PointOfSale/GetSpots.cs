@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Amazon.DynamoDBv2;
+using Amazon.DynamoDBv2.Model;
 using Amazon.Lambda.APIGatewayEvents;
 using FinanceApi.DatabaseModel;
 using Newtonsoft.Json;
@@ -15,7 +16,7 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
         public void Run(APIGatewayProxyRequest request, APIGatewayProxyResponse response, FinanceUser user)
         {
             var databaseClient = new DatabaseClient<Spot>(new AmazonDynamoDBClient());
-            var spots = databaseClient.GetAll()
+            var spots = databaseClient.ScanAll(new ScanRequest(new Spot().GetTable()))
                 .OrderBy(x => x.Section?.Name)
                 .ThenBy(x => x.Name)
                 .ToList();

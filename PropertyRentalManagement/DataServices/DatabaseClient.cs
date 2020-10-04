@@ -37,9 +37,8 @@ namespace PropertyRentalManagement.DataServices
             return items;
         }
 
-        public List<T> GetAll()
+        public List<T> ScanAll(ScanRequest scanRequest)
         {
-            var scanRequest = new ScanRequest(new T().GetTable());
             ScanResponse scanResponse = null;
             var items = new List<T>();
             do
