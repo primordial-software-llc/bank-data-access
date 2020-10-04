@@ -43,7 +43,9 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
                 var vendorId = request.QueryStringParameters != null && request.QueryStringParameters.ContainsKey("vendorId")
                     ? request.QueryStringParameters["vendorId"]
                     : string.Empty;
-                spotReservations = service.GetSpotReservationsByVendor(vendorId);
+                spotReservations = service.GetSpotReservationsByVendor(vendorId)
+                    .OrderBy(x => x.RentalDate)
+                    .ToList();
             }
 
             response.Body = JsonConvert.SerializeObject(spotReservations);

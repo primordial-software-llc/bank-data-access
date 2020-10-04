@@ -56,6 +56,12 @@ namespace PropertyRentalManagement.DataServices
             return items;
         }
 
+        public void Delete(T model)
+        {
+            Client.DeleteItemAsync(model.GetTable(), model.GetKey()).Wait();
+        }
+
+        public T Get(T model)
         public T Get(T model, bool? consistentRead = null)
         {
             var dbItem = Client.GetItemAsync(model.GetTable(), model.GetKey(), consistentRead.GetValueOrDefault()).Result;

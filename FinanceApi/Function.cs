@@ -106,6 +106,7 @@ namespace FinanceApi
                     routes.Add(new Routes.Authenticated.PointOfSale.GetCustomerInvoices());
                     routes.Add(new Routes.Authenticated.PointOfSale.PatchVendor());
                     routes.Add(new Routes.Authenticated.PointOfSale.PatchSpot());
+                    routes.Add(new Routes.Authenticated.PointOfSale.DeleteReservation());
                     routes.Add(new Routes.Authenticated.PointOfSale.PostReceipt());
                     routes.Add(new Routes.Authenticated.PointOfSale.PostCreateWeeklyInvoices());
                     routes.Add(new Routes.Authenticated.PointOfSale.PostCreateMonthlyInvoices());
