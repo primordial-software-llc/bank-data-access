@@ -17,7 +17,10 @@ namespace PropertyRentalManagement.DatabaseModel
 
         [JsonProperty("receipt")]
         public Receipt Receipt { get; set; }
-        
+
+        [JsonProperty("vendor")]
+        public Vendor Vendor { get; set; }
+
         [JsonProperty("invoice")]
         public Invoice Invoice { get; set; }
 

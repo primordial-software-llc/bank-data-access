@@ -5,6 +5,7 @@ using Amazon.Lambda.APIGatewayEvents;
 using FinanceApi.DatabaseModel;
 using FinanceApi.RequestModels;
 using Newtonsoft.Json;
+using PropertyRentalManagement.BusinessLogic;
 using PropertyRentalManagement.DatabaseModel;
 using PropertyRentalManagement.DataServices;
 using PropertyRentalManagement.QuickBooksOnline;
@@ -26,8 +27,7 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
             var allActiveCustomers = qboClient.QueryAll<Customer>("select * from customer")
                 .Where(x => !nonRentalCustomerIds.Contains(x.Id.GetValueOrDefault()))
                 .ToDictionary(x => x.Id);
-            var activeVendors = vendorClient.GetAll()
-                .Where(x => allActiveCustomers.ContainsKey(x.QuickBooksOnlineId))
+            var activeVendors = new ActiveVendorSearch().GetActiveVendors(allActiveCustomers, vendorClient)
                 .ToDictionary(x => x.QuickBooksOnlineId);
             var newCustomers = allActiveCustomers.Where(x => !activeVendors.ContainsKey(x.Key));
             foreach (var newCustomer in newCustomers)

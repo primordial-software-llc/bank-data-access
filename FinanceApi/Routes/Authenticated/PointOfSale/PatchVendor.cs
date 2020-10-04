@@ -34,14 +34,14 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
             {
                 errors.Add("Memo can't exceed 4,000 characters");
             }
-
             var spotReservationDbClient = new DatabaseClient<SpotReservation>(new AmazonDynamoDBClient());
-
             var allActiveCustomers = qboClient
                 .QueryAll<Customer>("select * from customer")
                 .ToDictionary(x => x.Id);
-            var spotReservationCheck = new SpotReservationCheck(spotReservationDbClient, vendorDataClient, allActiveCustomers);
-
+            var allActiveVendors = new ActiveVendorSearch()
+                .GetActiveVendors(allActiveCustomers, vendorDataClient)
+                .ToList();
+            var spotReservationCheck = new SpotReservationCheck(spotReservationDbClient, allActiveVendors, allActiveCustomers);
             DateTimeZone easternTimeZone = DateTimeZoneProviders.Tzdb["America/New_York"];
             ZonedClock easternClock = SystemClock.Instance.InZone(easternTimeZone);
             LocalDate easternToday = easternClock.GetCurrentDate();

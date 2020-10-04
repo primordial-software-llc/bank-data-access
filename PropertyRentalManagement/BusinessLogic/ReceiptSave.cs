@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using Newtonsoft.Json;
 using NodaTime;
@@ -11,6 +10,7 @@ using PropertyRentalManagement.QuickBooksOnline;
 using PropertyRentalManagement.QuickBooksOnline.Models;
 using PropertyRentalManagement.QuickBooksOnline.Models.Invoices;
 using PropertyRentalManagement.QuickBooksOnline.Models.Payments;
+using Vendor = PropertyRentalManagement.DatabaseModel.Vendor;
 
 namespace PropertyRentalManagement.BusinessLogic
 {
@@ -33,13 +33,20 @@ namespace PropertyRentalManagement.BusinessLogic
             SpotReservationDbClient = spotReservationDbClient;
         }
 
-        public ReceiptSaveResult SaveReceipt(Receipt receipt, string firstName, string lastName, string email)
+        public ReceiptSaveResult SaveReceipt(
+            Receipt receipt,
+            string customerId,
+            string firstName,
+            string lastName,
+            string email,
+            Vendor vendor)
         {
             ReceiptSaveResult result = new ReceiptSaveResult
             {
                 Id = Guid.NewGuid().ToString(),
                 Timestamp = DateTime.UtcNow.ToString("O"),
                 Receipt = JsonConvert.DeserializeObject<Receipt>(JsonConvert.SerializeObject(receipt)),
+                Vendor = vendor,
                 CreatedBy = new ReceiptSaveResultUser
                 {
                     FirstName = firstName,
@@ -48,14 +55,6 @@ namespace PropertyRentalManagement.BusinessLogic
                 }
             };
             ReceiptDbClient.Create(result);
-
-            string customerId = receipt.Customer.Id;
-            if (string.IsNullOrWhiteSpace(customerId))
-            {
-                var customer = new Customer {DisplayName = receipt.Customer.Name};
-                customer = QuickBooksClient.Create(customer);
-                customerId = customer.Id.ToString();
-            }
 
             var memo = receipt.Memo;
             if (receipt.Spots != null && receipt.Spots.Any())

@@ -33,9 +33,12 @@ namespace FinanceApi.Routes.Unauthenticated.PointOfSale
             var allActiveCustomers = qboClient
                 .QueryAll<Customer>("select * from customer")
                 .ToDictionary(x => x.Id);
+            var allActiveVendors = new ActiveVendorSearch()
+                .GetActiveVendors(allActiveCustomers, new DatabaseClient<Vendor>(new AmazonDynamoDBClient()))
+                .ToList();
             var spotReservationCheck = new SpotReservationCheck(
                 new DatabaseClient<SpotReservation>(new AmazonDynamoDBClient()),
-                new DatabaseClient<Vendor>(new AmazonDynamoDBClient()),
+                allActiveVendors,
                 allActiveCustomers
             );
             var rentalDate = request.QueryStringParameters.ContainsKey("rentalDate")

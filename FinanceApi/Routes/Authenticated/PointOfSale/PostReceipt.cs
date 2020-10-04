@@ -29,7 +29,10 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
             var allActiveCustomers = qboClient
                 .QueryAll<Customer>("select * from customer")
                 .ToDictionary(x => x.Id);
-            var spotReservationCheck = new SpotReservationCheck(spotReservationDbClient, vendorDbClient, allActiveCustomers);
+            var activeVendors = new ActiveVendorSearch()
+                .GetActiveVendors(allActiveCustomers, vendorDbClient)
+                .ToList();
+            var spotReservationCheck = new SpotReservationCheck(spotReservationDbClient, activeVendors, allActiveCustomers);
             var validation = new ReceiptValidation(spotReservationCheck).Validate(receipt);
             if (validation.Any())
             {
@@ -37,9 +40,17 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
                 response.Body = new JObject { { "error", JArray.FromObject(validation) } }.ToString();
                 return;
             }
-
             var receiptService = new ReceiptSave(receiptDbClient, qboClient, Configuration.POLK_COUNTY_RENTAL_SALES_TAX_RATE, spotReservationDbClient);
-            var receiptResult = receiptService.SaveReceipt(receipt, user.FirstName, user.LastName, user.Email);
+            string customerId = receipt.Customer.Id;
+            if (string.IsNullOrWhiteSpace(customerId))
+            {
+                var customer = new Customer { DisplayName = receipt.Customer.Name };
+                customer = qboClient.Create(customer);
+                customerId = customer.Id.ToString();
+            }
+            var vendor = activeVendors.FirstOrDefault(x => x.QuickBooksOnlineId.GetValueOrDefault().ToString() == customerId)
+                         ?? vendorDbClient.Create(VendorService.CreateModel(int.Parse(customerId), null, null, null));
+            var receiptResult = receiptService.SaveReceipt(receipt, customerId, user.FirstName, user.LastName, user.Email, vendor);
             response.Body = JsonConvert.SerializeObject(receiptResult);
         }
     }

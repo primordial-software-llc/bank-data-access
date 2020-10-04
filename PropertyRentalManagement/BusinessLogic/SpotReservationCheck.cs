@@ -11,21 +11,17 @@ namespace PropertyRentalManagement.BusinessLogic
     public class SpotReservationCheck
     {
         private DatabaseClient<SpotReservation> SpotReservationDbClient { get; }
-        private DatabaseClient<Vendor> VendorDbClient { get; }
         private Dictionary<int?, Customer> AllActiveCustomers { get; }
         private List<Vendor> AllActiveVendors { get; }
 
         public SpotReservationCheck(
             DatabaseClient<SpotReservation> spotReservationDbClient,
-            DatabaseClient<Vendor> vendorDbClient,
+            List<Vendor> allActiveVendors,
             Dictionary<int?, Customer> allActiveCustomers)
         {
             SpotReservationDbClient = spotReservationDbClient;
-            VendorDbClient = vendorDbClient;
             AllActiveCustomers = allActiveCustomers;
-            AllActiveVendors = new ActiveVendorSearch()
-                .GetActiveVendors(AllActiveCustomers, VendorDbClient)
-                .ToList();
+            AllActiveVendors = allActiveVendors;
         }
 
         public Vendor GetVendorWhoReservedSpot(string spotId, string ignoredVendorId = null)

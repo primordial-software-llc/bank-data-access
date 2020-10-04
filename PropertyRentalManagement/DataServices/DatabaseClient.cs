@@ -67,13 +67,15 @@ namespace PropertyRentalManagement.DataServices
             return JsonConvert.DeserializeObject<T>(Document.FromAttributeMap(dbItem.Item).ToJson());
         }
 
-        public void Create(T model)
+        public T Create(T model)
         {
             var json = JObject.FromObject(model, new JsonSerializer { NullValueHandling = NullValueHandling.Ignore });
-            Client.PutItemAsync(
+            var putItemResponse = Client.PutItemAsync(
                 new T().GetTable(),
-                Document.FromJson(json.ToString()).ToAttributeMap()
-            ).Wait();
+                Document.FromJson(json.ToString()).ToAttributeMap(),
+                ReturnValue.ALL_NEW
+            ).Result;
+            return JsonConvert.DeserializeObject<T>(Document.FromAttributeMap(putItemResponse.Attributes).ToJson());
         }
 
         public T Update(T model)
