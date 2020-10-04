@@ -70,12 +70,11 @@ namespace PropertyRentalManagement.DataServices
         public T Create(T model)
         {
             var json = JObject.FromObject(model, new JsonSerializer { NullValueHandling = NullValueHandling.Ignore });
-            var putItemResponse = Client.PutItemAsync(
+            Client.PutItemAsync(
                 new T().GetTable(),
-                Document.FromJson(json.ToString()).ToAttributeMap(),
-                ReturnValue.ALL_NEW
-            ).Result;
-            return JsonConvert.DeserializeObject<T>(Document.FromAttributeMap(putItemResponse.Attributes).ToJson());
+                Document.FromJson(json.ToString()).ToAttributeMap()
+            ).Wait();
+            return model;
         }
 
         public T Update(T model)

@@ -115,7 +115,8 @@ namespace PropertyRentalManagement.BusinessLogic
                     {
                         SpotId = spot.Id,
                         RentalDate = receipt.RentalDate,
-                        QuickBooksOnlineId = int.Parse(customerId)
+                        QuickBooksOnlineId = int.Parse(customerId),
+                        VendorId = vendor.Id
                     });
                 }
             }
