@@ -15,15 +15,17 @@ namespace PropertyRentalManagement.QuickBooksOnline
 {
     public class QuickBooksOnlineClient
     {
-        public QuickBooksOnlineBearerToken Token { get; set; }
-        public ILogging Logger { get; }
-        public string RealmId { get; }
+        private QuickBooksOnlineBearerToken Token { get; set; }
+        private ILogging Logger { get; }
+        private string RealmId { get; }
+        private DatabaseClient<QuickBooksOnlineConnection> DbClient { get; }
 
         public QuickBooksOnlineClient(string realmId, DatabaseClient<QuickBooksOnlineConnection> dbClient, ILogging logger)
         {
+            DbClient = dbClient;
             RealmId = realmId;
             Logger = logger;
-            var qboConnection = dbClient.Get(new QuickBooksOnlineConnection { RealmId = realmId });
+            var qboConnection = dbClient.Get(new QuickBooksOnlineConnection { RealmId = realmId }, true);
             Token = OAuthClient.GetAccessToken(
                 qboConnection.ClientId,
                 qboConnection.ClientSecret,
@@ -37,6 +39,31 @@ namespace PropertyRentalManagement.QuickBooksOnline
                     RefreshToken = Token.RefreshToken
                 });
             // Token will get stale during process, more work needs to be done, but that is why the token isn't injected. Token has to be retreived in the client to do the refresh mid-process.
+        }
+
+        public QuickBooksOnlineConnection GetConnectionForLocks()
+        {
+            return DbClient.Get(new QuickBooksOnlineConnection { RealmId = RealmId }, true);
+        }
+
+        public void LockWeeklyInvoices(bool lockUpdateType)
+        {
+            DbClient.Update(
+                new QuickBooksOnlineConnection
+                {
+                    RealmId = RealmId,
+                    WeeklyInvoiceLock = lockUpdateType
+                });
+        }
+
+        public void LockMonthlyInvoices(bool lockUpdateType)
+        {
+            DbClient.Update(
+                new QuickBooksOnlineConnection
+                {
+                    RealmId = RealmId,
+                    MonthlyInvoiceLock = lockUpdateType
+                });
         }
 
         public int QueryCount<T>(string query) where T : IQuickBooksOnlineEntity, new()

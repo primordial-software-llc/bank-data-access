@@ -56,9 +56,9 @@ namespace PropertyRentalManagement.DataServices
             return items;
         }
 
-        public T Get(T model)
+        public T Get(T model, bool? consistentRead = null)
         {
-            var dbItem = Client.GetItemAsync(model.GetTable(), model.GetKey()).Result;
+            var dbItem = Client.GetItemAsync(model.GetTable(), model.GetKey(), consistentRead.GetValueOrDefault()).Result;
             if (!dbItem.Item.Any())
             {
                 return default;

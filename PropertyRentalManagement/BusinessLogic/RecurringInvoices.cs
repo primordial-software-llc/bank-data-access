@@ -29,12 +29,38 @@ namespace PropertyRentalManagement.BusinessLogic
 
         public List<Invoice> CreateWeeklyInvoices(DateTime date)
         {
-            return CreateInvoices(GetWeekDateRange(date), Frequency.Weekly);
+            var connectionLock = QuickBooksClient.GetConnectionForLocks();
+            if (connectionLock.WeeklyInvoiceLock)
+            {
+                throw new Exception("Can't create weekly invoices. Weekly invoice lock is enabled. Invoices are being created by another process.");
+            }
+            QuickBooksClient.LockWeeklyInvoices(true);
+            try
+            {
+                return CreateInvoices(GetWeekDateRange(date), Frequency.Weekly);
+            }
+            finally
+            {
+                QuickBooksClient.LockWeeklyInvoices(false);
+            }
         }
 
         public List<Invoice> CreateMonthlyInvoices(DateTime date)
         {
-            return CreateInvoices(GetMonthDateRange(date), Frequency.Monthly);
+            var connectionLock = QuickBooksClient.GetConnectionForLocks();
+            if (connectionLock.MonthlyInvoiceLock)
+            {
+                throw new Exception("Can't create monthly invoices. Monthly invoice lock is enabled. Invoices are being created by another process.");
+            }
+            QuickBooksClient.LockMonthlyInvoices(true);
+            try
+            {
+                return CreateInvoices(GetMonthDateRange(date), Frequency.Monthly);
+            }
+            finally
+            {
+                QuickBooksClient.LockMonthlyInvoices(false);
+            }
         }
 
         public List<Invoice> CreateInvoices(DateRange dateRange, Frequency frequency)

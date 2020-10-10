@@ -22,6 +22,12 @@ namespace PropertyRentalManagement.DatabaseModel
         [JsonProperty("access-token")]
         public string AccessToken { get; set; }
 
+        [JsonProperty("weeklyInvoiceLock")]
+        public bool WeeklyInvoiceLock { get; set; }
+
+        [JsonProperty("monthlyInvoiceLock")]
+        public bool MonthlyInvoiceLock { get; set; }
+
         public Dictionary<string, AttributeValue> GetKey()
         {
             return new Dictionary<string, AttributeValue> { { "realm-id", new AttributeValue { S = RealmId } } };
