@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Linq;
 using FinanceApi.Tests.InfrastructureAsCode;
-using PropertyRentalManagement.BusinessLogic;
 using PropertyRentalManagement.QuickBooksOnline.Models;
-using PropertyRentalManagement.Reports;
 using Xunit;
 using Xunit.Abstractions;
 

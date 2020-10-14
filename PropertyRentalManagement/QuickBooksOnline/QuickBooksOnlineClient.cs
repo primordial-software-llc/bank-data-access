@@ -147,7 +147,7 @@ namespace PropertyRentalManagement.QuickBooksOnline
             if (!result.IsSuccessStatusCode)
             {
                 Logger.Log($"QuickBooks Online API Request Failure"
-                           + $" {(int) result.StatusCode} GET {relativePath}"
+                           + $" {(int) result.StatusCode} {method} {relativePath}"
                            + $" Received {response}");
             }
             result.EnsureSuccessStatusCode();

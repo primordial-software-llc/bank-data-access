@@ -28,6 +28,9 @@ namespace PropertyRentalManagement.QuickBooksOnline.Models
         [JsonProperty("PrimaryPhone")]
         public PhoneNumber PrimaryPhone { get; set; }
 
+        [JsonProperty("DefaultTaxCodeRef")]
+        public Reference DefaultTaxCodeRef { get; set; }
+
         [JsonProperty("MetaData")]
         public MetaData MetaData { get; set; }
 
