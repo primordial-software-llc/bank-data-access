@@ -42,8 +42,7 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
                 .GetActiveVendors(allActiveCustomers, vendorDataClient)
                 .ToList();
             var spotReservationCheck = new SpotReservationCheck(spotReservationDbClient, allActiveVendors, allActiveCustomers);
-            DateTimeZone easternTimeZone = DateTimeZoneProviders.Tzdb["America/New_York"];
-            ZonedClock easternClock = SystemClock.Instance.InZone(easternTimeZone);
+            ZonedClock easternClock = SystemClock.Instance.InZone(Configuration.LakeLandMiPuebloTimeZone);
             LocalDate easternToday = easternClock.GetCurrentDate();
             while (easternToday.DayOfWeek != IsoDayOfWeek.Sunday)
             {

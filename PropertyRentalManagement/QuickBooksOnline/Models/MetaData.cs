@@ -6,9 +6,9 @@ namespace PropertyRentalManagement.QuickBooksOnline.Models
     public class MetaData
     {
         [JsonProperty("CreateTime")]
-        public DateTime CreateTime { get; set; }
+        public DateTimeOffset CreateTime { get; set; }
 
         [JsonProperty("LastUpdatedTime")]
-        public DateTime LastUpdatedTime { get; set; }
+        public DateTimeOffset LastUpdatedTime { get; set; }
     }
 }

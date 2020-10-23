@@ -1,6 +1,14 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
+using Amazon.DynamoDBv2;
+using FinanceApi.Routes.Authenticated.PointOfSale;
 using FinanceApi.Tests.InfrastructureAsCode;
+using NodaTime;
+using PropertyRentalManagement;
+using PropertyRentalManagement.DatabaseModel;
+using PropertyRentalManagement.DataServices;
+using PropertyRentalManagement.QuickBooksOnline;
 using PropertyRentalManagement.QuickBooksOnline.Models;
 using Xunit;
 using Xunit.Abstractions;
@@ -17,7 +25,7 @@ namespace FinanceApi.Tests.Reports
         }
 
         [Fact]
-        public void PrintRentalIncomeForMonth()
+        public void PrintAccrualRentalIncomeForMonth()
         {
             var start = new DateTime(2020, 8, 1);
             var end = new DateTime(2020, 8, 31);
@@ -57,16 +65,30 @@ namespace FinanceApi.Tests.Reports
             Assert.Equal(65633.45m, total);
         }
 
+        /*
+         Delete this once the endpoint is working for income report.
         [Fact]
         public void PrintDailyCash()
         {
-            var start = new DateTime(2020, 9, 21);
-            var end = new DateTime(2020, 9, 27);
-            PropertyRentalManagement.Reports.IncomeReport.PrintReport(
-                start,
-                end,
-                new XUnitLogger(Output),
-                Factory.CreateQuickBooksOnlineClient(new XUnitLogger(Output)));
+            var startDate = DateTime.ParseExact("2020-09-21", "yyyy-MM-dd", CultureInfo.InvariantCulture);
+            var endDate = DateTime.ParseExact("2020-09-27", "yyyy-MM-dd", CultureInfo.InvariantCulture);
+
+            var easternStart = PatchVendor.LakeLandMiPuebloTimeZone.AtLeniently(LocalDateTime.FromDateTime(startDate));
+            var easternEnd = PatchVendor.LakeLandMiPuebloTimeZone.AtLeniently(LocalDateTime.FromDateTime(endDate));
+
+            var report = PropertyRentalManagement.Reports.IncomeReport.RunReport(
+                easternStart.ToDateTimeOffset(),
+                easternEnd.ToDateTimeOffset(),
+                Factory.CreateQuickBooksOnlineClient(new XUnitLogger(Output)),
+                Constants.NonRentalCustomerIds);
+
+
+            var logger = new XUnitLogger(Output);
+            var total = report.Payments.Sum(x => x.TotalAmount.GetValueOrDefault()) +
+                        report.SalesReceipts.Sum(x => x.TotalAmount.GetValueOrDefault());
+            logger.Log($"Rental Income {total:C}");
         }
+
+        */
     }
 }

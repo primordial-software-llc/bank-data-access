@@ -1,4 +1,5 @@
 ﻿using System;
+using NodaTime;
 
 namespace FinanceApi
 {
@@ -16,6 +17,8 @@ namespace FinanceApi
         public static string RealmId => "9130347957983546";
 
         public static decimal POLK_COUNTY_RENTAL_SALES_TAX_RATE = Decimal.Parse(Environment.GetEnvironmentVariable("POLK_COUNTY_RENTAL_SALES_TAX_RATE"));
+
+        public static DateTimeZone LakeLandMiPuebloTimeZone => DateTimeZoneProviders.Tzdb["America/New_York"];
 
         public static BankAccessClient BankClient => new BankAccessClient(
             PLAID_URL,
