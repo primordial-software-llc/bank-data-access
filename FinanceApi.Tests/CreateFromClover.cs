@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Amazon.DynamoDBv2.Model;
 using FinanceApi.Tests.InfrastructureAsCode;
 using PropertyRentalManagement.Clover;
 using PropertyRentalManagement.Clover.Models;
@@ -29,7 +30,7 @@ namespace FinanceApi.Tests
         [Fact]
         public void SendCloverIncomeToQuickBooksOnlineForMonth()
         {
-            var date = new DateTime(2020, 9, 1);
+            var date = new DateTime(2020, 10, 1);
             var originalMonth = date.Month;
 
             var qboClient = Factory.CreateQuickBooksOnlineClient(new XUnitLogger(Output));
@@ -59,28 +60,36 @@ namespace FinanceApi.Tests
                 {
                     var today = new DateTimeOffset(date).ToUnixTimeMilliseconds();
                     var tomorrow = new DateTimeOffset(date.AddDays(1)).ToUnixTimeMilliseconds();
-                    var result = client.QueryAll<Payment>($"payments?filter=createdTime>={today}&filter=createdTime<{tomorrow}");
+                    var result =
+                        client.QueryAll<Payment>($"payments?filter=createdTime>={today}&filter=createdTime<{tomorrow}");
 
                     var cashPayments = result.Where(x => x.Tender.Id == cashTenderType.Id).ToList();
                     var cardPayments = result.Where(x => x.Tender.Id != cashTenderType.Id).ToList();
+                    var cashTotal = GetTotal(cashPayments);
+                    var cardTotal = GetTotal(cardPayments);
+                    if (cashTotal > 0)
+                    {
+                        CreateSalesReceipt(
+                            qboClient,
+                            restaurantCustomer.Id,
+                            restaurantCustomer.DefaultTaxCodeRef.Value,
+                            PRODUCT_RESTAURANT,
+                            date,
+                            GetTotal(cashPayments),
+                            "Restaurant sales using cash in Clover Register");
+                    }
 
-                    CreateSalesReceipt(
-                        qboClient,
-                        restaurantCustomer.Id,
-                        restaurantCustomer.DefaultTaxCodeRef.Value,
-                        PRODUCT_RESTAURANT,
-                        date,
-                        GetTotal(cashPayments),
-                        "Restaurant sales using cash in Clover Register");
-
-                    CreateSalesReceipt(
-                        qboClient,
-                        restaurantCustomer.Id,
-                        restaurantCustomer.DefaultTaxCodeRef.Value,
-                        PRODUCT_RESTAURANT,
-                        date,
-                        GetTotal(cardPayments),
-                        "Restaurant sales using credit card in Clover Register");
+                    if (cardTotal > 0)
+                    {
+                        CreateSalesReceipt(
+                            qboClient,
+                            restaurantCustomer.Id,
+                            restaurantCustomer.DefaultTaxCodeRef.Value,
+                            PRODUCT_RESTAURANT,
+                            date,
+                            cardTotal,
+                            "Restaurant sales using credit card in Clover Register");
+                    }
                 }
                 date = date.AddDays(1);
             } while (date.Month == originalMonth);
