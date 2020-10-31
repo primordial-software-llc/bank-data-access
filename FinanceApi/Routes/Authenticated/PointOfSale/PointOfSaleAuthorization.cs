@@ -11,6 +11,7 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
                    string.Equals(email, "kiara@primordial-software.com", StringComparison.OrdinalIgnoreCase) ||
                    string.Equals(email, "kmanrique506@hotmail.com", StringComparison.OrdinalIgnoreCase) ||
                    string.Equals(email, "lakeland.mipueblo@outlook.com", StringComparison.OrdinalIgnoreCase) ||
+                   string.Equals(email, "cvillavicencio921@gmail.com", StringComparison.OrdinalIgnoreCase) ||
                    string.Equals(email, "taniagkocher@gmail.com", StringComparison.OrdinalIgnoreCase);
         }
     }
