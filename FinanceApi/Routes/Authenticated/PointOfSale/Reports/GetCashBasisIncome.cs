@@ -12,7 +12,7 @@ using PropertyRentalManagement.DatabaseModel;
 using PropertyRentalManagement.DataServices;
 using PropertyRentalManagement.QuickBooksOnline;
 
-namespace FinanceApi.Routes.Authenticated.PointOfSale
+namespace FinanceApi.Routes.Authenticated.PointOfSale.Reports
 {
     public class GetCashBasisIncome : IRoute
     {

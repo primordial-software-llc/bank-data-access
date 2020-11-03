@@ -104,14 +104,20 @@ namespace FinanceApi
                     routes.Add(new Routes.Authenticated.PointOfSale.GetCustomerPaymentSettings());
                     routes.Add(new Routes.Authenticated.PointOfSale.GetCustomerPaymentSettingsById());
                     routes.Add(new Routes.Authenticated.PointOfSale.GetCustomerInvoices());
-                    routes.Add(new Routes.Authenticated.PointOfSale.GetCashBasisIncome());
+                    routes.Add(new Routes.Authenticated.PointOfSale.GetUnsentTransactions());
                     routes.Add(new Routes.Authenticated.PointOfSale.PatchVendor());
                     routes.Add(new Routes.Authenticated.PointOfSale.PatchSpot());
                     routes.Add(new Routes.Authenticated.PointOfSale.DeleteReservation());
                     routes.Add(new Routes.Authenticated.PointOfSale.PostReceipt());
                     routes.Add(new Routes.Authenticated.PointOfSale.PostCreateWeeklyInvoices());
                     routes.Add(new Routes.Authenticated.PointOfSale.PostCreateMonthlyInvoices());
+                    routes.Add(new Routes.Authenticated.PointOfSale.PostTransaction());
+                    routes.Add(new Routes.Authenticated.PointOfSale.PostSendToAccounting());
                     routes.Add(new Routes.Authenticated.PointOfSale.GetRecurringInvoiceDateRange());
+                }
+                if (new PointOfSaleAuthorization().IsAuthorizedForReports(user?.Email))
+                {
+                    routes.Add( new Routes.Authenticated.PointOfSale.Reports.GetCashBasisIncome());
                 }
                 var matchedRoute = routes.FirstOrDefault(route => string.Equals(request.HttpMethod, route.HttpMethod, StringComparison.OrdinalIgnoreCase) &&
                                                                   string.Equals(request.Path, route.Path, StringComparison.OrdinalIgnoreCase));

@@ -15,6 +15,7 @@
     <PackageReference Include="Stripe.net" Version="34.17.0" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\private-accounting\PrivateAccounting\PrivateAccounting.csproj" />
     <ProjectReference Include="..\PropertyRentalManagement\PropertyRentalManagement.csproj" />
   </ItemGroup>
 </Project>
