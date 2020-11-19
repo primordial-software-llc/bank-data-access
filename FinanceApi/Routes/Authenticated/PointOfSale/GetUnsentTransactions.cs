@@ -1,4 +1,5 @@
-﻿using Amazon.DynamoDBv2;
+﻿using System.Linq;
+using Amazon.DynamoDBv2;
 using Amazon.Lambda.APIGatewayEvents;
 using FinanceApi.DatabaseModel;
 using Newtonsoft.Json;
@@ -21,7 +22,9 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
             var qboClient = new QuickBooksOnlineClient(Configuration.RealmId, databaseClient, new Logger());
             var accountingClient = new AccountingQuickBooksOnlineClient(qboClient);
             var journal = new PrivateAccountingJournal<JournalEntry>(new AmazonDynamoDBClient(), accountingClient);
-            var unsent = journal.GetUnsent();
+            var unsent = journal.GetUnsent()
+                .OrderBy(x => x.Date)
+                .ToList();
             response.Body = JsonConvert.SerializeObject(unsent);
         }
     }

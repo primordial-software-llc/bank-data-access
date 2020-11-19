@@ -111,6 +111,14 @@ namespace PropertyRentalManagement.QuickBooksOnline
             return JsonConvert.DeserializeObject<T>(json[new T().EntityName].ToString());
         }
 
+        public T Delete<T>(T model) where T : IQuickBooksOnlineEntity, new()
+        {
+            var jsonInput = JsonConvert.SerializeObject(model, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+            var result = Request(model.EntityName.ToLower() + "?operation=delete", HttpMethod.Post, jsonInput);
+            var json = JObject.Parse(result);
+            return JsonConvert.DeserializeObject<T>(json[new T().EntityName].ToString());
+        }
+
         public T FullUpdate<T>(T model) where T : IQuickBooksOnlineEntity, new()
         {
             model.Sparse = false;
