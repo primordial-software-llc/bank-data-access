@@ -15,7 +15,7 @@ namespace FinanceApi.DatabaseModel
         public JArray AllAccounts { get; set; }
 
         [JsonProperty("failedAccounts")]
-        public JArray FailedAccounts { get; set; }
+        public List<FinanceUserBankAccountFailedAccount> FailedAccounts { get; set; }
 
         [JsonProperty("updated")]
         public string Updated { get; set; }

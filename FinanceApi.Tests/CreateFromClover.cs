@@ -1,10 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Amazon.DynamoDBv2;
+using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
+using FinanceApi.DatabaseModel;
 using FinanceApi.Tests.InfrastructureAsCode;
+using Newtonsoft.Json;
+using PrivateAccounting;
 using PropertyRentalManagement.Clover;
 using PropertyRentalManagement.Clover.Models;
+using PropertyRentalManagement.DataServices;
 using PropertyRentalManagement.QuickBooksOnline;
 using PropertyRentalManagement.QuickBooksOnline.Models;
 using PropertyRentalManagement.QuickBooksOnline.Models.Invoices;
@@ -27,10 +33,110 @@ namespace FinanceApi.Tests
             Output = output;
         }
 
+
+        //[Fact]
+        public void RollBackBatch()
+        {
+            var client = Factory.CreateAmazonDynamoDbClient();
+            client.ScanAsync(new ScanRequest(Constants.PrivateDatabase));
+
+            var batch1018 = GetFromBatch("0e85763b-d2e7-498c-9027-b4e785746ea7");
+            Output.WriteLine(batch1018.Count.ToString());
+            foreach (var record in batch1018)
+            {
+                DeleteInAccounting(record, "2020-10-18");
+            }
+
+            var batch1011 = GetFromBatch("b4d3aaa9-28a1-49b4-92ff-7d0edd440da7");
+            Output.WriteLine(batch1011.Count.ToString());
+            foreach (var record in batch1011)
+            {
+                DeleteInAccounting(record, "2020-10-11");
+            }
+        }
+
+        private void DeleteInAccounting(JournalEntry privateJournalEntry, string date)
+        {
+            var qboClient = Factory.CreateQuickBooksOnlineClient(new XUnitLogger(Output));
+
+            if (privateJournalEntry.AccountingId > 0)
+            {
+                if (string.Equals(privateJournalEntry.Type, "income"))
+                {
+                    var salesReceipt = qboClient.Query<SalesReceipt>($"select * from SalesReceipt where id = '{privateJournalEntry.AccountingId}'")
+                        .FirstOrDefault();
+                    if (salesReceipt != null)
+                    {
+                        qboClient.Delete(salesReceipt);
+                    }
+                }
+                else
+                {
+                    var purchase = qboClient.Query<Purchase>($"select * from Purchase where id = '{privateJournalEntry.AccountingId}'")
+                        .FirstOrDefault();
+                    if (purchase != null)
+                    {
+                        qboClient.Delete(purchase);
+                    }
+                }
+            }
+
+            var client = Factory.CreateAmazonDynamoDbClient();
+
+            var key = new Dictionary<string, AttributeValue> { { "id", new AttributeValue { S = privateJournalEntry.Id } } };
+
+            var updates = new Dictionary<string, AttributeValueUpdate>
+            {
+                {"batch", new AttributeValueUpdate(null, AttributeAction.DELETE)},
+                {"accountingId", new AttributeValueUpdate(null, AttributeAction.DELETE)},
+                {"amount", new AttributeValueUpdate(new AttributeValue { N = privateJournalEntry.Amount.ToString() }, AttributeAction.PUT)},
+                {"date", new AttributeValueUpdate(new AttributeValue { S = date }, AttributeAction.PUT )}
+            };
+
+            var privateUpdates = client.UpdateItemAsync(Constants.PrivateDatabase, key, updates).Result;
+            var auditUpdates = client.UpdateItemAsync(Constants.AuditDatabase, key, updates).Result;
+
+        }
+
+        public List<JournalEntry> GetFromBatch(string batch)
+        {
+            var client = Factory.CreateAmazonDynamoDbClient();
+            var scanRequest = new ScanRequest(PrivateAccounting.Constants.PrivateDatabase)
+            {
+                ExpressionAttributeValues = new Dictionary<string, AttributeValue>
+                {
+                    {":batch", new AttributeValue { S = batch }}
+                },
+                ExpressionAttributeNames = new Dictionary<string, string>
+                {
+                    { "#batch", "batch" }
+                },
+                FilterExpression = "#batch = :batch"
+            };
+            ScanResponse scanResponse = null;
+            var items = new List<JournalEntry>();
+            do
+            {
+                if (scanResponse != null)
+                {
+                    scanRequest.ExclusiveStartKey = scanResponse.LastEvaluatedKey;
+                }
+                scanResponse = client.ScanAsync(scanRequest).Result;
+                if (scanResponse.Items.Any())
+                {
+                    foreach (var item in scanResponse.Items)
+                    {
+                        items.Add(JsonConvert.DeserializeObject<JournalEntry>(Document.FromAttributeMap(item).ToJson()));
+                    }
+                }
+            } while (scanResponse.LastEvaluatedKey.Any());
+            return items;
+        }
+
         [Fact]
         public void SendCloverIncomeToQuickBooksOnlineForMonth()
         {
-            var date = new DateTime(2020, 10, 1);
+            var date = new DateTime(2020, 11, 1);
             var originalMonth = date.Month;
 
             var qboClient = Factory.CreateQuickBooksOnlineClient(new XUnitLogger(Output));

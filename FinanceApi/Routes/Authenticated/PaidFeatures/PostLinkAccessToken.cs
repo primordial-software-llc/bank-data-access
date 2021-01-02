@@ -1,9 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Amazon.DynamoDBv2;
 using Amazon.Lambda.APIGatewayEvents;
+using FinanceApi.BusinessLogic;
 using FinanceApi.DatabaseModel;
 using FinanceApi.RequestModels;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using PropertyRentalManagement.DataServices;
 
 namespace FinanceApi.Routes.Authenticated.PaidFeatures
 {
@@ -26,8 +31,11 @@ namespace FinanceApi.Routes.Authenticated.PaidFeatures
                 InstitutionName = institutionResponse["institution"]["name"].Value<string>()
             });
             var update = new JObject { { "bankLinks", JToken.FromObject(updatedBankLinks) } };
-            var updateItemResponse = new UserService().UpdateUser(user.Email, update);
-            response.StatusCode = (int)updateItemResponse.HttpStatusCode;
+            new UserService().UpdateUser(user.Email, update);
+
+            new BankAggregator().GetAndCacheFinanceUserBankAccount(user, new DatabaseClient<FinanceUserBankAccount>(new AmazonDynamoDBClient())); // Can't update the existing, because removing and adding a bank link generates a new id and an old bank link could stay in the failed accounts showing a false error.
+
+            response.StatusCode = 200;
             response.Body = Constants.JSON_EMPTY;
         }
     }
