@@ -12,7 +12,7 @@ namespace FinanceApi.BusinessLogic
 {
     class BankAggregator
     {
-        public void GetAndCacheFinanceUserBankAccount(
+        public FinanceUserBankAccount GetAndCacheFinanceUserBankAccount(
             FinanceUser user,
             DatabaseClient<FinanceUserBankAccount> userBankAccountClient)
         {
@@ -66,6 +66,7 @@ namespace FinanceApi.BusinessLogic
                 Updated = DateTime.UtcNow.ToString("O")
             };
             userBankAccountClient.Create(financeUserBankAccount);
+            return financeUserBankAccount;
         }
     }
 }

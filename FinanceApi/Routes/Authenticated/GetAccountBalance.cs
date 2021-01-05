@@ -28,8 +28,11 @@ namespace FinanceApi.Routes.Authenticated
                 Console.WriteLine("Returning account data from cache");
                 return;
             }
-            var financeUserBankAccount = new BankAggregator();
-            response.Body = JsonConvert.SerializeObject(financeUserBankAccount);
+            var bankAggregator = new BankAggregator();
+            var accountBalance = bankAggregator.GetAndCacheFinanceUserBankAccount(
+                user,
+                userBankAccountClient);
+            response.Body = JsonConvert.SerializeObject(accountBalance);
         }
     }
 }
