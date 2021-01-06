@@ -22,6 +22,9 @@ namespace PropertyRentalManagement.DatabaseModel
         [JsonProperty("bottom")]
         public string Bottom { get; set; }
 
+        [JsonProperty("restricted")]
+        public bool? Restricted { get; set; }
+
         public Dictionary<string, AttributeValue> GetKey()
         {
             return new Dictionary<string, AttributeValue> { { "id", new AttributeValue { S = Id } } };
