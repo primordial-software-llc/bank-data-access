@@ -20,7 +20,7 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
                 .OrderBy(x => x.Section?.Name)
                 .ThenBy(x => x.Name)
                 .ToList();
-            response.Body = JsonConvert.SerializeObject(spots);
+            response.Body = JsonConvert.SerializeObject(spots, Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
         }
     }
 }
