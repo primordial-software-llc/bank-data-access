@@ -15,7 +15,7 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
         public void Run(APIGatewayProxyRequest request, APIGatewayProxyResponse response, FinanceUser user)
         {
             var spotReservation = JsonConvert.DeserializeObject<SpotReservation>(request.Body);
-            var databaseClient = new DatabaseClient<SpotReservation>(new AmazonDynamoDBClient());
+            var databaseClient = new DatabaseClient<SpotReservation>(new AmazonDynamoDBClient(), new ConsoleLogger());
             databaseClient.Delete(spotReservation);
             response.StatusCode = 200;
             response.Body = Constants.JSON_EMPTY;

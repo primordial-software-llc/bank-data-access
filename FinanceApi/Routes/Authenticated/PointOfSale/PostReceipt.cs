@@ -21,10 +21,12 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
         public void Run(APIGatewayProxyRequest request, APIGatewayProxyResponse response, FinanceUser user)
         {
             var receipt = JsonConvert.DeserializeObject<Receipt>(request.Body);
-            var receiptDbClient = new DatabaseClient<ReceiptSaveResult>(new AmazonDynamoDBClient());
-            var spotReservationDbClient = new DatabaseClient<SpotReservation>(new AmazonDynamoDBClient());
-            var vendorDbClient = new DatabaseClient<Vendor>(new AmazonDynamoDBClient());
-            var qboClient = new QuickBooksOnlineClient(Configuration.RealmId, new DatabaseClient<QuickBooksOnlineConnection>(new AmazonDynamoDBClient()), new Logger());
+            var dbClient = new AmazonDynamoDBClient();
+            var logger = new ConsoleLogger();
+            var receiptDbClient = new DatabaseClient<ReceiptSaveResult>(dbClient, logger);
+            var spotReservationDbClient = new DatabaseClient<SpotReservation>(dbClient, logger);
+            var vendorDbClient = new DatabaseClient<Vendor>(dbClient, logger);
+            var qboClient = new QuickBooksOnlineClient(Configuration.RealmId, new DatabaseClient<QuickBooksOnlineConnection>(dbClient, logger), logger);
 
             var allActiveCustomers = qboClient
                 .QueryAll<Customer>("select * from customer")
@@ -32,8 +34,9 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
             var activeVendors = new ActiveVendorSearch()
                 .GetActiveVendors(allActiveCustomers, vendorDbClient)
                 .ToList();
-            var spotReservationCheck = new SpotReservationCheck(spotReservationDbClient, activeVendors, allActiveCustomers);
-            var validation = new ReceiptValidation(spotReservationCheck).Validate(receipt);
+            var spotClient = new DatabaseClient<Spot>(dbClient, logger);
+            var spotReservationCheck = new SpotReservationCheck(spotClient, spotReservationDbClient, activeVendors, allActiveCustomers);
+            var validation = new ReceiptValidation(spotReservationCheck).Validate(receipt).Result;
             if (validation.Any())
             {
                 response.StatusCode = 400;

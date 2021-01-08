@@ -17,9 +17,9 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
         public void Run(APIGatewayProxyRequest request, APIGatewayProxyResponse response, FinanceUser user)
         {
             var dbClient = new AmazonDynamoDBClient();
-            var qboDbClient = new DatabaseClient<QuickBooksOnlineConnection>(dbClient);
-            var qboClient = new QuickBooksOnlineClient(Configuration.RealmId, qboDbClient, new Logger());
-            var vendorDataClient = new DatabaseClient<Vendor>(dbClient);
+            var qboDbClient = new DatabaseClient<QuickBooksOnlineConnection>(dbClient, new ConsoleLogger());
+            var qboClient = new QuickBooksOnlineClient(Configuration.RealmId, qboDbClient, new ConsoleLogger());
+            var vendorDataClient = new DatabaseClient<Vendor>(dbClient, new ConsoleLogger());
             var vendor = vendorDataClient.Get(new Vendor { Id = request.QueryStringParameters["id"] });
             var start = request.QueryStringParameters["start"];
             var end = request.QueryStringParameters["end"];

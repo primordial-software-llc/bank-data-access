@@ -25,20 +25,23 @@ namespace FinanceApi.Routes.Unauthenticated.PointOfSale
 
         public void Run(APIGatewayProxyRequest request, APIGatewayProxyResponse response, FinanceUser user)
         {
-            var databaseClient = new DatabaseClient<Spot>(new AmazonDynamoDBClient());
-            var spots = databaseClient.ScanAll(new ScanRequest(new Spot().GetTable()))
+            var dbClientCore = new AmazonDynamoDBClient();
+            var logger = new ConsoleLogger();
+            var spotClient = new DatabaseClient<Spot>(dbClientCore, logger);
+            var spots = spotClient.ScanAll(new ScanRequest(new Spot().GetTable()))
                 .OrderBy(x => x.Section?.Name)
                 .ThenBy(x => x.Name)
                 .ToList();
-            var qboClient = new QuickBooksOnlineClient(Configuration.RealmId, new DatabaseClient<QuickBooksOnlineConnection>(new AmazonDynamoDBClient()), new Logger());
+            var qboClient = new QuickBooksOnlineClient(Configuration.RealmId, new DatabaseClient<QuickBooksOnlineConnection>(dbClientCore, logger), logger);
             var allActiveCustomers = qboClient
                 .QueryAll<Customer>("select * from customer")
                 .ToDictionary(x => x.Id);
             var allActiveVendors = new ActiveVendorSearch()
-                .GetActiveVendors(allActiveCustomers, new DatabaseClient<Vendor>(new AmazonDynamoDBClient()))
+                .GetActiveVendors(allActiveCustomers, new DatabaseClient<Vendor>(dbClientCore, logger))
                 .ToList();
             var spotReservationCheck = new SpotReservationCheck(
-                new DatabaseClient<SpotReservation>(new AmazonDynamoDBClient()),
+                spotClient,
+                new DatabaseClient<SpotReservation>(dbClientCore, logger),
                 allActiveVendors,
                 allActiveCustomers
             );

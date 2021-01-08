@@ -25,7 +25,7 @@ namespace FinanceApi
             PLAID_CLIENT_ID,
             PLAID_SECRET,
             PLAID_PUBLIC_KEY,
-            new Logger());
+            new ConsoleLogger());
 
     }
 }

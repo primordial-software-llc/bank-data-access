@@ -15,7 +15,7 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
         public string Path => "/point-of-sale/spots";
         public void Run(APIGatewayProxyRequest request, APIGatewayProxyResponse response, FinanceUser user)
         {
-            var databaseClient = new DatabaseClient<Spot>(new AmazonDynamoDBClient());
+            var databaseClient = new DatabaseClient<Spot>(new AmazonDynamoDBClient(), new ConsoleLogger());
             var spots = databaseClient.ScanAll(new ScanRequest(new Spot().GetTable()))
                 .OrderBy(x => x.Section?.Name)
                 .ThenBy(x => x.Name)

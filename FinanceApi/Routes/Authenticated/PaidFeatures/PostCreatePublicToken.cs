@@ -26,7 +26,7 @@ namespace FinanceApi.Routes.Authenticated.PaidFeatures
             var institutionResponse = client.GetInstitution(item["institution_id"].Value<string>());
             var accountBalance = Configuration.BankClient.GetAccountBalance(link.AccessToken);
             accountBalance.Item["institution"] = institutionResponse["institution"];
-            var userBankAccountClient = new DatabaseClient<FinanceUserBankAccount>(new AmazonDynamoDBClient());
+            var userBankAccountClient = new DatabaseClient<FinanceUserBankAccount>(new AmazonDynamoDBClient(), new ConsoleLogger());
             var userBankAccount = userBankAccountClient.Get(new FinanceUserBankAccount { Email = user.Email });
             userBankAccount.AllAccounts.Add(JObject.FromObject(accountBalance));
             var newFailedAccounts = userBankAccount

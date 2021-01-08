@@ -26,7 +26,7 @@ namespace FinanceApi
                     IpAddress = ip
                 }
             };
-            var dbClient = new DatabaseClient<FinanceUser>(new AmazonDynamoDBClient());
+            var dbClient = new DatabaseClient<FinanceUser>(new AmazonDynamoDBClient(), new ConsoleLogger());
             dbClient.Create(user);
         }
 

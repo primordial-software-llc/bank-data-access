@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using Amazon.DynamoDBv2;
@@ -25,23 +26,24 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
         {
             List<string> errors = new List<string>();
             var dbClient = new AmazonDynamoDBClient();
-            var vendorDataClient = new DatabaseClient<Vendor>(dbClient);
-            var databaseClient = new DatabaseClient<QuickBooksOnlineConnection>(new AmazonDynamoDBClient());
-            var qboClient = new QuickBooksOnlineClient(Configuration.RealmId, databaseClient, new Logger());
-
+            var logger = new ConsoleLogger();
+            var spotClient = new DatabaseClient<Spot>(dbClient, logger);
+            var vendorDataClient = new DatabaseClient<Vendor>(dbClient, logger);
+            var databaseClient = new DatabaseClient<QuickBooksOnlineConnection>(dbClient, logger);
+            var qboClient = new QuickBooksOnlineClient(Configuration.RealmId, databaseClient, logger);
             var vendorUpdates = JsonConvert.DeserializeObject<Vendor>(request.Body);
             if (vendorUpdates.Memo != null && vendorUpdates.Memo.Length > 4000)
             {
                 errors.Add("Memo can't exceed 4,000 characters");
             }
-            var spotReservationDbClient = new DatabaseClient<SpotReservation>(new AmazonDynamoDBClient());
+            var spotReservationDbClient = new DatabaseClient<SpotReservation>(dbClient, logger);
             var allActiveCustomers = qboClient
                 .QueryAll<Customer>("select * from customer")
                 .ToDictionary(x => x.Id);
             var allActiveVendors = new ActiveVendorSearch()
                 .GetActiveVendors(allActiveCustomers, vendorDataClient)
                 .ToList();
-            var spotReservationCheck = new SpotReservationCheck(spotReservationDbClient, allActiveVendors, allActiveCustomers);
+            var spotReservationCheck = new SpotReservationCheck(spotClient, spotReservationDbClient, allActiveVendors, allActiveCustomers);
             ZonedClock easternClock = SystemClock.Instance.InZone(Configuration.LakeLandMiPuebloTimeZone);
             LocalDate easternToday = easternClock.GetCurrentDate();
             while (easternToday.DayOfWeek != IsoDayOfWeek.Sunday)
@@ -49,7 +51,7 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
                 easternToday = easternToday.PlusDays(1);
             }
             string easternRentalDate = easternToday.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
-            errors.AddRange(spotReservationCheck.GetSpotConflicts(vendorUpdates.Spots, easternRentalDate, vendorUpdates.Id));
+            errors.AddRange(spotReservationCheck.GetSpotConflicts(vendorUpdates.Spots, easternRentalDate, vendorUpdates.Id).Result);
 
             if (errors.Any())
             {

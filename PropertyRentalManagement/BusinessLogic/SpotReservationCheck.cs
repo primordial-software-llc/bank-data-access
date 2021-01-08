@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using PropertyRentalManagement.DatabaseModel;
 using PropertyRentalManagement.DataServices;
 using PropertyRentalManagement.QuickBooksOnline.Models;
@@ -10,15 +11,18 @@ namespace PropertyRentalManagement.BusinessLogic
 {
     public class SpotReservationCheck
     {
+        private DatabaseClient<Spot> SpotDbClient { get; set; }
         private DatabaseClient<SpotReservation> SpotReservationDbClient { get; }
         private Dictionary<int?, Customer> AllActiveCustomers { get; }
         private List<Vendor> AllActiveVendors { get; }
 
         public SpotReservationCheck(
+            DatabaseClient<Spot> spotDbClient,
             DatabaseClient<SpotReservation> spotReservationDbClient,
             List<Vendor> allActiveVendors,
             Dictionary<int?, Customer> allActiveCustomers)
         {
+            SpotDbClient = spotDbClient;
             SpotReservationDbClient = spotReservationDbClient;
             AllActiveCustomers = allActiveCustomers;
             AllActiveVendors = allActiveVendors;
@@ -44,7 +48,8 @@ namespace PropertyRentalManagement.BusinessLogic
             {
                 SpotId = spotId,
                 RentalDate = rentalDate
-            });
+            },
+            true);
             if (oneTimeReservation != null)
             {
                 return new Tuple<Vendor, SpotReservation>(null, oneTimeReservation);
@@ -52,15 +57,23 @@ namespace PropertyRentalManagement.BusinessLogic
             return null;
         }
 
-        public List<string> GetSpotConflicts(List<Spot> spots, string rentalDate, string ignoredVendorId = null)
+        public async Task<List<string>> GetSpotConflicts(List<Spot> unAuthoritativeSpots, string rentalDate, string ignoredVendorId = null)
         {
             var conflicts = new List<string>();
-            if (spots == null)
+            if (unAuthoritativeSpots == null || !unAuthoritativeSpots.Any())
             {
                 return conflicts;
             }
-            foreach (var spot in spots)
+
+            var authoritativeSpots = await SpotDbClient.Get(unAuthoritativeSpots);
+
+            foreach (var spot in authoritativeSpots)
             {
+                if (spot.Restricted.GetValueOrDefault())
+                {
+                    conflicts.Add($"Spot {spot.Section?.Name} - {spot.Name} is restricted from reservation.");
+                    continue;
+                }
                 var reservation = GetReservation(spot.Id, rentalDate, ignoredVendorId);
                 if (reservation?.Item1 != null)
                 {

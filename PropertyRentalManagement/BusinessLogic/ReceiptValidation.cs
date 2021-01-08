@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace PropertyRentalManagement.BusinessLogic
 {
@@ -32,7 +33,7 @@ namespace PropertyRentalManagement.BusinessLogic
             return validation;
         }
 
-        public List<string> Validate(Receipt receipt)
+        public async Task<List<string>> Validate(Receipt receipt)
         {
             List<string> errors = new List<string>();
 
@@ -87,7 +88,7 @@ namespace PropertyRentalManagement.BusinessLogic
 
             if (!errors.Any())
             {
-                errors.AddRange(SpotReservationCheck.GetSpotConflicts(receipt.Spots, receipt.RentalDate));
+                errors.AddRange(await SpotReservationCheck.GetSpotConflicts(receipt.Spots, receipt.RentalDate));
             }
 
             return errors;

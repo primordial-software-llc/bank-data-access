@@ -55,7 +55,7 @@ namespace FinanceApi
                 try
                 {
                     Console.WriteLine("Authenticated user accessed API's: " + email);
-                    var databaseClient = new DatabaseClient<FinanceUser>(new AmazonDynamoDBClient());
+                    var databaseClient = new DatabaseClient<FinanceUser>(new AmazonDynamoDBClient(), new ConsoleLogger());
                     user = databaseClient.Get(new FinanceUser { Email = email });
                     if (user == null)
                     {

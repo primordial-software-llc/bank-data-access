@@ -15,7 +15,7 @@ namespace FinanceApi.Routes.Authenticated
         public string Path => "/accountBalance";
         public void Run(APIGatewayProxyRequest request, APIGatewayProxyResponse response, FinanceUser user)
         {
-            var userBankAccountClient = new DatabaseClient<FinanceUserBankAccount>(new AmazonDynamoDBClient());
+            var userBankAccountClient = new DatabaseClient<FinanceUserBankAccount>(new AmazonDynamoDBClient(), new ConsoleLogger());
             var userBankAccount = userBankAccountClient.Get(new FinanceUserBankAccount { Email = user.Email });
             if (!DateTime.TryParseExact(userBankAccount.Updated, "O", CultureInfo.InvariantCulture, DateTimeStyles.None, out var updated))
             {

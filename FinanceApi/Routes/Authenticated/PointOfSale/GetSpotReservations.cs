@@ -21,7 +21,7 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
             var rentalDate = request.QueryStringParameters != null && request.QueryStringParameters.ContainsKey("rentalDate")
                 ? request.QueryStringParameters["rentalDate"]
                 : string.Empty;
-            var databaseClient = new DatabaseClient<SpotReservation>(new AmazonDynamoDBClient());
+            var databaseClient = new DatabaseClient<SpotReservation>(new AmazonDynamoDBClient(), new ConsoleLogger());
             var service = new SpotReservationService(databaseClient);
 
             List<SpotReservation> spotReservations;

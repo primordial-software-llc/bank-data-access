@@ -15,7 +15,7 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
         public void Run(APIGatewayProxyRequest request, APIGatewayProxyResponse response, FinanceUser user)
         {
             var update = JsonConvert.DeserializeObject<Spot>(request.Body);
-            var databaseClient = new DatabaseClient<Spot>(new AmazonDynamoDBClient());
+            var databaseClient = new DatabaseClient<Spot>(new AmazonDynamoDBClient(), new ConsoleLogger());
             var updated = databaseClient.Update(update);
             response.Body = JsonConvert.SerializeObject(updated);
         }

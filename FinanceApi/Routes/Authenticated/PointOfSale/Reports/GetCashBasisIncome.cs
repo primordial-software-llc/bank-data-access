@@ -31,8 +31,8 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale.Reports
             var easternEnd = Configuration.LakeLandMiPuebloTimeZone.AtLeniently(LocalDateTime.FromDateTime(endDate));
 
             var dbClient = new AmazonDynamoDBClient();
-            var qboDbClient = new DatabaseClient<QuickBooksOnlineConnection>(dbClient);
-            var qboClient = new QuickBooksOnlineClient(Configuration.RealmId, qboDbClient, new Logger());
+            var qboDbClient = new DatabaseClient<QuickBooksOnlineConnection>(dbClient, new ConsoleLogger());
+            var qboClient = new QuickBooksOnlineClient(Configuration.RealmId, qboDbClient, new ConsoleLogger());
             var report = PropertyRentalManagement.Reports.IncomeReport.RunReport(
                 easternStart.ToDateTimeOffset(),
                 easternEnd.ToDateTimeOffset(),

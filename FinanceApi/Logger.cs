@@ -3,7 +3,7 @@ using AwsTools;
 
 namespace FinanceApi
 {
-    public class Logger : ILogging
+    public class ConsoleLogger : ILogging
     {
         public void Log(string message)
         {

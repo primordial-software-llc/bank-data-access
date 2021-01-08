@@ -20,9 +20,9 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
         public void Run(APIGatewayProxyRequest request, APIGatewayProxyResponse response, FinanceUser user)
         {
             var dbClient = new AmazonDynamoDBClient();
-            var qboDbClient = new DatabaseClient<QuickBooksOnlineConnection>(dbClient);
-            var qboClient = new QuickBooksOnlineClient(Configuration.RealmId, qboDbClient, new Logger());
-            var vendorClient = new DatabaseClient<PropertyRentalManagement.DatabaseModel.Vendor>(dbClient);
+            var qboDbClient = new DatabaseClient<QuickBooksOnlineConnection>(dbClient, new ConsoleLogger());
+            var qboClient = new QuickBooksOnlineClient(Configuration.RealmId, qboDbClient, new ConsoleLogger());
+            var vendorClient = new DatabaseClient<PropertyRentalManagement.DatabaseModel.Vendor>(dbClient, new ConsoleLogger());
             var nonRentalCustomerIds = PropertyRentalManagement.Constants.NonRentalCustomerIds;
             var allActiveCustomers = qboClient.QueryAll<Customer>("select * from customer")
                 .Where(x => !nonRentalCustomerIds.Contains(x.Id.GetValueOrDefault()))

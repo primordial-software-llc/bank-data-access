@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
 using PropertyRentalManagement.DatabaseModel;
@@ -13,7 +12,9 @@ namespace FinanceApi.Tests.InfrastructureAsCode.PointOfSale
         [Fact]
         public void CreateSpots()
         {
-            var client = new DatabaseClient<Spot>(new AmazonDynamoDBClient(Factory.CreateCredentialsFromProfile(), Factory.HomeRegion));
+            var client = new DatabaseClient<Spot>(
+                new AmazonDynamoDBClient(Factory.CreateCredentialsFromProfile(), Factory.HomeRegion),
+                new ConsoleLogger());
 
             /*
             client.Create(new Spot

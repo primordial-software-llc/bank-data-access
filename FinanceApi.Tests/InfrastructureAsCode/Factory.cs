@@ -47,7 +47,7 @@ namespace FinanceApi.Tests.InfrastructureAsCode
 
         public static QuickBooksOnlineClient CreateQuickBooksOnlineClient(ILogging logger)
         {
-            var databaseClient = new DatabaseClient<QuickBooksOnlineConnection>(CreateAmazonDynamoDbClient());
+            var databaseClient = new DatabaseClient<QuickBooksOnlineConnection>(CreateAmazonDynamoDbClient(), logger);
             return new QuickBooksOnlineClient(Configuration.RealmId, databaseClient, logger);
         }
     }
