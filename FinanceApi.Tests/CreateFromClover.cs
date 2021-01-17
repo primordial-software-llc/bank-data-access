@@ -136,7 +136,7 @@ namespace FinanceApi.Tests
         [Fact]
         public void SendCloverIncomeToQuickBooksOnlineForMonth()
         {
-            var date = new DateTime(2020, 11, 1);
+            var date = new DateTime(2020, 12, 1);
             var originalMonth = date.Month;
 
             var qboClient = Factory.CreateQuickBooksOnlineClient(new XUnitLogger(Output));

@@ -16,38 +16,73 @@ namespace FinanceApi.Tests
         [Fact]
         public void Test()
         {
-            var apr = .07m;
+            var apr = .15m;
             var monthlyRate = apr / 12;
-            const decimal INITIAL_LOAN_AMOUNT = 1200m;
-            decimal currentLoanPayoffAmount = INITIAL_LOAN_AMOUNT;
-
-            var startYear = 2019;
-            var startMonth = 11;
-            var startDay = 19;
+            var loanLengthInMonths = 2;
+            const decimal INITIAL_LOAN_AMOUNT = 30 * 1000m;
+            const int MAXIMUM_LOAN_LENGTH = 12;
+            var startYear = 2021;
+            var startMonth = 2;
+            var startDay = 1;
             var startTime = 0;
+            const string lender = "LENDER_NAME";
+            const string borrower = "BORROWER_NAME";
+            const string wittness = "WITTNESS_NAME";
             var loanDate = new DateTime(startYear, startMonth, startDay, startTime, startTime, startTime, DateTimeKind.Utc);
-            var currentDate = new DateTime(startYear, startMonth, startDay, startTime, startTime, startTime, DateTimeKind.Utc);
-            var sampleEndDate = new DateTime(2023, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-            var compoundIntervalMonths = 1;
-            Output.WriteLine($"Loan Transfer Date: {currentDate:D}");
-            Output.WriteLine($"Loan Amount: {currentLoanPayoffAmount:C} UTC United States Dollars");
+            Output.WriteLine($"Lender: {lender}");
+            Output.WriteLine($"Borrower: {borrower}");
+            Output.WriteLine($"Loan Transfer Date: {loanDate:D}");
+            Output.WriteLine($"Loan Amount: {INITIAL_LOAN_AMOUNT:C} United States Dollars");
             Output.WriteLine($"Loan Interest Annual Percentage Rate: {apr}");
             Output.WriteLine("Interest Type: Compounding Monthly in Perpetuity");
             Output.WriteLine("");
-            Output.WriteLine($"Note: There is a minimum loan cost of one month's interest." +
-                             $"The loan payoff amount is a sample of the potential payoff amounts. " +
-                             $"The actual loan payoff amount will continue to compound monthly in perpetuity until the loan plus interest is paid in full. " +
-                             $"Partial payments are allowed." +
-                             $"A new payoff amount, using the same interest mechanics, will be provided after a partial payment is made. ");
+            var minimumLoanRepayment = INITIAL_LOAN_AMOUNT + GetInterest(INITIAL_LOAN_AMOUNT, monthlyRate);
+            Output.WriteLine($"TERMS \n" +
+                             $"All payments have a 7 day grace period. " +
+                             $"Early repayment is allowed, creating a new amortization schedule, but the total repayment can't be less than {minimumLoanRepayment:C}. " +
+                             $"The loan SHOULD be repaid on {loanDate.AddMonths(loanLengthInMonths):D} according to the amortization schedule in TABLE 1. " +
+                             $"If the loan is not repaid by {loanDate.AddMonths(loanLengthInMonths):D}, interest will accrue each month and the loan MUST be repaid according to the amortization schedule shown in TABLE 2.");
+            Output.WriteLine("\nIf the loan isn't repaid at a minimum according to the amortization schedule in TABLE 2, then the loan must be repaid in full immediately or legal action can be taken with the losing party paying all attorney's fees.");
+
             Output.WriteLine(string.Empty);
-            currentDate = currentDate.AddMonths(compoundIntervalMonths);
-            currentLoanPayoffAmount += currentLoanPayoffAmount * (monthlyRate * compoundIntervalMonths);
-            do
+
+            Output.WriteLine("TABLE 1");
+            PrintAmortization(INITIAL_LOAN_AMOUNT, loanLengthInMonths, loanDate, monthlyRate);
+
+            Output.WriteLine("TABLE 2");
+            PrintAmortization(INITIAL_LOAN_AMOUNT, MAXIMUM_LOAN_LENGTH, loanDate, monthlyRate);
+
+            Output.WriteLine($"Lender: {lender}");
+            Output.WriteLine("Lender Signature: ________________________________________________");
+
+            Output.WriteLine($"Borrower Name: {borrower}");
+            Output.WriteLine("Borrower Signature: ________________________________________________");
+
+            Output.WriteLine($"Witness: {wittness}");
+            Output.WriteLine("Witness Signature: ________________________________________________");
+        }
+
+        private void PrintAmortization(decimal loanAmount, int loanLengthInMonths, DateTime loanDate, decimal monthlyRate)
+        {
+            int remainingLoanLengthInMonths = loanLengthInMonths;
+            decimal currentLoanPayoffAmount = loanAmount;
+            var currentRepaymentDate = loanDate.AddMonths(1);
+            for (var ct = 0; ct < loanLengthInMonths; ct++)
             {
-                Output.WriteLine($"Loan Payoff Amount if paid before {currentDate.AddDays(1):yyyy MMM dd} UTC: {currentLoanPayoffAmount:C} United States Dollars");
-                currentLoanPayoffAmount += currentLoanPayoffAmount * (monthlyRate * compoundIntervalMonths);
-                currentDate = currentDate.AddMonths(compoundIntervalMonths);
-            } while (currentDate < sampleEndDate);
+                Output.WriteLine($"{currentRepaymentDate:D}");
+                var interest = currentLoanPayoffAmount * monthlyRate;
+                var principlePayment = currentLoanPayoffAmount / remainingLoanLengthInMonths;
+                currentLoanPayoffAmount -= principlePayment;
+                Output.WriteLine($"Principle Due {principlePayment:C}. Interest Due {interest:C}. Total Due {principlePayment + interest:C}. Remaining balance {currentLoanPayoffAmount:C}.");
+                Output.WriteLine("");
+                currentRepaymentDate = currentRepaymentDate.AddMonths(1);
+                remainingLoanLengthInMonths -= 1;
+            }
+        }
+
+        private decimal GetInterest(decimal principle, decimal monthlyRate)
+        {
+            return principle * monthlyRate;
         }
     }
 }

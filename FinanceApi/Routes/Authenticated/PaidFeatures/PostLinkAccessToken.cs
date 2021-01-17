@@ -32,7 +32,7 @@ namespace FinanceApi.Routes.Authenticated.PaidFeatures
             new UserService().UpdateUser(user.Email, update);
 
             new BankAggregator().GetAndCacheFinanceUserBankAccount(user,
-                new DatabaseClient<FinanceUserBankAccount>(new AmazonDynamoDBClient(), new ConsoleLogger())); // Can't update the existing, because removing and adding a bank link generates a new id and an old bank link could stay in the failed accounts showing a false error.
+                new DatabaseClient<FinanceUserBankAccount>(new AmazonDynamoDBClient(), new ConsoleLogger()));
 
             response.StatusCode = 200;
             response.Body = Constants.JSON_EMPTY;
