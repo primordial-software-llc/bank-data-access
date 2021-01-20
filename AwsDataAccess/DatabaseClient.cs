@@ -9,7 +9,7 @@ using AwsTools;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace PropertyRentalManagement.DataServices
+namespace AwsDataAccess
 {
     public class DatabaseClient<T> where T : IModel, new()
     {

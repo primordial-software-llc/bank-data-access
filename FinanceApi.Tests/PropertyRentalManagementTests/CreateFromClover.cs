@@ -4,13 +4,11 @@ using System.Linq;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
-using FinanceApi.DatabaseModel;
 using FinanceApi.Tests.InfrastructureAsCode;
 using Newtonsoft.Json;
 using PrivateAccounting;
 using PropertyRentalManagement.Clover;
 using PropertyRentalManagement.Clover.Models;
-using PropertyRentalManagement.DataServices;
 using PropertyRentalManagement.QuickBooksOnline;
 using PropertyRentalManagement.QuickBooksOnline.Models;
 using PropertyRentalManagement.QuickBooksOnline.Models.Invoices;
@@ -18,7 +16,7 @@ using Xunit;
 using Xunit.Abstractions;
 using Reference = PropertyRentalManagement.QuickBooksOnline.Models.Reference;
 
-namespace FinanceApi.Tests
+namespace FinanceApi.Tests.PropertyRentalManagementTests
 {
     public class CreateFromClover
     {
@@ -34,7 +32,7 @@ namespace FinanceApi.Tests
         }
 
 
-        //[Fact]
+        [Fact]
         public void RollBackBatch()
         {
             var client = Factory.CreateAmazonDynamoDbClient();

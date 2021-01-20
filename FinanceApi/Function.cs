@@ -4,11 +4,11 @@ using System.Linq;
 using Amazon.DynamoDBv2;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
+using AwsDataAccess;
 using FinanceApi.DatabaseModel;
 using FinanceApi.Routes;
 using FinanceApi.Routes.Authenticated.PointOfSale;
 using Newtonsoft.Json.Linq;
-using PropertyRentalManagement.DataServices;
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.Json.JsonSerializer))]

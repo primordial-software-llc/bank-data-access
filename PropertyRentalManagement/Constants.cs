@@ -28,5 +28,7 @@ namespace PropertyRentalManagement
             CUSTOMER_RESTAURANT,
             CUSTOMER_VIRGIN_GUADALUPE
         };
+
+        public static string RealmId => "9130347957983546";
     }
 }

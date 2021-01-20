@@ -4,12 +4,12 @@ using System.Globalization;
 using System.Linq;
 using Amazon.DynamoDBv2;
 using Amazon.Lambda.APIGatewayEvents;
+using AwsDataAccess;
 using FinanceApi.DatabaseModel;
 using FinanceApi.ResponseModels;
 using Newtonsoft.Json;
 using NodaTime;
 using PropertyRentalManagement.DatabaseModel;
-using PropertyRentalManagement.DataServices;
 using PropertyRentalManagement.QuickBooksOnline;
 
 namespace FinanceApi.Routes.Authenticated.PointOfSale.Reports
@@ -32,7 +32,7 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale.Reports
 
             var dbClient = new AmazonDynamoDBClient();
             var qboDbClient = new DatabaseClient<QuickBooksOnlineConnection>(dbClient, new ConsoleLogger());
-            var qboClient = new QuickBooksOnlineClient(Configuration.RealmId, qboDbClient, new ConsoleLogger());
+            var qboClient = new QuickBooksOnlineClient(PropertyRentalManagement.Constants.RealmId, qboDbClient, new ConsoleLogger());
             var report = PropertyRentalManagement.Reports.IncomeReport.RunReport(
                 easternStart.ToDateTimeOffset(),
                 easternEnd.ToDateTimeOffset(),

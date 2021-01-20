@@ -1,6 +1,7 @@
 ﻿using System;
 using Amazon.DynamoDBv2;
 using Amazon.Lambda.APIGatewayEvents;
+using AwsDataAccess;
 using FinanceApi.DatabaseModel;
 using Newtonsoft.Json;
 using PropertyRentalManagement;
@@ -18,18 +19,16 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
 
         public void Run(APIGatewayProxyRequest request, APIGatewayProxyResponse response, FinanceUser user)
         {
-            var databaseClient = new DatabaseClient<QuickBooksOnlineConnection>(new AmazonDynamoDBClient(), new ConsoleLogger());
-            var qboClient = new QuickBooksOnlineClient(Configuration.RealmId, databaseClient, new ConsoleLogger());
+            var awsDbClient = new AmazonDynamoDBClient();
+            var logger = new ConsoleLogger();
+            var databaseClient = new DatabaseClient<QuickBooksOnlineConnection>(awsDbClient, logger);
+            var qboClient = new QuickBooksOnlineClient(PropertyRentalManagement.Constants.RealmId, databaseClient, new ConsoleLogger());
             var day = JsonConvert.DeserializeObject<CalendarDay>(request.Body);
             var date = new DateTime(day.Year, day.Month, day.DayOfMonth, 0, 0, 0, DateTimeKind.Utc);
             Console.WriteLine($"{user.Email} is creating weekly invoices for {date:yyyy-MM-dd}");
-            var recurringInvoices = new RecurringInvoices(new VendorService(new AmazonDynamoDBClient()), qboClient, Configuration.POLK_COUNTY_RENTAL_SALES_TAX_RATE);
-            var weeklyInvoices = recurringInvoices.CreateWeeklyInvoices(date);
-            Console.WriteLine($"Created {weeklyInvoices.Count} weekly invoices for {JsonConvert.SerializeObject(day)}");
-            foreach (var weeklyInvoice in weeklyInvoices)
-            {
-                Console.WriteLine($"Created weekly invoice for {weeklyInvoice.CustomerRef.Name} - {weeklyInvoice.CustomerRef.Value}");
-            }
+            var taxRate = new Tax().GetTaxRate(qboClient, PropertyRentalManagement.Constants.QUICKBOOKS_RENTAL_TAX_RATE);
+            var recurringInvoices = new RecurringInvoices(new VendorService(awsDbClient), qboClient, taxRate, logger);
+            var weeklyInvoices = recurringInvoices.CreateInvoicesForFrequency(date, RecurringInvoices.Frequency.Weekly);
             var invoicesJson = JsonConvert.SerializeObject(weeklyInvoices);
             Console.WriteLine(invoicesJson);
             response.Body = invoicesJson;

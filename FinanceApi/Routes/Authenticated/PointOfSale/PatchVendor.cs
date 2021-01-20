@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using Amazon.DynamoDBv2;
 using Amazon.Lambda.APIGatewayEvents;
+using AwsDataAccess;
 using FinanceApi.DatabaseModel;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -11,7 +11,6 @@ using NodaTime;
 using NodaTime.Extensions;
 using PropertyRentalManagement.BusinessLogic;
 using PropertyRentalManagement.DatabaseModel;
-using PropertyRentalManagement.DataServices;
 using PropertyRentalManagement.QuickBooksOnline;
 using PropertyRentalManagement.QuickBooksOnline.Models;
 using Vendor = PropertyRentalManagement.DatabaseModel.Vendor;
@@ -30,7 +29,7 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
             var spotClient = new DatabaseClient<Spot>(dbClient, logger);
             var vendorDataClient = new DatabaseClient<Vendor>(dbClient, logger);
             var databaseClient = new DatabaseClient<QuickBooksOnlineConnection>(dbClient, logger);
-            var qboClient = new QuickBooksOnlineClient(Configuration.RealmId, databaseClient, logger);
+            var qboClient = new QuickBooksOnlineClient(PropertyRentalManagement.Constants.RealmId, databaseClient, logger);
             var vendorUpdates = JsonConvert.DeserializeObject<Vendor>(request.Body);
             if (vendorUpdates.Memo != null && vendorUpdates.Memo.Length > 4000)
             {

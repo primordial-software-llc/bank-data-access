@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
+using AwsDataAccess;
 using PropertyRentalManagement.DatabaseModel;
-using PropertyRentalManagement.DataServices;
 using Xunit;
 
 namespace FinanceApi.Tests.InfrastructureAsCode.PointOfSale

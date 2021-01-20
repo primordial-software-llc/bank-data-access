@@ -14,10 +14,6 @@ namespace FinanceApi
         public static string STRIPE_API_SECRET_KEY => Environment.GetEnvironmentVariable("STRIPE_API_SECRET_KEY");
         public static string STRIPE_INCOME_CALCULATOR_PRODUCT_PLAN_ID = Environment.GetEnvironmentVariable("STRIPE_INCOME_CALCULATOR_PRODUCT_PLAN_ID");
 
-        public static string RealmId => "9130347957983546";
-
-        public static decimal POLK_COUNTY_RENTAL_SALES_TAX_RATE = Decimal.Parse(Environment.GetEnvironmentVariable("POLK_COUNTY_RENTAL_SALES_TAX_RATE"));
-
         public static DateTimeZone LakeLandMiPuebloTimeZone => DateTimeZoneProviders.Tzdb["America/New_York"];
 
         public static BankAccessClient BankClient => new BankAccessClient(

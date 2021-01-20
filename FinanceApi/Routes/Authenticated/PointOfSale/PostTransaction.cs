@@ -4,12 +4,12 @@ using System.Globalization;
 using System.Linq;
 using Amazon.DynamoDBv2;
 using Amazon.Lambda.APIGatewayEvents;
+using AwsDataAccess;
 using FinanceApi.DatabaseModel;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PrivateAccounting;
 using PropertyRentalManagement.DatabaseModel;
-using PropertyRentalManagement.DataServices;
 using PropertyRentalManagement.QuickBooksOnline;
 using JournalEntry = PropertyRentalManagement.DatabaseModel.JournalEntry;
 
@@ -23,7 +23,7 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
         public void Run(APIGatewayProxyRequest request, APIGatewayProxyResponse response, FinanceUser user)
         {
             var databaseClient = new DatabaseClient<QuickBooksOnlineConnection>(new AmazonDynamoDBClient(), new ConsoleLogger());
-            var qboClient = new QuickBooksOnlineClient(Configuration.RealmId, databaseClient, new ConsoleLogger());
+            var qboClient = new QuickBooksOnlineClient(PropertyRentalManagement.Constants.RealmId, databaseClient, new ConsoleLogger());
             var accountingClient = new AccountingQuickBooksOnlineClient(qboClient);
             var journal = new PrivateAccountingJournal<JournalEntry>(new AmazonDynamoDBClient(), accountingClient);
             var journalEntry = JsonConvert.DeserializeObject<JournalEntry>(request.Body);
@@ -59,7 +59,7 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
             {
                 validation.Add("Date is required");
             }
-            else if (!DateTime.TryParseExact(rentalDate, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedRentalDate))
+            else if (!DateTime.TryParseExact(rentalDate, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out _))
             {
                 validation.Add("Date must be in the format YYYY-MM-DD e.g. 1989-06-16");
             }

@@ -1,9 +1,9 @@
 ﻿using Amazon.DynamoDBv2;
 using Amazon.Lambda.APIGatewayEvents;
+using AwsDataAccess;
 using FinanceApi.DatabaseModel;
 using Newtonsoft.Json;
 using PropertyRentalManagement.DatabaseModel;
-using PropertyRentalManagement.DataServices;
 using PropertyRentalManagement.QuickBooksOnline;
 using PropertyRentalManagement.QuickBooksOnline.Models;
 using Vendor = PropertyRentalManagement.DatabaseModel.Vendor;
@@ -18,7 +18,7 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
         {
             var dbClient = new AmazonDynamoDBClient();
             var qboDbClient = new DatabaseClient<QuickBooksOnlineConnection>(dbClient, new ConsoleLogger());
-            var qboClient = new QuickBooksOnlineClient(Configuration.RealmId, qboDbClient, new ConsoleLogger());
+            var qboClient = new QuickBooksOnlineClient(PropertyRentalManagement.Constants.RealmId, qboDbClient, new ConsoleLogger());
             var vendorDataClient = new DatabaseClient<Vendor>(dbClient, new ConsoleLogger());
             var vendor = vendorDataClient.Get(new Vendor { Id = request.QueryStringParameters["id"] });
             var start = request.QueryStringParameters["start"];

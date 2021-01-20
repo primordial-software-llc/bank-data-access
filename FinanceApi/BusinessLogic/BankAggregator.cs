@@ -3,10 +3,10 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AwsDataAccess;
 using FinanceApi.DatabaseModel;
 using FinanceApi.PlaidModel;
 using Newtonsoft.Json.Linq;
-using PropertyRentalManagement.DataServices;
 
 namespace FinanceApi.BusinessLogic
 {

@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using Amazon.DynamoDBv2;
 using Amazon.Lambda.APIGatewayEvents;
+using AwsDataAccess;
 using FinanceApi.BusinessLogic;
 using FinanceApi.DatabaseModel;
 using FinanceApi.RequestModels;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using PropertyRentalManagement.DataServices;
 
 namespace FinanceApi.Routes.Authenticated.PaidFeatures
 {

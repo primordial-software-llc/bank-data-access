@@ -3,9 +3,10 @@ using Amazon;
 using Amazon.DynamoDBv2;
 using Amazon.Runtime;
 using Amazon.Runtime.CredentialManagement;
+using AwsDataAccess;
 using AwsTools;
+using PropertyRentalManagement;
 using PropertyRentalManagement.DatabaseModel;
-using PropertyRentalManagement.DataServices;
 using PropertyRentalManagement.QuickBooksOnline;
 
 namespace FinanceApi.Tests.InfrastructureAsCode
@@ -48,7 +49,7 @@ namespace FinanceApi.Tests.InfrastructureAsCode
         public static QuickBooksOnlineClient CreateQuickBooksOnlineClient(ILogging logger)
         {
             var databaseClient = new DatabaseClient<QuickBooksOnlineConnection>(CreateAmazonDynamoDbClient(), logger);
-            return new QuickBooksOnlineClient(Configuration.RealmId, databaseClient, logger);
+            return new QuickBooksOnlineClient(Constants.RealmId, databaseClient, logger);
         }
     }
 }

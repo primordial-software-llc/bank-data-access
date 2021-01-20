@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
+using AwsDataAccess;
 using FinanceApi.DatabaseModel;
 using Newtonsoft.Json.Linq;
-using PropertyRentalManagement.DataServices;
 
 namespace FinanceApi
 {

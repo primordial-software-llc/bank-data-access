@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using Amazon.DynamoDBv2.Model;
+using AwsDataAccess;
 using PropertyRentalManagement.DatabaseModel;
 
 namespace PropertyRentalManagement.DataServices
 {
     public class SpotReservationService
     {
-        private DatabaseClient<SpotReservation> Client { get; set; }
+        private DatabaseClient<SpotReservation> Client { get; }
 
         public SpotReservationService(DatabaseClient<SpotReservation> client)
         {

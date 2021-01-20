@@ -5,13 +5,13 @@ using System.Linq;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
 using Amazon.Lambda.APIGatewayEvents;
+using AwsDataAccess;
 using FinanceApi.DatabaseModel;
 using FinanceApi.ResponseModels;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PropertyRentalManagement.BusinessLogic;
 using PropertyRentalManagement.DatabaseModel;
-using PropertyRentalManagement.DataServices;
 using PropertyRentalManagement.QuickBooksOnline;
 using PropertyRentalManagement.QuickBooksOnline.Models;
 using Vendor = PropertyRentalManagement.DatabaseModel.Vendor;
@@ -32,7 +32,7 @@ namespace FinanceApi.Routes.Unauthenticated.PointOfSale
                 .OrderBy(x => x.Section?.Name)
                 .ThenBy(x => x.Name)
                 .ToList();
-            var qboClient = new QuickBooksOnlineClient(Configuration.RealmId, new DatabaseClient<QuickBooksOnlineConnection>(dbClientCore, logger), logger);
+            var qboClient = new QuickBooksOnlineClient(PropertyRentalManagement.Constants.RealmId, new DatabaseClient<QuickBooksOnlineConnection>(dbClientCore, logger), logger);
             var allActiveCustomers = qboClient
                 .QueryAll<Customer>("select * from customer")
                 .ToDictionary(x => x.Id);

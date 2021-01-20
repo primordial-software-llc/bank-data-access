@@ -1,14 +1,7 @@
 ﻿using System;
-using System.Globalization;
 using System.Linq;
-using Amazon.DynamoDBv2;
-using FinanceApi.Routes.Authenticated.PointOfSale;
 using FinanceApi.Tests.InfrastructureAsCode;
-using NodaTime;
 using PropertyRentalManagement;
-using PropertyRentalManagement.DatabaseModel;
-using PropertyRentalManagement.DataServices;
-using PropertyRentalManagement.QuickBooksOnline;
 using PropertyRentalManagement.QuickBooksOnline.Models;
 using Xunit;
 using Xunit.Abstractions;
@@ -33,7 +26,7 @@ namespace FinanceApi.Tests.Reports
 
             var invoiceQuery = $"select * from Invoice Where TxnDate >= '{start:yyyy-MM-dd}' and TxnDate <= '{end:yyyy-MM-dd}'";
             var invoices = client.QueryAll<Invoice>(invoiceQuery)
-                .Where(x => !PropertyRentalManagement.Constants.NonRentalCustomerIds.Contains(int.Parse(x.CustomerRef.Value)))
+                .Where(x => !Constants.NonRentalCustomerIds.Contains(int.Parse(x.CustomerRef.Value)))
                 .ToList();
 
 
@@ -47,7 +40,7 @@ namespace FinanceApi.Tests.Reports
 
             string salesReceiptQuery = $"select * from SalesReceipt Where TxnDate >= '{start:yyyy-MM-dd}' and TxnDate <= '{end:yyyy-MM-dd}'";
             var salesReceipts = client.QueryAll<SalesReceipt>(salesReceiptQuery)
-                .Where(x => !PropertyRentalManagement.Constants.NonRentalCustomerIds.Contains(int.Parse(x.CustomerRef.Value)))
+                .Where(x => !Constants.NonRentalCustomerIds.Contains(int.Parse(x.CustomerRef.Value)))
                 .ToList();
 
             var salesReceiptLines = salesReceipts.SelectMany(x => x.Line).ToList();

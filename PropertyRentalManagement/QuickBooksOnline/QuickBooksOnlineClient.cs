@@ -4,12 +4,13 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Web;
+using AwsDataAccess;
 using AwsTools;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PropertyRentalManagement.DatabaseModel;
-using PropertyRentalManagement.DataServices;
 using PropertyRentalManagement.QuickBooksOnline.Models;
+using static PropertyRentalManagement.BusinessLogic.RecurringInvoices;
 
 namespace PropertyRentalManagement.QuickBooksOnline
 {
@@ -44,6 +45,22 @@ namespace PropertyRentalManagement.QuickBooksOnline
         public QuickBooksOnlineConnection GetConnectionForLocks()
         {
             return DbClient.Get(new QuickBooksOnlineConnection { RealmId = RealmId }, true);
+        }
+
+        public void LockInvoices(Frequency frequency, bool lockUpdateType)
+        {
+            if (frequency == Frequency.Weekly)
+            {
+                LockWeeklyInvoices(lockUpdateType);
+            }
+            else if (frequency == Frequency.Monthly)
+            {
+                LockMonthlyInvoices(lockUpdateType);
+            }
+            else
+            {
+                throw new Exception($"Can't lock invoices due to unknown frequency of {frequency}");
+            }
         }
 
         public void LockWeeklyInvoices(bool lockUpdateType)

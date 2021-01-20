@@ -2,10 +2,10 @@
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
 using Amazon.Lambda.APIGatewayEvents;
+using AwsDataAccess;
 using FinanceApi.DatabaseModel;
 using Newtonsoft.Json;
 using PropertyRentalManagement.DatabaseModel;
-using PropertyRentalManagement.DataServices;
 
 namespace FinanceApi.Routes.Authenticated.PointOfSale
 {

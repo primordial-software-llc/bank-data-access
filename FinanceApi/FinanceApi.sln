@@ -11,7 +11,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PropertyRentalManagement", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Accounting", "..\Accounting\Accounting.csproj", "{235DEFAB-DA01-4772-8305-151DCDB59E53}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrivateAccounting", "..\..\private-accounting\PrivateAccounting\PrivateAccounting.csproj", "{4810DC95-C8FA-47DF-8F0A-0901A714599F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrivateAccounting", "..\..\private-accounting\PrivateAccounting\PrivateAccounting.csproj", "{4810DC95-C8FA-47DF-8F0A-0901A714599F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PropertyRentalManagement.CreateWeeklyInvoices", "..\PropertyRentalManagement.CreateWeeklyInvoices\PropertyRentalManagement.CreateWeeklyInvoices.csproj", "{8099943B-FE15-4CB5-A796-25C761435598}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AwsDataAccess", "..\AwsDataAccess\AwsDataAccess.csproj", "{71F05528-3A2A-4DF9-BEDA-0A9E1271281E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PropertyRentalManagement.CreateMonthlyInvoices", "..\PropertyRentalManagement.CreateMonthlyInvoices\PropertyRentalManagement.CreateMonthlyInvoices.csproj", "{450D340B-CFBC-417C-A08F-8C87B37D1C33}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +45,18 @@ Global
 		{4810DC95-C8FA-47DF-8F0A-0901A714599F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4810DC95-C8FA-47DF-8F0A-0901A714599F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4810DC95-C8FA-47DF-8F0A-0901A714599F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8099943B-FE15-4CB5-A796-25C761435598}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8099943B-FE15-4CB5-A796-25C761435598}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8099943B-FE15-4CB5-A796-25C761435598}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8099943B-FE15-4CB5-A796-25C761435598}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71F05528-3A2A-4DF9-BEDA-0A9E1271281E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71F05528-3A2A-4DF9-BEDA-0A9E1271281E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71F05528-3A2A-4DF9-BEDA-0A9E1271281E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71F05528-3A2A-4DF9-BEDA-0A9E1271281E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{450D340B-CFBC-417C-A08F-8C87B37D1C33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{450D340B-CFBC-417C-A08F-8C87B37D1C33}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{450D340B-CFBC-417C-A08F-8C87B37D1C33}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{450D340B-CFBC-417C-A08F-8C87B37D1C33}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

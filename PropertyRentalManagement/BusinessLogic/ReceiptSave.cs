@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using AwsDataAccess;
 using Newtonsoft.Json;
 using NodaTime;
 using NodaTime.Extensions;
 using PropertyRentalManagement.DatabaseModel;
-using PropertyRentalManagement.DataServices;
 using PropertyRentalManagement.QuickBooksOnline;
 using PropertyRentalManagement.QuickBooksOnline.Models;
 using PropertyRentalManagement.QuickBooksOnline.Models.Invoices;
@@ -19,7 +19,7 @@ namespace PropertyRentalManagement.BusinessLogic
         private DatabaseClient<ReceiptSaveResult> ReceiptDbClient { get; }
         private DatabaseClient<SpotReservation> SpotReservationDbClient { get; }
         private QuickBooksOnlineClient QuickBooksClient { get; }
-        private decimal TaxRate { get; set; }
+        private decimal TaxRate { get; }
 
         public ReceiptSave(
             DatabaseClient<ReceiptSaveResult> receiptDbClient,

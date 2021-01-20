@@ -2,10 +2,10 @@
 using System.Globalization;
 using Amazon.DynamoDBv2;
 using Amazon.Lambda.APIGatewayEvents;
+using AwsDataAccess;
 using FinanceApi.BusinessLogic;
 using FinanceApi.DatabaseModel;
 using Newtonsoft.Json;
-using PropertyRentalManagement.DataServices;
 
 namespace FinanceApi.Routes.Authenticated
 {

@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AwsDataAccess;
 using PropertyRentalManagement.DatabaseModel;
-using PropertyRentalManagement.DataServices;
 using PropertyRentalManagement.QuickBooksOnline.Models;
 using Vendor = PropertyRentalManagement.DatabaseModel.Vendor;
 
@@ -11,7 +11,7 @@ namespace PropertyRentalManagement.BusinessLogic
 {
     public class SpotReservationCheck
     {
-        private DatabaseClient<Spot> SpotDbClient { get; set; }
+        private DatabaseClient<Spot> SpotDbClient { get; }
         private DatabaseClient<SpotReservation> SpotReservationDbClient { get; }
         private Dictionary<int?, Customer> AllActiveCustomers { get; }
         private List<Vendor> AllActiveVendors { get; }
