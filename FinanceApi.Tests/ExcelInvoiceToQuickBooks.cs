@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using FinanceApi.Taxes;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -29,16 +30,22 @@ namespace FinanceApi.Tests
                     .Where(x => !string.IsNullOrWhiteSpace(x.Amount) && x.Amount != "$-")
                     .ToList();
 
-                /*
                 var billableTime = invoiceItems.First(x =>
                     string.Equals(x.Description, "Hourly business consulting for customer sales processes and bookkeeping", StringComparison.OrdinalIgnoreCase) ||
                     string.Equals(x.Description, "Hourly consulting, bookkeeping and software development", StringComparison.OrdinalIgnoreCase)
                 );
-                total += decimal.Parse(billableTime.Amount.Replace("$", string.Empty));
-                */
-                total += invoiceItems.Sum(x => decimal.Parse(x.Amount.Replace("$", string.Empty)));
 
+                var billableExpense = invoiceItems.Where(x =>
+                    !string.Equals(x.Description, "Hourly business consulting for customer sales processes and bookkeeping", StringComparison.OrdinalIgnoreCase) &&
+                    !string.Equals(x.Description, "Hourly consulting, bookkeeping and software development", StringComparison.OrdinalIgnoreCase)
+                );
+
+                total += decimal.Parse(billableTime.Amount.Replace("$", string.Empty));
             }
+
+
+
+
             Output.WriteLine(total.ToString());
         }
 
@@ -118,14 +125,6 @@ namespace FinanceApi.Tests
             var subtotalIndex = items.IndexOf(subtotalStart);
             var invoiceItems = items.GetRange(descriptionIndex + 1, subtotalIndex - descriptionIndex - 1);
             return invoiceItems;
-        }
-
-        class LakeLandMiPuebloInvoiceLineItem
-        {
-            public string Description { get; set; }
-            public string QuantityAndSubtotal { get; set; }
-            public string UnitPrice { get; set; }
-            public string Amount { get; set; }
         }
 
         class IndustriaSupersportInvoiceLineItem
