@@ -1,7 +1,7 @@
 ﻿
 namespace FinanceApi.Taxes
 {
-    public class LakeLandMiPuebloInvoiceLineItem
+    public class IndustriasSupersportsInvoiceLineItem
     {
         public string Description { get; set; }
         public string Quantity { get; set; }

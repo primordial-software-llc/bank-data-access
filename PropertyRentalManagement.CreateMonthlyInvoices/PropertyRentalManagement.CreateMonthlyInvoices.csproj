@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\private-accounting\PrivateAccounting\PrivateAccounting.csproj" />
     <ProjectReference Include="..\AwsDataAccess\AwsDataAccess.csproj" />
     <ProjectReference Include="..\PropertyRentalManagement\PropertyRentalManagement.csproj" />
   </ItemGroup>

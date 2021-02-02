@@ -20,7 +20,7 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
         public void Run(APIGatewayProxyRequest request, APIGatewayProxyResponse response, FinanceUser user)
         {
             var databaseClient = new DatabaseClient<QuickBooksOnlineConnection>(new AmazonDynamoDBClient(), new ConsoleLogger());
-            var qboClient = new QuickBooksOnlineClient(PropertyRentalManagement.Constants.RealmId, databaseClient, new ConsoleLogger());
+            var qboClient = new QuickBooksOnlineClient(PrivateAccounting.Constants.LakelandMiPuebloRealmId, databaseClient, new ConsoleLogger());
             var day = JsonConvert.DeserializeObject<CalendarDay>(request.Body);
             var date = new DateTime(day.Year, day.Month, day.DayOfMonth, 0, 0, 0, DateTimeKind.Utc);
             Console.WriteLine($"{user.Email} is creating monthly invoices for {date:yyyy-MM-dd}");

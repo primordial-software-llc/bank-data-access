@@ -1,20 +1,16 @@
 ﻿using FinanceApi.DatabaseModel;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace FinanceApi.Tests
 {
-    public class Test
+    public class CredentialTests
     {
         private readonly ITestOutputHelper output;
 
-        public Test(ITestOutputHelper output)
+        public CredentialTests(ITestOutputHelper output)
         {
             this.output = output;
         }

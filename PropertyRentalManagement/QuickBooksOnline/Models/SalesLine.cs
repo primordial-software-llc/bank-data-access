@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace PropertyRentalManagement.QuickBooksOnline.Models.Invoices
+namespace PropertyRentalManagement.QuickBooksOnline.Models
 {
     public class SalesLine
     {
@@ -12,5 +12,8 @@ namespace PropertyRentalManagement.QuickBooksOnline.Models.Invoices
 
         [JsonProperty("Amount")]
         public decimal? Amount { get; set; }
+
+        [JsonProperty("Description")]
+        public string Description { get; set; }
     }
 }

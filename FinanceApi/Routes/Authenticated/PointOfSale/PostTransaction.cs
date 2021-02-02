@@ -23,7 +23,7 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
         public void Run(APIGatewayProxyRequest request, APIGatewayProxyResponse response, FinanceUser user)
         {
             var databaseClient = new DatabaseClient<QuickBooksOnlineConnection>(new AmazonDynamoDBClient(), new ConsoleLogger());
-            var qboClient = new QuickBooksOnlineClient(PropertyRentalManagement.Constants.RealmId, databaseClient, new ConsoleLogger());
+            var qboClient = new QuickBooksOnlineClient(PrivateAccounting.Constants.LakelandMiPuebloRealmId, databaseClient, new ConsoleLogger());
             var accountingClient = new AccountingQuickBooksOnlineClient(qboClient);
             var journal = new PrivateAccountingJournal<JournalEntry>(new AmazonDynamoDBClient(), accountingClient);
             var journalEntry = JsonConvert.DeserializeObject<JournalEntry>(request.Body);

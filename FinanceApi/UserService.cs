@@ -15,6 +15,7 @@ namespace FinanceApi
         {
             var user = new FinanceUser
             {
+                Id = Guid.NewGuid().ToString(),
                 Email = email,
                 Biweekly = new List<JObject>(),
                 MonthlyRecurringExpenses = new List<JObject>(),

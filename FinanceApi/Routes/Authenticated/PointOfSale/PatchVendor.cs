@@ -29,7 +29,7 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
             var spotClient = new DatabaseClient<Spot>(dbClient, logger);
             var vendorDataClient = new DatabaseClient<Vendor>(dbClient, logger);
             var databaseClient = new DatabaseClient<QuickBooksOnlineConnection>(dbClient, logger);
-            var qboClient = new QuickBooksOnlineClient(PropertyRentalManagement.Constants.RealmId, databaseClient, logger);
+            var qboClient = new QuickBooksOnlineClient(PrivateAccounting.Constants.LakelandMiPuebloRealmId, databaseClient, logger);
             var vendorUpdates = JsonConvert.DeserializeObject<Vendor>(request.Body);
             if (vendorUpdates.Memo != null && vendorUpdates.Memo.Length > 4000)
             {

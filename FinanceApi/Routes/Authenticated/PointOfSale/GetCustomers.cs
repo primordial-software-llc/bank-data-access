@@ -16,7 +16,7 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
         public void Run(APIGatewayProxyRequest request, APIGatewayProxyResponse response, FinanceUser user)
         {
             var databaseClient = new DatabaseClient<QuickBooksOnlineConnection>(new AmazonDynamoDBClient(), new ConsoleLogger());
-            var qboClient = new QuickBooksOnlineClient(PropertyRentalManagement.Constants.RealmId, databaseClient, new ConsoleLogger());
+            var qboClient = new QuickBooksOnlineClient(PrivateAccounting.Constants.LakelandMiPuebloRealmId, databaseClient, new ConsoleLogger());
             var customers = qboClient.QueryAll<Customer>("select * from customer");
             response.Body = JsonConvert.SerializeObject(customers);
         }

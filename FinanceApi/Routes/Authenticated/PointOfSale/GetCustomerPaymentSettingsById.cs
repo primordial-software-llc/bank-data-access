@@ -20,7 +20,7 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
         {
             var dbClient = new AmazonDynamoDBClient();
             var qboDbClient = new DatabaseClient<QuickBooksOnlineConnection>(dbClient, new ConsoleLogger());
-            var qboClient = new QuickBooksOnlineClient(PropertyRentalManagement.Constants.RealmId, qboDbClient, new ConsoleLogger());
+            var qboClient = new QuickBooksOnlineClient(PrivateAccounting.Constants.LakelandMiPuebloRealmId, qboDbClient, new ConsoleLogger());
 
             var vendorDataClient = new DatabaseClient<Vendor>(dbClient, new ConsoleLogger());
             var vendor = vendorDataClient.Get(new Vendor {Id = request.QueryStringParameters["id"]});

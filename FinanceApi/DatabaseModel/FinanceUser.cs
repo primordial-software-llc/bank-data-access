@@ -7,6 +7,9 @@ namespace FinanceApi.DatabaseModel
 {
     public class FinanceUser : IModel
     {
+        [JsonProperty("id")]
+        public string Id { get; set; }
+
         [JsonProperty("email")]
         public string Email { get; set; }
 

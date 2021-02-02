@@ -32,7 +32,7 @@ namespace FinanceApi.Routes.Unauthenticated.PointOfSale
                 .OrderBy(x => x.Section?.Name)
                 .ThenBy(x => x.Name)
                 .ToList();
-            var qboClient = new QuickBooksOnlineClient(PropertyRentalManagement.Constants.RealmId, new DatabaseClient<QuickBooksOnlineConnection>(dbClientCore, logger), logger);
+            var qboClient = new QuickBooksOnlineClient(PrivateAccounting.Constants.LakelandMiPuebloRealmId, new DatabaseClient<QuickBooksOnlineConnection>(dbClientCore, logger), logger);
             var allActiveCustomers = qboClient
                 .QueryAll<Customer>("select * from customer")
                 .ToDictionary(x => x.Id);

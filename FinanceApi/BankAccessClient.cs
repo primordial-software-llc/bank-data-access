@@ -13,7 +13,6 @@ namespace FinanceApi
         private string BaseUrl { get; }
         private string ClientId { get; }
         private string Secret { get; }
-        private string PublicKey { get; }
         private ILogging Logger { get; }
         private readonly HttpClient Client = new HttpClient();
         
@@ -22,13 +21,11 @@ namespace FinanceApi
             string baseUrl,
             string clientId,
             string secret,
-            string publicKey,
             ILogging logger)
         {
             BaseUrl = baseUrl;
             ClientId = clientId;
             Secret = secret;
-            PublicKey = publicKey;
             Logger = logger;
         }
 
@@ -70,7 +67,9 @@ namespace FinanceApi
             var data = new JObject
             {
                 { "institution_id", institutionId },
-                { "public_key", PublicKey }
+                { "client_id", ClientId },
+                { "secret", Secret },
+                { "country_codes", new JArray { "US" }}
             };
             return Send("/institutions/get_by_id", data);
         }
@@ -102,17 +101,6 @@ namespace FinanceApi
             return result;
         }
 
-        public JObject CreatePublicToken(string accessToken)
-        {
-            var data = new JObject
-            {
-                { "client_id", ClientId },
-                { "access_token", accessToken },
-                { "secret", Secret }
-            };
-            return Send("/item/public_token/create", data);
-        }
-
         public ExchangeAccessToken GetAccessToken(string publicToken)
         {
             var data = new JObject
@@ -125,7 +113,7 @@ namespace FinanceApi
             return JsonConvert.DeserializeObject<ExchangeAccessToken>(response.ToString());
         }
 
-        private JObject Send(string path, JObject data)
+        public JObject Send(string path, JObject data)
         {
             var url = BaseUrl + path;
             var content = new StringContent(data.ToString(), Encoding.UTF8, "application/json");

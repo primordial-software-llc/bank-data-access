@@ -27,7 +27,7 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
             var receiptDbClient = new DatabaseClient<ReceiptSaveResult>(dbClient, logger);
             var spotReservationDbClient = new DatabaseClient<SpotReservation>(dbClient, logger);
             var vendorDbClient = new DatabaseClient<Vendor>(dbClient, logger);
-            var qboClient = new QuickBooksOnlineClient(PropertyRentalManagement.Constants.RealmId, new DatabaseClient<QuickBooksOnlineConnection>(dbClient, logger), logger);
+            var qboClient = new QuickBooksOnlineClient(PrivateAccounting.Constants.LakelandMiPuebloRealmId, new DatabaseClient<QuickBooksOnlineConnection>(dbClient, logger), logger);
 
             var allActiveCustomers = qboClient
                 .QueryAll<Customer>("select * from customer")

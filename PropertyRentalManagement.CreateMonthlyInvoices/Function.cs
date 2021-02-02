@@ -16,7 +16,7 @@ namespace PropertyRentalManagement.CreateMonthlyInvoices
         public string FunctionHandler(ILambdaContext context)
         {
             var databaseClient = new DatabaseClient<QuickBooksOnlineConnection>(new AmazonDynamoDBClient(), new ConsoleLogger());
-            var qboClient = new QuickBooksOnlineClient(Constants.RealmId, databaseClient, new ConsoleLogger());
+            var qboClient = new QuickBooksOnlineClient(PrivateAccounting.Constants.LakelandMiPuebloRealmId, databaseClient, new ConsoleLogger());
             var taxRate = new Tax().GetTaxRate(qboClient, Constants.QUICKBOOKS_RENTAL_TAX_RATE);
             var recurringInvoices = new RecurringInvoices(new VendorService(new AmazonDynamoDBClient()), qboClient, taxRate, new ConsoleLogger());
             recurringInvoices.CreateInvoicesForFrequency(DateTime.UtcNow.Date, RecurringInvoices.Frequency.Monthly);

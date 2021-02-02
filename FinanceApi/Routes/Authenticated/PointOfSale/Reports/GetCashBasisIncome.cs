@@ -32,7 +32,7 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale.Reports
 
             var dbClient = new AmazonDynamoDBClient();
             var qboDbClient = new DatabaseClient<QuickBooksOnlineConnection>(dbClient, new ConsoleLogger());
-            var qboClient = new QuickBooksOnlineClient(PropertyRentalManagement.Constants.RealmId, qboDbClient, new ConsoleLogger());
+            var qboClient = new QuickBooksOnlineClient(PrivateAccounting.Constants.LakelandMiPuebloRealmId, qboDbClient, new ConsoleLogger());
             var report = PropertyRentalManagement.Reports.IncomeReport.RunReport(
                 easternStart.ToDateTimeOffset(),
                 easternEnd.ToDateTimeOffset(),

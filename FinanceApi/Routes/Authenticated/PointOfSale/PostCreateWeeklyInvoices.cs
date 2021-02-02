@@ -22,7 +22,7 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
             var awsDbClient = new AmazonDynamoDBClient();
             var logger = new ConsoleLogger();
             var databaseClient = new DatabaseClient<QuickBooksOnlineConnection>(awsDbClient, logger);
-            var qboClient = new QuickBooksOnlineClient(PropertyRentalManagement.Constants.RealmId, databaseClient, new ConsoleLogger());
+            var qboClient = new QuickBooksOnlineClient(PrivateAccounting.Constants.LakelandMiPuebloRealmId, databaseClient, new ConsoleLogger());
             var day = JsonConvert.DeserializeObject<CalendarDay>(request.Body);
             var date = new DateTime(day.Year, day.Month, day.DayOfMonth, 0, 0, 0, DateTimeKind.Utc);
             Console.WriteLine($"{user.Email} is creating weekly invoices for {date:yyyy-MM-dd}");
