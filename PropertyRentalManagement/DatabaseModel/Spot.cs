@@ -25,6 +25,9 @@ namespace PropertyRentalManagement.DatabaseModel
         [JsonProperty("restricted")]
         public bool? Restricted { get; set; }
 
+        [JsonProperty("heightInFeet")]
+        public decimal? HeightInFeet { get; set; }
+
         public Dictionary<string, AttributeValue> GetKey()
         {
             return new Dictionary<string, AttributeValue> { { "id", new AttributeValue { S = Id } } };
