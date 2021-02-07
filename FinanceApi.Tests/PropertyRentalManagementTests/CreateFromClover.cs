@@ -7,8 +7,10 @@ using Amazon.DynamoDBv2.Model;
 using FinanceApi.Tests.InfrastructureAsCode;
 using Newtonsoft.Json;
 using PrivateAccounting;
+using PropertyRentalManagement.BusinessLogic;
 using PropertyRentalManagement.Clover;
 using PropertyRentalManagement.Clover.Models;
+using PropertyRentalManagement.DataServices;
 using PropertyRentalManagement.QuickBooksOnline;
 using PropertyRentalManagement.QuickBooksOnline.Models;
 using PropertyRentalManagement.QuickBooksOnline.Models.Invoices;
@@ -32,20 +34,20 @@ namespace FinanceApi.Tests.PropertyRentalManagementTests
         }
 
 
-        [Fact]
+        //[Fact]
         public void RollBackBatch()
         {
             var client = Factory.CreateAmazonDynamoDbClient();
             client.ScanAsync(new ScanRequest(Constants.PrivateDatabase));
 
-            var batch1018 = GetFromBatch("0e85763b-d2e7-498c-9027-b4e785746ea7");
+            var batch1018 = GetFromBatch("DONTFIND0e85763b-d2e7-498c-9027-b4e785746ea7");
             Output.WriteLine(batch1018.Count.ToString());
             foreach (var record in batch1018)
             {
                 DeleteInAccounting(record, "2020-10-18");
             }
 
-            var batch1011 = GetFromBatch("b4d3aaa9-28a1-49b4-92ff-7d0edd440da7");
+            var batch1011 = GetFromBatch("DONTFINDb4d3aaa9-28a1-49b4-92ff-7d0edd440da7");
             Output.WriteLine(batch1011.Count.ToString());
             foreach (var record in batch1011)
             {

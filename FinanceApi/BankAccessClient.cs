@@ -115,8 +115,18 @@ namespace FinanceApi
 
         public JObject Send(string path, JObject data)
         {
+            return Send(path, data.ToString());
+        }
+
+        public JObject Send<T>(string path, T data)
+        {
+            return Send(path, JsonConvert.SerializeObject(data, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
+        }
+
+        private JObject Send(string path, string data)
+        {
             var url = BaseUrl + path;
-            var content = new StringContent(data.ToString(), Encoding.UTF8, "application/json");
+            var content = new StringContent(data, Encoding.UTF8, "application/json");
             var postResult = Client.PostAsync(url, content).Result;
             var result = postResult.Content.ReadAsStringAsync().Result;
             if (!postResult.IsSuccessStatusCode)

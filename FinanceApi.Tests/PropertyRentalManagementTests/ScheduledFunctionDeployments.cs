@@ -22,7 +22,7 @@ namespace FinanceApi.Tests.PropertyRentalManagementTests
         public void DeployCreateWeeklyInvoices()
         {
             var environmentVariables = new Dictionary<string, string>();
-            var scheduleExpression = "cron(0 0 ? * 1 *)";
+            var scheduleExpression = "cron(0 0 ? * 2 *)"; // Sunday 7pm utc-5
             new LambdaDeploy().Deploy(
                 Factory.CreateCredentialsFromProfile(),
                 new List<RegionEndpoint> { RegionEndpoint.USEast1 },
@@ -48,7 +48,7 @@ namespace FinanceApi.Tests.PropertyRentalManagementTests
         public void DeployCreateMonthlyInvoices()
         {
             var environmentVariables = new Dictionary<string, string>();
-            var scheduleExpression = $"cron(0 0 1 * ? *)";
+            var scheduleExpression = $"cron(0 0 L-7 * ? *)"; // Every 7 days before the end of each the month
             new LambdaDeploy().Deploy(
                 Factory.CreateCredentialsFromProfile(),
                 new List<RegionEndpoint> { RegionEndpoint.USEast1 },

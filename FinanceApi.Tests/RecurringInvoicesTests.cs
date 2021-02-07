@@ -58,14 +58,5 @@ namespace FinanceApi.Tests
             Assert.Equal("2020-08-01", RecurringInvoices.StartOfMonth(new DateTime(2020, 8, 14)).ToString("yyyy-MM-dd"));
         }
 
-        [Fact]
-        public void EndOfMonth()
-        {
-            Assert.Equal("2019-12-31", RecurringInvoices.EndOfMonth(new DateTime(2019, 12, 5)).ToString("yyyy-MM-dd"));
-            Assert.Equal("2020-01-31", RecurringInvoices.EndOfMonth(new DateTime(2020, 1, 2)).ToString("yyyy-MM-dd"));
-            Assert.Equal("2020-07-31", RecurringInvoices.EndOfMonth(new DateTime(2020, 7, 13)).ToString("yyyy-MM-dd"));
-            Assert.Equal("2020-09-30", RecurringInvoices.EndOfMonth(new DateTime(2020, 9, 14)).ToString("yyyy-MM-dd"));
-        }
-
     }
 }

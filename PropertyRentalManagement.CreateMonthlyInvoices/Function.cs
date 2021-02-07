@@ -19,7 +19,9 @@ namespace PropertyRentalManagement.CreateMonthlyInvoices
             var qboClient = new QuickBooksOnlineClient(PrivateAccounting.Constants.LakelandMiPuebloRealmId, databaseClient, new ConsoleLogger());
             var taxRate = new Tax().GetTaxRate(qboClient, Constants.QUICKBOOKS_RENTAL_TAX_RATE);
             var recurringInvoices = new RecurringInvoices(new VendorService(new AmazonDynamoDBClient()), qboClient, taxRate, new ConsoleLogger());
-            recurringInvoices.CreateInvoicesForFrequency(DateTime.UtcNow.Date, RecurringInvoices.Frequency.Monthly);
+            recurringInvoices.CreateInvoicesForFrequency(
+                DateTime.UtcNow.Date.AddMonths(1),
+                RecurringInvoices.Frequency.Monthly);
             Console.WriteLine("Scheduled function PropertyRentalManagement.CreateMonthlyInvoices completed");
             return "Scheduled function PropertyRentalManagement.CreateMonthlyInvoices completed";
         }
