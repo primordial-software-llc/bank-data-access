@@ -118,9 +118,9 @@ namespace AwsDataAccess
             return fullModels;
         }
 
-        public T Get(T model, bool? consistentRead = null)
+        public async Task<T> Get(T model, bool? consistentRead = null)
         {
-            var dbItem = Client.GetItemAsync(model.GetTable(), model.GetKey(), consistentRead.GetValueOrDefault()).Result;
+            var dbItem = await Client.GetItemAsync(model.GetTable(), model.GetKey(), consistentRead.GetValueOrDefault());
             if (!dbItem.Item.Any())
             {
                 return default;

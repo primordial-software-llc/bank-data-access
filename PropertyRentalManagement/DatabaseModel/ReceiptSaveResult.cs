@@ -2,6 +2,7 @@
 using Amazon.DynamoDBv2.Model;
 using AwsTools;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using PropertyRentalManagement.QuickBooksOnline.Models;
 using PropertyRentalManagement.QuickBooksOnline.Models.Payments;
 
@@ -27,8 +28,17 @@ namespace PropertyRentalManagement.DatabaseModel
         [JsonProperty("payments")]
         public List<Payment> Payments { get; set; }
 
+        [JsonProperty("spotReservations")]
+        public List<SpotReservation> SpotReservations { get; set; }
+
         [JsonProperty("createdBy")]
         public ReceiptSaveResultUser CreatedBy { get; set; }
+
+        [JsonProperty("cardAuthorizationResult")]
+        public JObject CardAuthorizationResult { get; set; }
+
+        [JsonProperty("cardCaptureResult")]
+        public JObject CardCaptureResult { get; set; }
 
         public Dictionary<string, AttributeValue> GetKey()
         {

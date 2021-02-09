@@ -26,7 +26,7 @@ namespace PropertyRentalManagement.QuickBooksOnline
             DbClient = dbClient;
             RealmId = realmId;
             Logger = logger;
-            var qboConnection = dbClient.Get(new QuickBooksOnlineConnection { RealmId = realmId }, true);
+            var qboConnection = dbClient.Get(new QuickBooksOnlineConnection {RealmId = realmId}, true).Result;
             Token = OAuthClient.GetAccessToken(
                 qboConnection.ClientId,
                 qboConnection.ClientSecret,
@@ -44,7 +44,7 @@ namespace PropertyRentalManagement.QuickBooksOnline
 
         public QuickBooksOnlineConnection GetConnectionForLocks()
         {
-            return DbClient.Get(new QuickBooksOnlineConnection { RealmId = RealmId }, true);
+            return DbClient.Get(new QuickBooksOnlineConnection {RealmId = RealmId}, true).Result;
         }
 
         public void LockInvoices(Frequency frequency, bool lockUpdateType)

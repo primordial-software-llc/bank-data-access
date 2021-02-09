@@ -1,11 +1,11 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Amazon.DynamoDBv2;
 using Amazon.Lambda.APIGatewayEvents;
 using AwsDataAccess;
 using FinanceApi.DatabaseModel;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using PropertyRentalManagement;
 using PropertyRentalManagement.BusinessLogic;
 using PropertyRentalManagement.DatabaseModel;
 using PropertyRentalManagement.DataServices;
@@ -45,7 +45,8 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
                 return;
             }
             var taxRate = new Tax().GetTaxRate(qboClient, PropertyRentalManagement.Constants.QUICKBOOKS_RENTAL_TAX_RATE);
-            var receiptService = new ReceiptSave(receiptDbClient, qboClient, taxRate, spotReservationDbClient);
+            var cardPayment = new CardPayment(logger, Environment.GetEnvironmentVariable("CLOVER_MI_PUEBLO_PRIVATE_TOKEN"));
+            var receiptService = new ReceiptSave(receiptDbClient, qboClient, taxRate, spotReservationDbClient, logger, cardPayment);
             string customerId = receipt.Customer.Id;
             if (string.IsNullOrWhiteSpace(customerId))
             {
@@ -55,7 +56,8 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
             }
             var vendor = activeVendors.FirstOrDefault(x => x.QuickBooksOnlineId.GetValueOrDefault().ToString() == customerId)
                          ?? vendorDbClient.Create(VendorService.CreateModel(int.Parse(customerId), null, null, null));
-            var receiptResult = receiptService.SaveReceipt(receipt, customerId, user.FirstName, user.LastName, user.Email, vendor);
+            receipt.Id = string.IsNullOrWhiteSpace(receipt.Id) ? Guid.NewGuid().ToString() : receipt.Id; // Needed until UI is deployed.
+            var receiptResult = receiptService.SaveReceipt(receipt, customerId, user.FirstName, user.LastName, user.Email, vendor, IpLookup.GetIp(request));
             response.Body = JsonConvert.SerializeObject(receiptResult);
         }
     }

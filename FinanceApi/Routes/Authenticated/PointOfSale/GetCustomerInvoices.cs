@@ -20,7 +20,7 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
             var qboDbClient = new DatabaseClient<QuickBooksOnlineConnection>(dbClient, new ConsoleLogger());
             var qboClient = new QuickBooksOnlineClient(PrivateAccounting.Constants.LakelandMiPuebloRealmId, qboDbClient, new ConsoleLogger());
             var vendorDataClient = new DatabaseClient<Vendor>(dbClient, new ConsoleLogger());
-            var vendor = vendorDataClient.Get(new Vendor { Id = request.QueryStringParameters["id"] });
+            var vendor = vendorDataClient.Get(new Vendor {Id = request.QueryStringParameters["id"]}).Result;
             var start = request.QueryStringParameters["start"];
             var end = request.QueryStringParameters["end"];
             var invoices = qboClient.QueryAll<Invoice>($"select * from Invoice where CustomerRef = '{vendor.QuickBooksOnlineId}' and TxnDate >= '{start}' and TxnDate <= '{end}' ORDERBY TxnDate DESC");

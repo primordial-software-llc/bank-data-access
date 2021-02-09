@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
-using PropertyRentalManagement.DatabaseModel;
 
-namespace PropertyRentalManagement
+namespace PropertyRentalManagement.DatabaseModel
 {
     public class Receipt
     {
+        [JsonProperty("id")]
+        public string Id { get; set; }
+
         [JsonProperty("rentalDate")]
         public string RentalDate { get; set; }
 
@@ -26,5 +28,11 @@ namespace PropertyRentalManagement
 
         [JsonProperty("spots")]
         public List<Spot> Spots { get; set; }
+
+        [JsonProperty("makeCardPayment")]
+        public bool? MakeCardPayment { get; set; }
+
+        [JsonProperty("cardPayment")]
+        public ReceiptCardPayment CardPayment { get; set; }
     }
 }

@@ -9,7 +9,7 @@ using Vendor = PropertyRentalManagement.DatabaseModel.Vendor;
 
 namespace PropertyRentalManagement.BusinessLogic
 {
-    public class SpotReservationCheck
+    public class SpotReservationCheck : ISpotReservationCheck
     {
         private DatabaseClient<Spot> SpotDbClient { get; }
         private DatabaseClient<SpotReservation> SpotReservationDbClient { get; }
@@ -49,7 +49,7 @@ namespace PropertyRentalManagement.BusinessLogic
                 SpotId = spotId,
                 RentalDate = rentalDate
             },
-            true);
+            true).Result;
             if (oneTimeReservation != null)
             {
                 return new Tuple<Vendor, SpotReservation>(null, oneTimeReservation);

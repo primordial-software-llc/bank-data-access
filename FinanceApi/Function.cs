@@ -56,7 +56,7 @@ namespace FinanceApi
                 {
                     Console.WriteLine("Authenticated user accessed API's: " + email);
                     var databaseClient = new DatabaseClient<FinanceUser>(new AmazonDynamoDBClient(), new ConsoleLogger());
-                    user = databaseClient.Get(new FinanceUser { Email = email });
+                    user = databaseClient.Get(new FinanceUser { Email = email }).Result;
                     if (user == null)
                     {
                         throw new Exception($"User not found {email}. Use the correct sign up form at https://www.primordial-software.com/pages/login-signup.html");

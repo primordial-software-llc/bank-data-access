@@ -23,7 +23,7 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
             var qboClient = new QuickBooksOnlineClient(PrivateAccounting.Constants.LakelandMiPuebloRealmId, qboDbClient, new ConsoleLogger());
 
             var vendorDataClient = new DatabaseClient<Vendor>(dbClient, new ConsoleLogger());
-            var vendor = vendorDataClient.Get(new Vendor {Id = request.QueryStringParameters["id"]});
+            var vendor = vendorDataClient.Get(new Vendor {Id = request.QueryStringParameters["id"]}).Result;
             var customer = qboClient.Query<Customer>($"select * from customer where Id = '{vendor.QuickBooksOnlineId}'").First();
 
             var json = new CustomerPaymentSettingsModel
