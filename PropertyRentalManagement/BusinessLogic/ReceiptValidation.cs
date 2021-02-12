@@ -84,9 +84,10 @@ namespace PropertyRentalManagement.BusinessLogic
 
             if (receipt.MakeCardPayment.GetValueOrDefault())
             {
-                if (receipt.ThisPayment.GetValueOrDefault() <= 0)
+                const decimal minimumPayment = 5m;
+                if (receipt.ThisPayment.GetValueOrDefault() < minimumPayment)
                 {
-                    errors.Add("Payment is required.");
+                    errors.Add($"Payment is required and must be at least {minimumPayment:C}.");
                 }
                 if (receipt.CardPayment == null || string.IsNullOrWhiteSpace(receipt.CardPayment.CardNumber))
                 {

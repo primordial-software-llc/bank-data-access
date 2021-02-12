@@ -73,7 +73,7 @@ namespace PropertyRentalManagement.BusinessLogic
                 throw;
             }
 
-            if (result.CardCaptureResult == null || result.CardCaptureResult["error"] != null)
+            if (receipt.MakeCardPayment.GetValueOrDefault() && (result.CardCaptureResult == null || result.CardCaptureResult["error"] != null))
             {
                 Logger.Log("Failed to get card capture result. Reverting charge, invoice, payments and spot reservations.");
                 Revert(result);

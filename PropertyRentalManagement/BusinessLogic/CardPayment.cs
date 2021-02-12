@@ -1,5 +1,4 @@
-﻿using System;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using AwsTools;
@@ -32,6 +31,7 @@ namespace PropertyRentalManagement.BusinessLogic
             captureRequest.Headers.TryAddWithoutValidation("Content-Type", "application/json");
             var response = httpClient.SendAsync(captureRequest).Result;
             var body = response.Content.ReadAsStringAsync().Result;
+            // Could get 404 even if the charge was created successfully when the amounts are low like less than $1. These low charges seem to be deleted and are never later recoverable so they should be prevented when specifying a charge amount.
             if (!response.IsSuccessStatusCode)
             {
                 Logger.Log($"Clover API Request Failure {(int)response.StatusCode} {HttpMethod.Post} {endpoint} Received {body}");

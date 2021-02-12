@@ -50,6 +50,11 @@ namespace FinanceApi.Tests.InfrastructureAsCode
             return CreateQuickBooksOnlineClient(PrivateAccounting.Constants.LakelandMiPuebloRealmId, logger);
         }
 
+        public static QuickBooksOnlineClient CreatePrimordialQuickBooksOnlineClient(ILogging logger)
+        {
+            return CreateQuickBooksOnlineClient(PrivateAccounting.Constants.PrimordialSoftwareRealmId, logger);
+        }
+
         public static QuickBooksOnlineClient CreateQuickBooksOnlineClient(string realmId, ILogging logger)
         {
             var databaseClient = new DatabaseClient<QuickBooksOnlineConnection>(CreateAmazonDynamoDbClient(), logger);
