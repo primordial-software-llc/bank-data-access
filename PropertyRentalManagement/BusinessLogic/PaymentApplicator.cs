@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using PropertyRentalManagement.QuickBooksOnline;
 using PropertyRentalManagement.QuickBooksOnline.Models;
@@ -37,8 +39,21 @@ namespace PropertyRentalManagement.BusinessLogic
                         new LinkedTransaction {TxnId = invoice.Id.ToString(), TxnType = "Invoice"}
                     }
                 };
-                unappliedPayment.Line = unappliedPayment.Line ?? new List<PaymentLine>();
+                unappliedPayment.Line ??= new List<PaymentLine>();
                 unappliedPayment.Line.Add(newPaymentLine);
+
+                var paymentDate = GetPaymentDate(unappliedPayment.TxnDate, invoice.TxnDate);
+                if (paymentDate != unappliedPayment.TxnDate)
+                {
+                    var newNote = "This payment was automatically applied to an invoice during invoice generation. " +
+                                       $"The payment date was moved from {unappliedPayment.TxnDate} to the date of the invoice it's being applied to {paymentDate}.";
+                    unappliedPayment.TxnDate = paymentDate;
+                    if (!string.IsNullOrWhiteSpace(unappliedPayment.PrivateNote))
+                    {
+                        newNote = newNote + Environment.NewLine + Environment.NewLine + unappliedPayment.PrivateNote;
+                    }
+                    unappliedPayment.PrivateNote = newNote;
+                }
 
                 invoice.Balance -= paymentAmount;
                 Client.SparseUpdate(unappliedPayment);
@@ -49,13 +64,13 @@ namespace PropertyRentalManagement.BusinessLogic
             Invoice invoice,
             string customerId,
             decimal maxPayment,
-            string date,
+            string datePaymentOccurred,
             string memo)
         {
             var payment = GetPayment(maxPayment, invoice?.Balance);
             var appliedPayment = new Payment
             {
-                TxnDate = date,
+                TxnDate = GetPaymentDate(datePaymentOccurred, invoice?.TxnDate),
                 CustomerRef = new QuickBooksOnline.Models.Reference { Value = customerId },
                 TotalAmount = payment,
                 PrivateNote = memo
@@ -75,6 +90,30 @@ namespace PropertyRentalManagement.BusinessLogic
                 };
             }
             return Client.Create(appliedPayment);
+        }
+
+        /// <summary>
+        /// If payment date is prior to invoice date,
+        /// the QuickBooks Online profit and loss report run on a cash basis will put the income under the
+        /// "Unapplied Cash Payment Income" account rather than the respective account.
+        ///
+        /// When the payment date is prior to the invoice date, payment applicator fixes the issue by setting payment date to invoice date
+        /// forcing an accrual basis for rental income received prior to the rental date.
+        ///
+        /// Cash basis income is reported for rental income using the cash basis income endpoint.
+        /// </summary>
+        public static string GetPaymentDate(string datePaymentOccurred, string invoiceDate)
+        {
+            if (string.IsNullOrWhiteSpace(invoiceDate))
+            {
+                return datePaymentOccurred;
+            }
+
+            var datePaymentOccurredParsed = System.DateTime.ParseExact(datePaymentOccurred, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal);
+            var dateOfInvoice = System.DateTime.ParseExact(invoiceDate, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal);
+
+            var prepayment = datePaymentOccurredParsed < dateOfInvoice;
+            return prepayment ? invoiceDate : datePaymentOccurred;
         }
 
         public static decimal GetPayment(decimal payment, decimal? invoiceBalance)

@@ -15,7 +15,7 @@ namespace FinanceApi.Tests.PropertyRentalManagementTests
                 {
                     MakeCardPayment = true
                 }).Result;
-            Assert.Contains("Payment is required and must be at least $5.00.", validation);
+            Assert.Contains("Payment is required and must be at least $0.01.", validation);
             Assert.Contains("Credit card number is required.", validation);
             Assert.Contains("Expiration month is required.", validation);
             Assert.Contains("Expiration year is required.", validation);
@@ -24,7 +24,7 @@ namespace FinanceApi.Tests.PropertyRentalManagementTests
             var goodValidation = new ReceiptValidation(Substitute.For<ISpotReservationCheck>()).Validate(
                 new Receipt
                 {
-                    ThisPayment = 5.01m,
+                    ThisPayment = .01m,
                     MakeCardPayment = true,
                     CardPayment = new ReceiptCardPayment
                     {

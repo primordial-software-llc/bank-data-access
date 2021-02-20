@@ -120,7 +120,7 @@ namespace PropertyRentalManagement.BusinessLogic
                 var last4 = receipt.CardPayment.CardNumber.Substring(receipt.CardPayment.CardNumber.Length - 4);
                 Logger.Log($"{firstName} {lastName} {email} is charging card ending in {last4} ${receipt.ThisPayment:C} on {DateTime.UtcNow:O} for receipt {result.Id}.");
                 var chargeResult = CardPayment.Authorize(
-                    receipt.ThisPayment,
+                    receipt.ThisPayment * 100,
                     receipt.CardPayment.CardNumber,
                     receipt.CardPayment.ExpirationMonth,
                     receipt.CardPayment.ExpirationYear,
@@ -164,7 +164,7 @@ namespace PropertyRentalManagement.BusinessLogic
                         unpaidInvoice,
                         customerId,
                         payment,
-                        receipt.RentalDate,
+                        $"{easternClock.GetCurrentDate():yyyy-MM-dd}",
                         paymentMemo);
                     result.Payments.Add(paymentAppliedToInvoice);
                     payment -= paymentAppliedToInvoice.TotalAmount.GetValueOrDefault();
@@ -179,7 +179,7 @@ namespace PropertyRentalManagement.BusinessLogic
                         null,
                         customerId,
                         payment,
-                        receipt.RentalDate,
+                        $"{easternClock.GetCurrentDate():yyyy-MM-dd}",
                         paymentMemo
                     );
                     result.Payments.Add(unappliedPayment);

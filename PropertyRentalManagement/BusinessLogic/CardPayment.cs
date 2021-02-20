@@ -41,7 +41,7 @@ namespace PropertyRentalManagement.BusinessLogic
         }
 
         public JObject Authorize(
-            decimal? amount,
+            decimal? amountInCents,
             string cardNumber,
             string expirationMonth,
             string expirationYear,
@@ -92,7 +92,7 @@ namespace PropertyRentalManagement.BusinessLogic
             var sourceToken = tokenResultJson["id"].Value<string>();
             var chargeData = new JObject
             {
-                { "amount", amount },
+                { "amount", amountInCents },
                 { "source", sourceToken },
                 { "capture", false },
                 { "currency", "usd" }
