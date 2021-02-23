@@ -148,13 +148,9 @@ namespace PropertyRentalManagement.BusinessLogic
             if (receipt.ThisPayment > 0)
             {
                 ZonedClock easternClock = SystemClock.Instance.InZone(DateTimeZoneProviders.Tzdb["America/New_York"]);
-                var paymentMemo = $"True Payment Date: {easternClock.GetCurrentDate():yyyy-MM-dd}{Environment.NewLine}{memo}";
-                if (receipt.MakeCardPayment.GetValueOrDefault())
-                {
-                    paymentMemo += Environment.NewLine;
-                    paymentMemo += $"Card payment entered by {firstName} {lastName} from IP {userIp}: " + result.CardAuthorizationResult.ToString(Formatting.Indented);
-                }
-
+                var paymentMemo = $"True Payment Date: {easternClock.GetCurrentDate():yyyy-MM-dd}. " +
+                                        $"Payment entered by {firstName} {lastName} from IP {userIp}." +
+                                        Environment.NewLine + Environment.NewLine + memo;
                 var unpaidInvoices = QuickBooksClient.QueryAll<Invoice>($"select * from Invoice where Balance != '0' and CustomerRef = '{customerId}' ORDERBY TxnDate");
                 decimal payment = receipt.ThisPayment.GetValueOrDefault();
                 var paymentApplicator = new PaymentApplicator(QuickBooksClient);
@@ -207,6 +203,11 @@ namespace PropertyRentalManagement.BusinessLogic
             if (receipt.MakeCardPayment.GetValueOrDefault())
             {
                 result.CardCaptureResult = CardPayment.Capture(result.CardAuthorizationResult["id"].Value<string>());
+                for (var ct = 0; ct < result.Payments.Count; ct++)
+                {
+                    result.Payments[ct].PrivateNote += Environment.NewLine + Environment.NewLine + $"Card payment confirmation {result.CardAuthorizationResult.ToString(Formatting.Indented)}";
+                    result.Payments[ct] = QuickBooksClient.SparseUpdate(result.Payments[ct]);
+                }
             }
             ReceiptDbClient.Create(result);
         }
