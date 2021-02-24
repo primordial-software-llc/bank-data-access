@@ -45,7 +45,8 @@ namespace PropertyRentalManagement.BusinessLogic
             string cardNumber,
             string expirationMonth,
             string expirationYear,
-            string cvv)
+            string cvv,
+            bool? isCardPresent)
         {
             var httpClient = new HttpClient();
             var apiKeyRequest = new HttpRequestMessage(HttpMethod.Get, "https://api.clover.com/pakms/apikey");
@@ -97,6 +98,10 @@ namespace PropertyRentalManagement.BusinessLogic
                 { "capture", false },
                 { "currency", "usd" }
             };
+            if (isCardPresent.HasValue)
+            {
+                chargeData["ecomind"] = isCardPresent.Value ? "ecom" : "moto";
+            }
             var chargeRequest = new HttpRequestMessage(HttpMethod.Post, $"{CLOVER_PROD_ECOMMERCE_API}/v1/charges");
             chargeRequest.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", CloverPrivateToken);

@@ -124,7 +124,8 @@ namespace PropertyRentalManagement.BusinessLogic
                     receipt.CardPayment.CardNumber,
                     receipt.CardPayment.ExpirationMonth,
                     receipt.CardPayment.ExpirationYear,
-                    receipt.CardPayment.Cvv);
+                    receipt.CardPayment.Cvv,
+                    receipt.IsCardPresent);
                 result.CardAuthorizationResult = chargeResult;
                 ReceiptDbClient.Create(result);
                 if (chargeResult["error"] != null)

@@ -34,5 +34,8 @@ namespace PropertyRentalManagement.DatabaseModel
 
         [JsonProperty("cardPayment")]
         public ReceiptCardPayment CardPayment { get; set; }
+
+        [JsonProperty("isCardPresent")]
+        public bool? IsCardPresent { get; set; }
     }
 }
