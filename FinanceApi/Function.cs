@@ -118,7 +118,8 @@ namespace FinanceApi
                 }
                 if (new PointOfSaleAuthorization().IsAuthorizedForReports(user?.Email))
                 {
-                    routes.Add( new Routes.Authenticated.PointOfSale.Reports.GetCashBasisIncome());
+                    routes.Add(new Routes.Authenticated.PointOfSale.Reports.GetCashBasisIncome());
+                    routes.Add(new Routes.Authenticated.PointOfSale.Reports.GetCardIncome());
                 }
                 var matchedRoute = routes.FirstOrDefault(route => string.Equals(request.HttpMethod, route.HttpMethod, StringComparison.OrdinalIgnoreCase) &&
                                                                   string.Equals(request.Path, route.Path, StringComparison.OrdinalIgnoreCase));
