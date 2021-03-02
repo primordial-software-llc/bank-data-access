@@ -21,6 +21,21 @@ namespace PropertyRentalManagement.BusinessLogic
             CloverPrivateToken = cloverPrivateToken;
         }
 
+        public JArray GetCardCharges(int start, int end)
+        {
+            var httpClient = new HttpClient();
+            var endpoint = $"{CardPayment.CLOVER_PROD_ECOMMERCE_API}/v1/charges?created[gte]={start}&created[lte]={end}";
+            var captureRequest = new HttpRequestMessage(HttpMethod.Get, endpoint);
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", CloverPrivateToken);
+            captureRequest.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            captureRequest.Headers.TryAddWithoutValidation("Content-Type", "application/json");
+            var response = httpClient.SendAsync(captureRequest).Result;
+            var body = response.Content.ReadAsStringAsync().Result;
+            response.EnsureSuccessStatusCode();
+            var json = JObject.Parse(body);
+            return (JArray) json["data"];
+        }
+
         public JObject Capture(string chargeId)
         {
             var httpClient = new HttpClient();

@@ -5,6 +5,7 @@ namespace FinanceApi
 {
     public class Configuration
     {
+        public static string CLOVER_MI_PUEBLO_PRIVATE_TOKEN = Environment.GetEnvironmentVariable("CLOVER_MI_PUEBLO_PRIVATE_TOKEN");
         public static string PLAID_URL => Environment.GetEnvironmentVariable("PLAID_URL");
         public static string PLAID_CLIENT_ID => Environment.GetEnvironmentVariable("PLAID_CLIENT_ID");
         public static string PLAID_SECRET => Environment.GetEnvironmentVariable("PLAID_SECRET");

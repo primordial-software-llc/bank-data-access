@@ -45,7 +45,7 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
                 return;
             }
             var taxRate = new Tax().GetTaxRate(qboClient, PropertyRentalManagement.Constants.QUICKBOOKS_RENTAL_TAX_RATE);
-            var cardPayment = new CardPayment(logger, Environment.GetEnvironmentVariable("CLOVER_MI_PUEBLO_PRIVATE_TOKEN"));
+            var cardPayment = new CardPayment(logger, Configuration.CLOVER_MI_PUEBLO_PRIVATE_TOKEN);
             var receiptService = new ReceiptSave(receiptDbClient, qboClient, taxRate, spotReservationDbClient, logger, cardPayment);
             string customerId = receipt.Customer.Id;
             if (string.IsNullOrWhiteSpace(customerId))
