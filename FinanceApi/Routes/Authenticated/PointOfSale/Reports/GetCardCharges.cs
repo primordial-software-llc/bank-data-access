@@ -5,10 +5,10 @@ using PropertyRentalManagement.BusinessLogic;
 
 namespace FinanceApi.Routes.Authenticated.PointOfSale.Reports
 {
-    class GetCardIncome : IRoute
+    class GetCardCharges : IRoute
     {
         public string HttpMethod => "GET";
-        public string Path => "/point-of-sale/card-income";
+        public string Path => "/point-of-sale/card-charges";
         public void Run(APIGatewayProxyRequest request, APIGatewayProxyResponse response, FinanceUser user)
         {
             var cardPayment = new CardPayment(new ConsoleLogger(), Configuration.CLOVER_MI_PUEBLO_PRIVATE_TOKEN);
