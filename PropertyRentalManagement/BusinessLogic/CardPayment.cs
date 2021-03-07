@@ -1,6 +1,8 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Web;
 using AwsTools;
 using FinanceApi.CloverModel;
 using Newtonsoft.Json;
@@ -21,10 +23,10 @@ namespace PropertyRentalManagement.BusinessLogic
             CloverPrivateToken = cloverPrivateToken;
         }
 
-        public JArray GetCardCharges(int start, int end)
+        public JArray GetCardCharges(string start, string end)
         {
             var httpClient = new HttpClient();
-            var endpoint = $"{CardPayment.CLOVER_PROD_ECOMMERCE_API}/v1/charges?created[gte]={start}&created[lte]={end}";
+            var endpoint = $"{CLOVER_PROD_ECOMMERCE_API}/v1/charges?limit=100&created.gt={HttpUtility.UrlEncode(start)}&created.lt={HttpUtility.UrlEncode(end)}";
             var captureRequest = new HttpRequestMessage(HttpMethod.Get, endpoint);
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", CloverPrivateToken);
             captureRequest.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));

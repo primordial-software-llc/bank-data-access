@@ -1,4 +1,5 @@
-﻿using Amazon.Lambda.APIGatewayEvents;
+﻿using System;
+using Amazon.Lambda.APIGatewayEvents;
 using FinanceApi.DatabaseModel;
 using Newtonsoft.Json;
 using PropertyRentalManagement.BusinessLogic;
@@ -12,8 +13,8 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale.Reports
         public void Run(APIGatewayProxyRequest request, APIGatewayProxyResponse response, FinanceUser user)
         {
             var cardPayment = new CardPayment(new ConsoleLogger(), Configuration.CLOVER_MI_PUEBLO_PRIVATE_TOKEN);
-            var start = int.Parse(request.QueryStringParameters["start"]);
-            var end = int.Parse(request.QueryStringParameters["end"]);
+            var start = request.QueryStringParameters.ContainsKey("start") ? request.QueryStringParameters["start"] : string.Empty;
+            var end = request.QueryStringParameters.ContainsKey("end") ? request.QueryStringParameters["end"] : string.Empty;
             var income = cardPayment.GetCardCharges(start, end);
             response.Body = JsonConvert.SerializeObject(income);
         }
