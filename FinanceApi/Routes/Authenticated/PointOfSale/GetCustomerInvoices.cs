@@ -24,6 +24,7 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
             var start = request.QueryStringParameters["start"];
             var end = request.QueryStringParameters["end"];
             var invoices = qboClient.QueryAll<Invoice>($"select * from Invoice where CustomerRef = '{vendor.QuickBooksOnlineId}' and TxnDate >= '{start}' and TxnDate <= '{end}' ORDERBY TxnDate DESC");
+            invoices.AddRange(qboClient.QueryAll<Invoice>($"select * from Invoice where CustomerRef = '{vendor.QuickBooksOnlineId}' and TxnDate < '{start}' and Balance > '0' ORDERBY TxnDate DESC"));
             response.Body = JsonConvert.SerializeObject(invoices);
         }
     }
