@@ -48,7 +48,7 @@ namespace FinanceApi.Tests.PropertyRentalManagementTests
         public void DeployCreateMonthlyInvoices()
         {
             var environmentVariables = new Dictionary<string, string>();
-            var scheduleExpression = $"cron(0 0 L-7 * ? *)"; // Every 7 days before the end of each the month
+            var scheduleExpression = $"cron(0 0 L-5 * ? *)";
             new LambdaDeploy().Deploy(
                 Factory.CreateCredentialsFromProfile(),
                 new List<RegionEndpoint> { RegionEndpoint.USEast1 },
