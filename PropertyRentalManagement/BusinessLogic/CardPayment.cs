@@ -35,7 +35,7 @@ namespace PropertyRentalManagement.BusinessLogic
             var body = response.Content.ReadAsStringAsync().Result;
             response.EnsureSuccessStatusCode();
             var json = JObject.Parse(body);
-            return (JArray) json["data"];
+            return (JArray)json["data"] ?? new JArray();
         }
 
         public JObject Capture(string chargeId)
