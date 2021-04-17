@@ -1,7 +1,7 @@
 ﻿using System;
 using AwsTools;
 
-namespace PropertyRentalManagement.CreateWeeklyInvoices
+namespace PropertyRentalManagement
 {
     public class ConsoleLogger : ILogging
     {

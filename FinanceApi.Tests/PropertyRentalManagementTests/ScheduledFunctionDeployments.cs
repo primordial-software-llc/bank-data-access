@@ -19,6 +19,32 @@ namespace FinanceApi.Tests.PropertyRentalManagementTests
         }
 
         [Fact]
+        public void DeploySendRestaurantSalesToAccounting()
+        {
+            var environmentVariables = new Dictionary<string, string>();
+            var scheduleExpression = "cron(0 0 2 * ? *)"; // Second of every month
+            new LambdaDeploy().Deploy(
+                Factory.CreateCredentialsFromProfile(),
+                new List<RegionEndpoint> { RegionEndpoint.USEast1 },
+                environmentVariables,
+                scheduleExpression,
+                "lakeland-mi-pueblo-send-restaurant-sales-to-accounting",
+                @"C:\Users\peon\Desktop\projects\bank-data-access\PropertyRentalManagement.SendRestaurantSalesToAccounting\PropertyRentalManagement.SendRestaurantSalesToAccounting.csproj",
+                new LambdaEntrypointDefinition
+                {
+                    AssemblyName = "PropertyRentalManagement.SendRestaurantSalesToAccounting",
+                    Namespace = "PropertyRentalManagement.SendRestaurantSalesToAccounting",
+                    ClassName = "Function",
+                    FunctionName = "FunctionHandler"
+                },
+                roleArn: "arn:aws:iam::283733643774:role/lambda_exec_finance_api",
+                runtime: Runtime.Dotnetcore31,
+                256,
+                1,
+                TimeSpan.FromMinutes(15));
+        }
+
+        [Fact]
         public void DeployCreateWeeklyInvoices()
         {
             var environmentVariables = new Dictionary<string, string>();
@@ -41,14 +67,14 @@ namespace FinanceApi.Tests.PropertyRentalManagementTests
                 runtime: Runtime.Dotnetcore31,
                 256,
                 1,
-                TimeSpan.FromMinutes(5));
+                TimeSpan.FromMinutes(15));
         }
 
         [Fact]
         public void DeployCreateMonthlyInvoices()
         {
             var environmentVariables = new Dictionary<string, string>();
-            var scheduleExpression = $"cron(0 0 L-5 * ? *)";
+            var scheduleExpression = $"cron(0 0 L-5 * ? *)"; // 5 days before the end of each month - L is a wildcard for end of the month which varies.
             new LambdaDeploy().Deploy(
                 Factory.CreateCredentialsFromProfile(),
                 new List<RegionEndpoint> { RegionEndpoint.USEast1 },
@@ -67,7 +93,7 @@ namespace FinanceApi.Tests.PropertyRentalManagementTests
                 runtime: Runtime.Dotnetcore31,
                 256,
                 1,
-                TimeSpan.FromMinutes(5));
+                TimeSpan.FromMinutes(15));
         }
     }
 }

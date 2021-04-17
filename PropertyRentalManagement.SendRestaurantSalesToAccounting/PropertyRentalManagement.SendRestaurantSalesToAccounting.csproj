@@ -1,16 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
-	<PropertyGroup>
+  <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
 	<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 	<GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Amazon.Lambda.Core" Version="1.2.0" />
-    <PackageReference Include="Amazon.Lambda.Serialization.Json" Version="1.8.0" />
-    <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.5.4.32" />
+    <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" Version="2.1.0" />
     <ProjectReference Include="..\..\private-accounting\PrivateAccounting\PrivateAccounting.csproj" />
     <ProjectReference Include="..\AwsDataAccess\AwsDataAccess.csproj" />
     <ProjectReference Include="..\PropertyRentalManagement\PropertyRentalManagement.csproj" />
-	<DotNetCliToolReference Include="Amazon.Lambda.Tools" Version="1.8.0" />
+    <DotNetCliToolReference Include="Amazon.Lambda.Tools" Version="1.8.0" />
   </ItemGroup>
 </Project>
