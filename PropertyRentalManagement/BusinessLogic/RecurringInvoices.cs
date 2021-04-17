@@ -101,7 +101,7 @@ namespace PropertyRentalManagement.BusinessLogic
                         {
                             ItemRef = new Reference { Value = Constants.QUICKBOOKS_PRODUCT_RENT.ToString() },
                             Quantity = quantity,
-                            TaxCodeRef = new Reference { Value = Constants.QUICKBOOKS_INVOICE_LINE_TAXABLE },
+                            TaxCodeRef = new Reference { Value = Accounting.Constants.QUICKBOOKS_INVOICE_LINE_TAXABLE },
                             UnitPrice = taxableAmount
                         },
                         Amount = quantity * taxableAmount

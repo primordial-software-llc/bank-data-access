@@ -230,7 +230,7 @@ namespace PropertyRentalManagement.BusinessLogic
                         {
                             ItemRef = new QuickBooksOnline.Models.Reference { Value = Constants.QUICKBOOKS_PRODUCT_RENT.ToString() },
                             Quantity = quantity,
-                            TaxCodeRef = new QuickBooksOnline.Models.Reference { Value = Constants.QUICKBOOKS_INVOICE_LINE_TAXABLE },
+                            TaxCodeRef = new QuickBooksOnline.Models.Reference { Value = Accounting.Constants.QUICKBOOKS_INVOICE_LINE_TAXABLE },
                             UnitPrice = taxableAmount
                         },
                         Amount = quantity * taxableAmount

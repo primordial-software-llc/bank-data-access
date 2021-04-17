@@ -5,17 +5,19 @@ using Amazon.DynamoDBv2;
 using Amazon.Lambda.Core;
 using AwsDataAccess;
 using AwsTools;
+using PropertyRentalManagement;
 using PropertyRentalManagement.Clover;
 using PropertyRentalManagement.Clover.Models;
 using PropertyRentalManagement.DatabaseModel;
 using PropertyRentalManagement.QuickBooksOnline;
 using PropertyRentalManagement.QuickBooksOnline.Models;
 using PropertyRentalManagement.QuickBooksOnline.Models.Invoices;
+using Constants = Accounting.Constants;
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
 
-namespace PropertyRentalManagement.SendRestaurantSalesToAccounting
+namespace SendRestaurantSalesToAccounting
 {
     /// <summary>
     /// I am responsible for keeping quickbooks up to date with clover.
@@ -24,9 +26,10 @@ namespace PropertyRentalManagement.SendRestaurantSalesToAccounting
     {
         public string FunctionHandler(ILambdaContext context)
         {
+            var logger = new ConsoleLogger();
             var date = new DateTime(DateTime.UtcNow.Date.Year, DateTime.UtcNow.Date.Month, 1).AddMonths(-1);
-            Console.WriteLine($"Scheduled function PropertyRentalManagement.SendRestaurantSalesToAccounting started for {date:yyyy-MM-dd}");
-            SendToAccounting(date, new ConsoleLogger());
+            logger.Log($"Scheduled function PropertyRentalManagement.SendRestaurantSalesToAccounting started for {date:yyyy-MM-dd}");
+            SendToAccounting(date, logger);
             Console.WriteLine("Scheduled function PropertyRentalManagement.SendRestaurantSalesToAccounting completed");
             return "Scheduled function PropertyRentalManagement.SendRestaurantSalesToAccounting completed";
         }
@@ -110,7 +113,7 @@ namespace PropertyRentalManagement.SendRestaurantSalesToAccounting
         {
             var salesReceipt = new SalesReceipt
             {
-                CustomerRef = new QuickBooksOnline.Models.Reference { Value = customerId.ToString() },
+                CustomerRef = new PropertyRentalManagement.QuickBooksOnline.Models.Reference { Value = customerId.ToString() },
                 TxnDate = date.ToString("yyyy-MM-dd"),
                 TotalAmount = amount,
                 PrivateNote = memo,
@@ -122,16 +125,16 @@ namespace PropertyRentalManagement.SendRestaurantSalesToAccounting
                         DetailType = "SalesItemLineDetail",
                         SalesItemLineDetail = new SalesItemLineDetail
                         {
-                            ItemRef = new QuickBooksOnline.Models.Reference { Value = product.ToString() },
+                            ItemRef = new PropertyRentalManagement.QuickBooksOnline.Models.Reference { Value = product.ToString() },
                             Quantity = 1,
                             UnitPrice = amount,
-                            TaxCodeRef = new QuickBooksOnline.Models.Reference { Value = Constants.QUICKBOOKS_INVOICE_LINE_TAXABLE }
+                            TaxCodeRef = new PropertyRentalManagement.QuickBooksOnline.Models.Reference { Value = Constants.QUICKBOOKS_INVOICE_LINE_TAXABLE }
                         }
                     }
                 },
                 TxnTaxDetail = new TxnTaxDetail
                 {
-                    TxnTaxCodeRef = new QuickBooksOnline.Models.Reference { Value = taxCode }
+                    TxnTaxCodeRef = new PropertyRentalManagement.QuickBooksOnline.Models.Reference { Value = taxCode }
                 }
             };
             client.Create(salesReceipt);

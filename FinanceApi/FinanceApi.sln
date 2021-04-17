@@ -19,7 +19,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AwsDataAccess", "..\AwsData
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PropertyRentalManagement.CreateMonthlyInvoices", "..\PropertyRentalManagement.CreateMonthlyInvoices\PropertyRentalManagement.CreateMonthlyInvoices.csproj", "{450D340B-CFBC-417C-A08F-8C87B37D1C33}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PropertyRentalManagement.SendRestaurantSalesToAccounting", "..\PropertyRentalManagement.SendRestaurantSalesToAccounting\PropertyRentalManagement.SendRestaurantSalesToAccounting.csproj", "{AE3C2B08-D964-456B-A751-A59A7E7D6394}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SendRestaurantSalesToAccounting", "..\SendRestaurantSalesToAccounting\SendRestaurantSalesToAccounting.csproj", "{AE3C2B08-D964-456B-A751-A59A7E7D6394}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ScheduledTasks", "ScheduledTasks", "{FA21AE27-CAB3-4CEE-8DB1-BB41CB0DBB03}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -66,6 +68,11 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8099943B-FE15-4CB5-A796-25C761435598} = {FA21AE27-CAB3-4CEE-8DB1-BB41CB0DBB03}
+		{450D340B-CFBC-417C-A08F-8C87B37D1C33} = {FA21AE27-CAB3-4CEE-8DB1-BB41CB0DBB03}
+		{AE3C2B08-D964-456B-A751-A59A7E7D6394} = {FA21AE27-CAB3-4CEE-8DB1-BB41CB0DBB03}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3FFD6536-89BD-479C-9C0C-8D8B3AE92508}

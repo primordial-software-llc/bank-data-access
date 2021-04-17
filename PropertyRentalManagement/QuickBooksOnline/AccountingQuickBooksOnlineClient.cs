@@ -10,7 +10,7 @@ namespace PropertyRentalManagement.QuickBooksOnline
 {
     public class AccountingQuickBooksOnlineClient : IAccountingClient
     {
-        private QuickBooksOnlineClient QuickBooksClient { get; set; }
+        private QuickBooksOnlineClient QuickBooksClient { get; }
 
         public AccountingQuickBooksOnlineClient(QuickBooksOnlineClient quickBooksClient)
         {
@@ -70,7 +70,7 @@ namespace PropertyRentalManagement.QuickBooksOnline
                             ItemRef = new Reference { Value = journalEntry.Product.ToString() },
                             Quantity = 1,
                             UnitPrice = taxableAmount,
-                            TaxCodeRef = new Reference { Value = Constants.QUICKBOOKS_INVOICE_LINE_TAXABLE }
+                            TaxCodeRef = new Reference { Value = Accounting.Constants.QUICKBOOKS_INVOICE_LINE_TAXABLE }
                         }
                     }
                 },
