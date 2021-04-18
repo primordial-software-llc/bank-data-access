@@ -29,11 +29,11 @@ namespace FinanceApi.Tests.PropertyRentalManagementTests
                 environmentVariables,
                 scheduleExpression,
                 "lakeland-mi-pueblo-send-restaurant-sales-to-accounting",
-                @"C:\Users\peon\Desktop\projects\bank-data-access\SendRestaurantSalesToAccounting\PropertyRentalManagement.SendRestaurantSalesToAccounting.csproj",
+                @"C:\Users\peon\Desktop\projects\bank-data-access\SendRestaurantSalesToAccounting\SendRestaurantSalesToAccounting.csproj",
                 new LambdaEntrypointDefinition
                 {
-                    AssemblyName = "PropertyRentalManagement.SendRestaurantSalesToAccounting",
-                    Namespace = "PropertyRentalManagement.SendRestaurantSalesToAccounting",
+                    AssemblyName = "SendRestaurantSalesToAccounting",
+                    Namespace = "SendRestaurantSalesToAccounting",
                     ClassName = "Function",
                     FunctionName = "FunctionHandler"
                 },

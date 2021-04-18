@@ -23,6 +23,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SendRestaurantSalesToAccoun
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ScheduledTasks", "ScheduledTasks", "{FA21AE27-CAB3-4CEE-8DB1-BB41CB0DBB03}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Deployer", "..\Deployer\Deployer.csproj", "{AE1F6A6D-2B4C-45FA-A840-E4EFE650F3A7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -65,6 +67,10 @@ Global
 		{AE3C2B08-D964-456B-A751-A59A7E7D6394}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AE3C2B08-D964-456B-A751-A59A7E7D6394}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AE3C2B08-D964-456B-A751-A59A7E7D6394}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE1F6A6D-2B4C-45FA-A840-E4EFE650F3A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE1F6A6D-2B4C-45FA-A840-E4EFE650F3A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE1F6A6D-2B4C-45FA-A840-E4EFE650F3A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE1F6A6D-2B4C-45FA-A840-E4EFE650F3A7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -73,6 +79,7 @@ Global
 		{8099943B-FE15-4CB5-A796-25C761435598} = {FA21AE27-CAB3-4CEE-8DB1-BB41CB0DBB03}
 		{450D340B-CFBC-417C-A08F-8C87B37D1C33} = {FA21AE27-CAB3-4CEE-8DB1-BB41CB0DBB03}
 		{AE3C2B08-D964-456B-A751-A59A7E7D6394} = {FA21AE27-CAB3-4CEE-8DB1-BB41CB0DBB03}
+		{AE1F6A6D-2B4C-45FA-A840-E4EFE650F3A7} = {FA21AE27-CAB3-4CEE-8DB1-BB41CB0DBB03}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3FFD6536-89BD-479C-9C0C-8D8B3AE92508}
