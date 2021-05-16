@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
+using Amazon.DynamoDBv2.Model;
+using AwsTools;
 using Newtonsoft.Json;
 
 namespace PropertyRentalManagement.DatabaseModel
 {
-    public class Receipt
+    public class Receipt : IModel
     {
         [JsonProperty("id")]
         public string Id { get; set; }
@@ -37,5 +39,21 @@ namespace PropertyRentalManagement.DatabaseModel
 
         [JsonProperty("isCardPresent")]
         public bool? IsCardPresent { get; set; }
+
+        [JsonProperty("timestamp")]
+        public string Timestamp { get; set; }
+
+        public Dictionary<string, AttributeValue> GetKey()
+        {
+            return new Dictionary<string, AttributeValue>
+            {
+                { "id", new AttributeValue { S = Id } }
+            };
+        }
+
+        public string GetTable()
+        {
+            return "lakeland-mi-pueblo-receipts";
+        }
     }
 }

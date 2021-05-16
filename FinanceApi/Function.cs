@@ -120,6 +120,7 @@ namespace FinanceApi
                 {
                     routes.Add(new Routes.Authenticated.PointOfSale.Reports.GetCashBasisIncome());
                     routes.Add(new Routes.Authenticated.PointOfSale.Reports.GetCardCharges());
+                    routes.Add(new Routes.Authenticated.PointOfSale.Reports.GetCashBasisIncomeFromReceipts());
                 }
                 var matchedRoute = routes.FirstOrDefault(route => string.Equals(request.HttpMethod, route.HttpMethod, StringComparison.OrdinalIgnoreCase) &&
                                                                   string.Equals(request.Path, route.Path, StringComparison.OrdinalIgnoreCase));

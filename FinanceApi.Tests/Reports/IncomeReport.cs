@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using Amazon.DynamoDBv2.Model;
 using FinanceApi.Tests.InfrastructureAsCode;
 using PropertyRentalManagement;
+using PropertyRentalManagement.DatabaseModel;
 using PropertyRentalManagement.QuickBooksOnline.Models;
 using Xunit;
 using Xunit.Abstractions;
@@ -15,6 +18,33 @@ namespace FinanceApi.Tests.Reports
         public IncomeReport(ITestOutputHelper output)
         {
             Output = output;
+        }
+
+        [Fact]
+        public void PrintReceiptsCashBasisIncome()
+        {
+            var client = new AwsDataAccess.DatabaseClient<Receipt>(
+                Factory.CreateAmazonDynamoDbClient(),
+                new ConsoleLogger());
+
+            var start = "2020-10-17T14:40:52Z";
+            var end = "2020-10-19T14:40:52Z";
+
+            var scanRequest = new ScanRequest // Can't use between on an id. It must be used on a range which requires an id. Until requests take longer than 30 seconds and timeout this solution is adequate.
+            {
+                TableName = new Receipt().GetTable(),
+                ExpressionAttributeValues = new Dictionary<string, AttributeValue>
+                {
+                    {":start", new AttributeValue {S = start }},
+                    {":end", new AttributeValue {S = end }}
+                },
+                ExpressionAttributeNames = new Dictionary<string, string>
+                {
+                    { "#timestamp", "timestamp" }
+                },
+                FilterExpression = "#timestamp between :start and :end"
+            };
+            var results = client.ScanAll(scanRequest);
         }
 
         [Fact]
@@ -58,30 +88,5 @@ namespace FinanceApi.Tests.Reports
             Assert.Equal(65633.45m, total);
         }
 
-        /*
-         Delete this once the endpoint is working for income report.
-        [Fact]
-        public void PrintDailyCash()
-        {
-            var startDate = DateTime.ParseExact("2020-09-21", "yyyy-MM-dd", CultureInfo.InvariantCulture);
-            var endDate = DateTime.ParseExact("2020-09-27", "yyyy-MM-dd", CultureInfo.InvariantCulture);
-
-            var easternStart = PatchVendor.LakeLandMiPuebloTimeZone.AtLeniently(LocalDateTime.FromDateTime(startDate));
-            var easternEnd = PatchVendor.LakeLandMiPuebloTimeZone.AtLeniently(LocalDateTime.FromDateTime(endDate));
-
-            var report = PropertyRentalManagement.Reports.IncomeReport.RunReport(
-                easternStart.ToDateTimeOffset(),
-                easternEnd.ToDateTimeOffset(),
-                Factory.CreateQuickBooksOnlineClient(new XUnitLogger(Output)),
-                Constants.NonRentalCustomerIds);
-
-
-            var logger = new XUnitLogger(Output);
-            var total = report.Payments.Sum(x => x.TotalAmount.GetValueOrDefault()) +
-                        report.SalesReceipts.Sum(x => x.TotalAmount.GetValueOrDefault());
-            logger.Log($"Rental Income {total:C}");
-        }
-
-        */
     }
 }
