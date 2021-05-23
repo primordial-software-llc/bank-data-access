@@ -18,12 +18,12 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale.Reports
         {
             var start = request.QueryStringParameters["start"];
             var end = request.QueryStringParameters["end"];
-            var client = new AwsDataAccess.DatabaseClient<Receipt>(
+            var client = new AwsDataAccess.DatabaseClient<ReceiptSaveResult>(
                 new AmazonDynamoDBClient(),
                 new ConsoleLogger());
             var scanRequest = new ScanRequest
             {
-                TableName = new Receipt().GetTable(),
+                TableName = new ReceiptSaveResult().GetTable(),
                 ExpressionAttributeValues = new Dictionary<string, AttributeValue>
                 {
                     {":start", new AttributeValue {S = start}},

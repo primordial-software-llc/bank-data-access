@@ -23,7 +23,7 @@ namespace FinanceApi.Tests.Reports
         [Fact]
         public void PrintReceiptsCashBasisIncome()
         {
-            var client = new AwsDataAccess.DatabaseClient<Receipt>(
+            var client = new AwsDataAccess.DatabaseClient<ReceiptSaveResult>(
                 Factory.CreateAmazonDynamoDbClient(),
                 new ConsoleLogger());
 
@@ -32,7 +32,7 @@ namespace FinanceApi.Tests.Reports
 
             var scanRequest = new ScanRequest // Can't use between on an id. It must be used on a range which requires an id. Until requests take longer than 30 seconds and timeout this solution is adequate.
             {
-                TableName = new Receipt().GetTable(),
+                TableName = new ReceiptSaveResult().GetTable(),
                 ExpressionAttributeValues = new Dictionary<string, AttributeValue>
                 {
                     {":start", new AttributeValue {S = start }},

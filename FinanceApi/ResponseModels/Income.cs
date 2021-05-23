@@ -4,6 +4,9 @@ namespace FinanceApi.ResponseModels
 {
     public class Income
     {
+        [JsonProperty("accountingId")]
+        public string AccountingId { get; set; }
+
         [JsonProperty("recordType")]
         public string RecordType { get; set; }
 

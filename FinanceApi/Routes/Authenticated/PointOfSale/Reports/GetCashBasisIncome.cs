@@ -44,6 +44,7 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale.Reports
             {
                 income.Add(new Income
                 {
+                    AccountingId = item.Id.ToString(),
                     RecordType = "payment",
                     Customer = item.CustomerRef.Name,
                     Amount = item.TotalAmount.ToString(),
@@ -54,6 +55,7 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale.Reports
             {
                 income.Add(new Income
                 {
+                    AccountingId = item.Id.ToString(),
                     RecordType = "salesReceipt",
                     Customer = item.CustomerRef.Name,
                     Amount = item.TotalAmount.ToString(),
