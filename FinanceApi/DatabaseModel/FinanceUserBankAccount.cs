@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Amazon.DynamoDBv2.Model;
-using AwsTools;
+using AwsDataAccess;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 

@@ -4,7 +4,6 @@ using System.Linq;
 using Amazon.DynamoDBv2;
 using Amazon.Lambda.Core;
 using AwsDataAccess;
-using AwsTools;
 using PropertyRentalManagement;
 using PropertyRentalManagement.Clover;
 using PropertyRentalManagement.Clover.Models;

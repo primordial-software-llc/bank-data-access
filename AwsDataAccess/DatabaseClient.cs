@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
-using AwsTools;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 

@@ -31,9 +31,12 @@ namespace FinanceApi.RequestModels
         public string DisplayName { get; set; }
 
         [JsonProperty("balance")]
-        public decimal Balance { get; set; }
+        public decimal? Balance { get; set; }
 
         [JsonProperty("spots")]
         public List<Spot> Spots { get; set; }
+
+        [JsonProperty("isActive")]
+        public bool? isActive { get; set; }
     }
 }

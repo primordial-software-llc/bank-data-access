@@ -1,4 +1,4 @@
-﻿using AwsTools;
+﻿using AwsDataAccess;
 using Xunit.Abstractions;
 
 namespace FinanceApi.Tests.InfrastructureAsCode

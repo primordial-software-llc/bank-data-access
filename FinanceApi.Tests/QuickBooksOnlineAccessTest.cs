@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Amazon.CloudWatchEvents.Model.Internal.MarshallTransformations;
+﻿using System.Collections.Generic;
 using FinanceApi.Tests.InfrastructureAsCode;
 using Newtonsoft.Json;
 using PropertyRentalManagement.QuickBooksOnline;

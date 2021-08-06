@@ -4,7 +4,6 @@ using Amazon.DynamoDBv2;
 using Amazon.Runtime;
 using Amazon.Runtime.CredentialManagement;
 using AwsDataAccess;
-using AwsTools;
 using PropertyRentalManagement.DatabaseModel;
 using PropertyRentalManagement.QuickBooksOnline;
 
