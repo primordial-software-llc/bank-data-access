@@ -31,29 +31,37 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
             var qboClient = new QuickBooksOnlineClient(PrivateAccounting.Constants.LakelandMiPuebloRealmId, qboDbClient, new ConsoleLogger());
             var vendorClient = new DatabaseClient<PropertyRentalManagement.DatabaseModel.Vendor>(dbClient, new ConsoleLogger());
             var nonRentalCustomerIds = PropertyRentalManagement.Constants.NonRentalCustomerIds;
-            var allActiveCustomers = qboClient.QueryAll<Customer>("select * from customer")
+            var customers = qboClient.QueryAll<Customer>("select * from customer")
                 .Where(x => !nonRentalCustomerIds.Contains(x.Id.GetValueOrDefault()))
                 .ToDictionary(x => x.Id);
 
-            var activeVendors = vendorClient.ScanAll(new ScanRequest(new PropertyRentalManagement.DatabaseModel.Vendor().GetTable()))
+            var vendors = vendorClient.ScanAll(new ScanRequest(new PropertyRentalManagement.DatabaseModel.Vendor().GetTable()))
                 .Where(x =>
-                    allActiveCustomers.ContainsKey(x.QuickBooksOnlineId) ||
+                    customers.ContainsKey(x.QuickBooksOnlineId) ||
                     (includeInactiveCustomersWithSpots && x.Spots != null && x.Spots.Any())
                 )
                 .ToDictionary(x => x.QuickBooksOnlineId);
 
-            var newCustomers = allActiveCustomers.Where(x => !activeVendors.ContainsKey(x.Key));
+            var newCustomers = customers.Where(x => !vendors.ContainsKey(x.Key));
             foreach (var newCustomer in newCustomers)
             {
                 var vendor = VendorService.CreateModel(newCustomer.Key, null, null, null);
                 vendorClient.Create(vendor);
-                activeVendors.Add(vendor.QuickBooksOnlineId, vendor);
+                vendors.Add(vendor.QuickBooksOnlineId, vendor);
+            }
+
+            if (includeInactiveCustomersWithSpots)
+            {
+                var inactiveVendors = vendors.Where(x => !customers.ContainsKey(x.Key));
+                var inactiveCustomerIds = inactiveVendors.Select(x => $"'{x.Value.QuickBooksOnlineId}'");
+                var inactiveCustomers = qboClient.Query<Customer>($"select * from customer where Id in ({string.Join(", ", inactiveCustomerIds)}) and Active = false");
+                inactiveCustomers.ForEach(x => customers.TryAdd(x.Id, x));
             }
 
             var json = new List<CustomerPaymentSettingsModel>();
-            foreach (var vendor in activeVendors.Values)
+            foreach (var vendor in vendors.Values)
             {
-                allActiveCustomers.TryGetValue(vendor.QuickBooksOnlineId, out var customer);
+                customers.TryGetValue(vendor.QuickBooksOnlineId, out var customer);
                 json.Add(new CustomerPaymentSettingsModel
                 {
                     Id = vendor.Id,
@@ -66,7 +74,7 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
                     DisplayName = customer?.DisplayName,
                     Balance = customer?.Balance,
                     Spots = vendor.Spots,
-                    isActive = customer != null
+                    isActive = (customer?.Active).GetValueOrDefault()
                 });
             }
             response.Body = JsonConvert.SerializeObject(json);

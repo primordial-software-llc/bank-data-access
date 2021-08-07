@@ -36,5 +36,8 @@ namespace PropertyRentalManagement.QuickBooksOnline.Models
 
         [JsonProperty("sparse")]
         public bool? Sparse { get; set; }
+
+        [JsonProperty("active")]
+        public bool? Active { get; set; }
     }
 }

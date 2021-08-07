@@ -24,7 +24,7 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
 
             var vendorDataClient = new DatabaseClient<Vendor>(dbClient, new ConsoleLogger());
             var vendor = vendorDataClient.Get(new Vendor {Id = request.QueryStringParameters["id"]}).Result;
-            var customer = qboClient.Query<Customer>($"select * from customer where Id = '{vendor.QuickBooksOnlineId}'").First();
+            var customer = qboClient.Query<Customer>($"select * from customer where Id = '{vendor.QuickBooksOnlineId}' and Active in (true, false)").FirstOrDefault();
 
             var json = new CustomerPaymentSettingsModel
             {
@@ -33,10 +33,11 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
                 PaymentFrequency = vendor.PaymentFrequency,
                 RentPrice = vendor.RentPrice,
                 Memo = vendor.Memo,
-                FirstName = customer.GivenName,
-                LastName = customer.FamilyName,
-                DisplayName = customer.DisplayName,
-                Spots = vendor.Spots
+                FirstName = customer?.GivenName,
+                LastName = customer?.FamilyName,
+                DisplayName = customer?.DisplayName,
+                Spots = vendor.Spots,
+                isActive = (customer?.Active).GetValueOrDefault()
             };
 
             response.Body = JsonConvert.SerializeObject(json);

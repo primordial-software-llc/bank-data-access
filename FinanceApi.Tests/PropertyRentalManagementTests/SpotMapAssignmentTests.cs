@@ -6,6 +6,7 @@ using AwsDataAccess;
 using FinanceApi.Tests.InfrastructureAsCode;
 using PropertyRentalManagement.BusinessLogic;
 using PropertyRentalManagement.DatabaseModel;
+using PropertyRentalManagement.QuickBooksOnline.Models;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -138,7 +139,7 @@ namespace FinanceApi.Tests.PropertyRentalManagementTests
         }
 
         [Fact]
-        public void PrintOrpanedSpots()
+        public void PrintOrphanedSpots()
         {
             var spotClient = new DatabaseClient<Spot>(Factory.CreateAmazonDynamoDbClient(), new XUnitLogger(Output));
             var spots = spotClient.ScanAll(new ScanRequest(new Spot().GetTable()))
