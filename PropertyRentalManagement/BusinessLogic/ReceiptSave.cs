@@ -237,7 +237,7 @@ namespace PropertyRentalManagement.BusinessLogic
                 },
                 TxnTaxDetail = new TxnTaxDetail
                 {
-                    TxnTaxCodeRef = new QuickBooksOnline.Models.Reference { Value = Constants.QUICKBOOKS_RENTAL_TAX_RATE.ToString() }
+                    TxnTaxCodeRef = new QuickBooksOnline.Models.Reference { Value = Constants.QUICKBOOKS_TAX_RATE_POLK_COUNTY_RENTAL.ToString() }
                 },
                 PrivateNote = memo,
                 SalesTermRef = new QuickBooksOnline.Models.Reference { Value = Constants.QUICKBOOKS_TERMS_DUE_NOW.ToString() }

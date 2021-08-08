@@ -29,7 +29,7 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
             var journalEntry = JsonConvert.DeserializeObject<JournalEntry>(request.Body);
             if (string.Equals(journalEntry.Type ?? string.Empty, Accounting.Constants.TYPE_INCOME, StringComparison.OrdinalIgnoreCase))
             {
-                journalEntry.TaxCode = PrivateAccounting.Constants.QUICKBOOKS_TAX_RATE;
+                journalEntry.TaxCode = PropertyRentalManagement.Constants.QUICKBOOKS_TAX_RATE_POLK_COUNTY;
             }
             var validation = new List<string>();
             validation.AddRange(GetDateValidation(journalEntry.Date));

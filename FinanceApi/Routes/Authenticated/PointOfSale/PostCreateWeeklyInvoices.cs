@@ -26,7 +26,7 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
             var day = JsonConvert.DeserializeObject<CalendarDay>(request.Body);
             var date = new DateTime(day.Year, day.Month, day.DayOfMonth, 0, 0, 0, DateTimeKind.Utc);
             Console.WriteLine($"{user.Email} is creating weekly invoices for {date:yyyy-MM-dd}");
-            var taxRate = new Tax().GetTaxRate(qboClient, PropertyRentalManagement.Constants.QUICKBOOKS_RENTAL_TAX_RATE);
+            var taxRate = new Tax().GetTaxRate(qboClient, PropertyRentalManagement.Constants.QUICKBOOKS_TAX_RATE_POLK_COUNTY_RENTAL);
             var recurringInvoices = new RecurringInvoices(new VendorService(awsDbClient), qboClient, taxRate, logger);
             var weeklyInvoices = recurringInvoices.CreateInvoicesForFrequency(date, RecurringInvoices.Frequency.Weekly);
             var invoicesJson = JsonConvert.SerializeObject(weeklyInvoices);

@@ -17,7 +17,7 @@ namespace PropertyRentalManagement.CreateWeeklyInvoices
         {
             var databaseClient = new DatabaseClient<QuickBooksOnlineConnection>(new AmazonDynamoDBClient(), new ConsoleLogger());
             var qboClient = new QuickBooksOnlineClient(PrivateAccounting.Constants.LakelandMiPuebloRealmId, databaseClient, new ConsoleLogger());
-            var taxRate = new Tax().GetTaxRate(qboClient, Constants.QUICKBOOKS_RENTAL_TAX_RATE);
+            var taxRate = new Tax().GetTaxRate(qboClient, Constants.QUICKBOOKS_TAX_RATE_POLK_COUNTY_RENTAL);
             var recurringInvoices = new RecurringInvoices(new VendorService(new AmazonDynamoDBClient()), qboClient, taxRate, new ConsoleLogger());
             recurringInvoices.CreateInvoicesForFrequency(DateTime.UtcNow.Date, RecurringInvoices.Frequency.Weekly);
             Console.WriteLine("Scheduled function PropertyRentalManagement.CreateWeeklyInvoices completed");

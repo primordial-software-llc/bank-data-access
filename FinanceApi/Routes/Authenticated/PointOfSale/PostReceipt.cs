@@ -44,7 +44,7 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
                 response.Body = new JObject { { "error", JArray.FromObject(validation) } }.ToString();
                 return;
             }
-            var taxRate = new Tax().GetTaxRate(qboClient, PropertyRentalManagement.Constants.QUICKBOOKS_RENTAL_TAX_RATE);
+            var taxRate = new Tax().GetTaxRate(qboClient, PropertyRentalManagement.Constants.QUICKBOOKS_TAX_RATE_POLK_COUNTY_RENTAL);
             var cardPayment = new CardPayment(logger, Configuration.CLOVER_MI_PUEBLO_PRIVATE_TOKEN);
             var receiptService = new ReceiptSave(receiptDbClient, qboClient, taxRate, spotReservationDbClient, logger, cardPayment);
             string customerId = receipt.Customer.Id;
