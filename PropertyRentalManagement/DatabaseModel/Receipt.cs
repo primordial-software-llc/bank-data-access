@@ -38,8 +38,10 @@ namespace PropertyRentalManagement.DatabaseModel
         [JsonProperty("isCardPresent")]
         public bool? IsCardPresent { get; set; }
 
+        [JsonProperty("locationId")]
+        public string LocationId { get; set; }
+
         [JsonProperty("timestamp")]
         public string Timestamp { get; set; }
-
     }
 }

@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using Amazon.DynamoDBv2.Model;
 using FinanceApi.Tests.InfrastructureAsCode;
 using PropertyRentalManagement;
-using PropertyRentalManagement.DatabaseModel;
 using PropertyRentalManagement.QuickBooksOnline.Models;
 using Xunit;
 using Xunit.Abstractions;
@@ -18,33 +15,6 @@ namespace FinanceApi.Tests.Reports
         public IncomeReport(ITestOutputHelper output)
         {
             Output = output;
-        }
-
-        [Fact]
-        public void PrintReceiptsCashBasisIncome()
-        {
-            var client = new AwsDataAccess.DatabaseClient<ReceiptSaveResult>(
-                Factory.CreateAmazonDynamoDbClient(),
-                new ConsoleLogger());
-
-            var start = "2020-10-17T14:40:52Z";
-            var end = "2020-10-19T14:40:52Z";
-
-            var scanRequest = new ScanRequest // Can't use between on an id. It must be used on a range which requires an id. Until requests take longer than 30 seconds and timeout this solution is adequate.
-            {
-                TableName = new ReceiptSaveResult().GetTable(),
-                ExpressionAttributeValues = new Dictionary<string, AttributeValue>
-                {
-                    {":start", new AttributeValue {S = start }},
-                    {":end", new AttributeValue {S = end }}
-                },
-                ExpressionAttributeNames = new Dictionary<string, string>
-                {
-                    { "#timestamp", "timestamp" }
-                },
-                FilterExpression = "#timestamp between :start and :end"
-            };
-            var results = client.ScanAll(scanRequest);
         }
 
         [Fact]

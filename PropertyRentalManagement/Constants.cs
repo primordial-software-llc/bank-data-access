@@ -4,6 +4,9 @@ namespace PropertyRentalManagement
 {
     public class Constants
     {
+        public static readonly string LOCATION_ID_LAKELAND = "6b14e1ca-78a7-42a6-900a-4b837f07e613";
+        public static readonly string LOCATION_ID_OCALA = "a9612133-3c4f-4a30-b9b6-5de73334ec1e";
+
         public static readonly int QUICKBOOKS_TAX_RATE_POLK_COUNTY_RENTAL = 5;
         public static readonly int QUICKBOOKS_TAX_RATE_POLK_COUNTY = 2;
 

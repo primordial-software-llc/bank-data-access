@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using AwsDataAccess;
+﻿using AwsDataAccess;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NodaTime;
@@ -11,6 +8,9 @@ using PropertyRentalManagement.QuickBooksOnline;
 using PropertyRentalManagement.QuickBooksOnline.Models;
 using PropertyRentalManagement.QuickBooksOnline.Models.Invoices;
 using PropertyRentalManagement.QuickBooksOnline.Models.Payments;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Vendor = PropertyRentalManagement.DatabaseModel.Vendor;
 
 namespace PropertyRentalManagement.BusinessLogic
@@ -20,24 +20,24 @@ namespace PropertyRentalManagement.BusinessLogic
         private DatabaseClient<ReceiptSaveResult> ReceiptDbClient { get; }
         private DatabaseClient<SpotReservation> SpotReservationDbClient { get; }
         private QuickBooksOnlineClient QuickBooksClient { get; }
-        private decimal TaxRate { get; }
+        private Location Location { get; }
         private ILogging Logger { get; }
         private CardPayment CardPayment { get; }
 
         public ReceiptSave(
             DatabaseClient<ReceiptSaveResult> receiptDbClient,
             QuickBooksOnlineClient quickBooksClient,
-            decimal taxRate,
             DatabaseClient<SpotReservation> spotReservationDbClient,
             ILogging logger,
-            CardPayment cardPayment)
+            CardPayment cardPayment,
+            Location location)
         {
             ReceiptDbClient = receiptDbClient;
             QuickBooksClient = quickBooksClient;
-            TaxRate = taxRate;
             SpotReservationDbClient = spotReservationDbClient;
             Logger = logger;
             CardPayment = cardPayment;
+            Location = location;
         }
 
         public ReceiptSaveResult SaveReceipt(
@@ -215,7 +215,8 @@ namespace PropertyRentalManagement.BusinessLogic
         private Invoice CreateInvoice(string customerId, decimal? rentalAmount, string transactionDate, string memo)
         {
             decimal quantity = 1;
-            decimal taxableAmount = rentalAmount.GetValueOrDefault() / (1 + TaxRate);
+            var taxRate = new Tax().GetTaxRate(QuickBooksClient, Location.SalesRentalTaxRateId);
+            decimal taxableAmount = rentalAmount.GetValueOrDefault() / (1 + taxRate);
             var invoice = new Invoice
             {
                 TxnDate = transactionDate,
@@ -227,7 +228,7 @@ namespace PropertyRentalManagement.BusinessLogic
                         DetailType = "SalesItemLineDetail",
                         SalesItemLineDetail = new SalesItemLineDetail
                         {
-                            ItemRef = new QuickBooksOnline.Models.Reference { Value = Constants.QUICKBOOKS_PRODUCT_RENT.ToString() },
+                            ItemRef = new QuickBooksOnline.Models.Reference { Value = Location.RentProductId.ToString() },
                             Quantity = quantity,
                             TaxCodeRef = new QuickBooksOnline.Models.Reference { Value = Accounting.Constants.QUICKBOOKS_INVOICE_LINE_TAXABLE },
                             UnitPrice = taxableAmount
@@ -237,7 +238,7 @@ namespace PropertyRentalManagement.BusinessLogic
                 },
                 TxnTaxDetail = new TxnTaxDetail
                 {
-                    TxnTaxCodeRef = new QuickBooksOnline.Models.Reference { Value = Constants.QUICKBOOKS_TAX_RATE_POLK_COUNTY_RENTAL.ToString() }
+                    TxnTaxCodeRef = new QuickBooksOnline.Models.Reference { Value = Location.SalesRentalTaxRateId.ToString() }
                 },
                 PrivateNote = memo,
                 SalesTermRef = new QuickBooksOnline.Models.Reference { Value = Constants.QUICKBOOKS_TERMS_DUE_NOW.ToString() }
