@@ -25,7 +25,7 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
             var receipt = JsonConvert.DeserializeObject<Receipt>(request.Body);
             if (string.IsNullOrWhiteSpace(receipt.LocationId))
             {
-                receipt.LocationId = PropertyRentalManagement.Constants.LOCATION_ID_LAKELAND;
+                receipt.LocationId = PropertyRentalManagement.Constants.LOCATION_ID_LAKELAND; // WARNING: location id should come from the UI and be required
             }
             var dbClient = new AmazonDynamoDBClient();
             var logger = new ConsoleLogger();
@@ -52,8 +52,7 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
             }
             var cardPayment = new CardPayment(logger, Configuration.CLOVER_MI_PUEBLO_PRIVATE_TOKEN);
             var location = locationClient.Get(new Location { Id = receipt.LocationId }).Result;
-            var receiptService = new ReceiptSave(receiptDbClient, qboClient, spotReservationDbClient, logger, cardPayment,
-                location);
+            var receiptService = new ReceiptSave(receiptDbClient, qboClient, spotReservationDbClient, logger, cardPayment, location);
             string customerId = receipt.Customer.Id;
             if (string.IsNullOrWhiteSpace(customerId))
             {
@@ -61,9 +60,13 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
                 customer = qboClient.Create(customer);
                 customerId = customer.Id.ToString();
             }
-            var vendor = activeVendors.FirstOrDefault(x => x.QuickBooksOnlineId.GetValueOrDefault().ToString() == customerId)
-                         ?? vendorDbClient.Create(VendorService.CreateModel(int.Parse(customerId), null, null, null));
-            receipt.Id = string.IsNullOrWhiteSpace(receipt.Id) ? Guid.NewGuid().ToString() : receipt.Id; // Needed until UI is deployed. Let's remove this when we test thoroughly for Ocala.
+            var vendor = activeVendors.FirstOrDefault(x => x.QuickBooksOnlineId.GetValueOrDefault().ToString() == customerId);
+            if (vendor == null)
+            {
+                var vendorService = new VendorService(dbClient, logger);
+                var vendorResult = vendorService.CreateVendor(int.Parse(customerId), null, null, null, receipt.LocationId);
+                vendor = vendorResult.Item1;
+            }
             var receiptResult = receiptService.SaveReceipt(receipt, customerId, user.FirstName, user.LastName, user.Email, vendor, IpLookup.GetIp(request));
             response.Body = JsonConvert.SerializeObject(receiptResult);
         }

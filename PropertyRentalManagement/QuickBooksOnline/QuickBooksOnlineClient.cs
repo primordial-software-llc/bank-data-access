@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -88,7 +89,19 @@ namespace PropertyRentalManagement.QuickBooksOnline
             var json = JObject.Parse(result);
             return json["QueryResponse"]["totalCount"].Value<int>();
         }
-
+        
+        public List<T> QueryAll<T>(string entity, string fieldName, List<string> values) where T : IQuickBooksOnlineEntity, new()
+        {
+            var batchedValues = Batcher.Batch(100, values);
+            var fullModels = new List<T>();
+            foreach (var batchOfValues in batchedValues)
+            {
+                var query = $"select * from {entity} where {fieldName} in ({string.Join(",", batchOfValues.Select(x => "'" + x + "'"))})";
+                fullModels.AddRange(QueryAll<T>(query));
+            }
+            return fullModels;
+        }
+        
         public List<T> QueryAll<T>(string query) where T : IQuickBooksOnlineEntity, new()
         {
             var count = QueryCount<T>(query.Replace("select * from", "select count(*) from"));

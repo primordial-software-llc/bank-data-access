@@ -67,8 +67,8 @@ namespace AwsDataAccess
         protected virtual async Task<List<T>> GetBatchOf100(List<Dictionary<string, AttributeValue>> modelKeyBatch)
         {
             var table = new T().GetTable();
-            var fullAds = new List<T>();
-            var fullAdBatchKeys = new Dictionary<string, KeysAndAttributes>
+            var fullModels = new List<T>();
+            var fullModelsBatchKeys = new Dictionary<string, KeysAndAttributes>
             {
                 {
                     table,
@@ -82,9 +82,9 @@ namespace AwsDataAccess
             do
             {
                 currentAttempt += 1;
-                var responseTask = Client.BatchGetItemAsync(fullAdBatchKeys).ConfigureAwait(false);
+                var responseTask = Client.BatchGetItemAsync(fullModelsBatchKeys).ConfigureAwait(false);
                 response = await responseTask;
-                fullAds.AddRange(response
+                fullModels.AddRange(response
                     .Responses[table]
                     .Select(x => JsonConvert.DeserializeObject<T>(Document.FromAttributeMap(x).ToJson())));
 
@@ -102,7 +102,7 @@ namespace AwsDataAccess
                 throw new Exception($"Failed to read all items after {MAX_ATTEMPTS} attempts.");
             }
 
-            return fullAds;
+            return fullModels;
         }
 
         public async Task<List<T>> Get(List<T> models)

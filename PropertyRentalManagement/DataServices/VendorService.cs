@@ -4,6 +4,7 @@ using System.Linq;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
+using AwsDataAccess;
 using Newtonsoft.Json;
 using PropertyRentalManagement.BusinessLogic;
 using PropertyRentalManagement.DatabaseModel;
@@ -13,13 +14,39 @@ namespace PropertyRentalManagement.DataServices
     public class VendorService
     {
         public IAmazonDynamoDB DbClient { get; }
+        public ILogging Logger { get; }
 
-        public VendorService(IAmazonDynamoDB dbClient)
+        public VendorService(IAmazonDynamoDB dbClient, ILogging logger)
         {
             DbClient = dbClient;
+            Logger = logger;
         }
 
-        public static Vendor CreateModel(
+        public Tuple<Vendor, VendorLocation> CreateVendor(
+            int? quickBooksOnlineId,
+            string paymentFrequency,
+            decimal? rentPrice,
+            string memo,
+            string locationId)
+        {
+            var vendorClient = new DatabaseClient<Vendor>(DbClient, Logger);
+            var vendor = vendorClient.Create(CreateModel(quickBooksOnlineId, paymentFrequency, rentPrice, memo));
+            var vendorLocation = AssignVendorLocation(vendor.Id, locationId);
+            return new Tuple<Vendor, VendorLocation>(vendor, vendorLocation);
+        }
+
+        public VendorLocation AssignVendorLocation(string vendorId, string locationId)
+        {
+            var vendorLocationClient = new DatabaseClient<VendorLocation>(DbClient, Logger);
+            var vendorLocation = vendorLocationClient.Create(new VendorLocation
+            {
+                VendorId = vendorId,
+                LocationId = locationId,
+            });
+            return vendorLocation;
+        }
+
+        private Vendor CreateModel(
             int? quickBooksOnlineId,
             string paymentFrequency,
             decimal? rentPrice,

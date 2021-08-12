@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 using PropertyRentalManagement.DatabaseModel;
 
-namespace FinanceApi.RequestModels
+namespace PropertyRentalManagement.RequestModels
 {
     public class CustomerPaymentSettingsModel
     {
@@ -37,6 +37,6 @@ namespace FinanceApi.RequestModels
         public List<Spot> Spots { get; set; }
 
         [JsonProperty("isActive")]
-        public bool? isActive { get; set; }
+        public bool? IsActive { get; set; }
     }
 }

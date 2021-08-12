@@ -34,6 +34,10 @@ namespace FinanceApi.Tests.InfrastructureAsCode
             return awsCredentials;
         }
 
+        /// <summary>
+        /// CreateAmazonDynamoDbClient for Mi Pueblo
+        /// </summary>
+        /// <returns></returns>
         public static IAmazonDynamoDB CreateAmazonDynamoDbClient()
         {
             return new AmazonDynamoDBClient(CreateCredentialsForLakelandMiPuebloProfile(), HomeRegion);
@@ -44,6 +48,11 @@ namespace FinanceApi.Tests.InfrastructureAsCode
             return new AmazonDynamoDBClient(CreateCredentialsFromProfile(), HomeRegion);
         }
 
+        /// <summary>
+        /// CreateQuickBooksOnlineClient for Mi Pueblo
+        /// </summary>
+        /// <param name="logger"></param>
+        /// <returns></returns>
         public static QuickBooksOnlineClient CreateQuickBooksOnlineClient(ILogging logger)
         {
             return CreateQuickBooksOnlineClient(PrivateAccounting.Constants.LakelandMiPuebloRealmId, logger);

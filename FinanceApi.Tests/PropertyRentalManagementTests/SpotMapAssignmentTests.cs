@@ -6,7 +6,6 @@ using AwsDataAccess;
 using FinanceApi.Tests.InfrastructureAsCode;
 using PropertyRentalManagement.BusinessLogic;
 using PropertyRentalManagement.DatabaseModel;
-using PropertyRentalManagement.QuickBooksOnline.Models;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -156,5 +155,6 @@ namespace FinanceApi.Tests.PropertyRentalManagementTests
                 }
             }
         }
+        
     }
 }

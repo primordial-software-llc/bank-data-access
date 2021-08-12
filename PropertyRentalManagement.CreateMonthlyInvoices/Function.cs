@@ -15,10 +15,11 @@ namespace PropertyRentalManagement.CreateMonthlyInvoices
     {
         public string FunctionHandler(ILambdaContext context)
         {
-            var databaseClient = new DatabaseClient<QuickBooksOnlineConnection>(new AmazonDynamoDBClient(), new ConsoleLogger());
-            var qboClient = new QuickBooksOnlineClient(PrivateAccounting.Constants.LakelandMiPuebloRealmId, databaseClient, new ConsoleLogger());
+            var logger = new ConsoleLogger();
+            var databaseClient = new DatabaseClient<QuickBooksOnlineConnection>(new AmazonDynamoDBClient(), logger);
+            var qboClient = new QuickBooksOnlineClient(PrivateAccounting.Constants.LakelandMiPuebloRealmId, databaseClient, logger);
             var taxRate = new Tax().GetTaxRate(qboClient, Constants.QUICKBOOKS_TAX_RATE_POLK_COUNTY_RENTAL);
-            var recurringInvoices = new RecurringInvoices(new VendorService(new AmazonDynamoDBClient()), qboClient, taxRate, new ConsoleLogger());
+            var recurringInvoices = new RecurringInvoices(new VendorService(new AmazonDynamoDBClient(), logger), qboClient, taxRate, logger);
             recurringInvoices.CreateInvoicesForFrequency(
                 DateTime.UtcNow.Date.AddMonths(1),
                 RecurringInvoices.Frequency.Monthly);

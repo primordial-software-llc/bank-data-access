@@ -7,6 +7,10 @@ namespace PropertyRentalManagement.DatabaseModel
 {
     public class Vendor : IModel
     {
+        public Vendor()
+        {
+
+        }
         [JsonProperty("id")]
         public string Id { get; set; }
 

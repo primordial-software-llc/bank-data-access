@@ -3,11 +3,11 @@ using Amazon.DynamoDBv2;
 using Amazon.Lambda.APIGatewayEvents;
 using AwsDataAccess;
 using FinanceApi.DatabaseModel;
-using FinanceApi.RequestModels;
 using Newtonsoft.Json;
 using PropertyRentalManagement.DatabaseModel;
 using PropertyRentalManagement.QuickBooksOnline;
 using PropertyRentalManagement.QuickBooksOnline.Models;
+using PropertyRentalManagement.RequestModels;
 using Vendor = PropertyRentalManagement.DatabaseModel.Vendor;
 
 namespace FinanceApi.Routes.Authenticated.PointOfSale
@@ -37,7 +37,7 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
                 LastName = customer?.FamilyName,
                 DisplayName = customer?.DisplayName,
                 Spots = vendor.Spots,
-                isActive = (customer?.Active).GetValueOrDefault()
+                IsActive = (customer?.Active).GetValueOrDefault()
             };
 
             response.Body = JsonConvert.SerializeObject(json);
