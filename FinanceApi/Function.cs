@@ -110,17 +110,23 @@ namespace FinanceApi
                     routes.Add(new Routes.Authenticated.PointOfSale.PatchSpot());
                     routes.Add(new Routes.Authenticated.PointOfSale.DeleteReservation());
                     routes.Add(new Routes.Authenticated.PointOfSale.PostReceipt());
-                    routes.Add(new Routes.Authenticated.PointOfSale.PostCreateWeeklyInvoices());
-                    routes.Add(new Routes.Authenticated.PointOfSale.PostCreateMonthlyInvoices());
                     routes.Add(new Routes.Authenticated.PointOfSale.PostTransaction());
                     routes.Add(new Routes.Authenticated.PointOfSale.PostSendToAccounting());
                     routes.Add(new Routes.Authenticated.PointOfSale.GetRecurringInvoiceDateRange());
+                    routes.Add(new Routes.Authenticated.PointOfSale.GetLocation());
+                    routes.Add(new Routes.Authenticated.PointOfSale.GetVendorLocation());
+                    routes.Add(new Routes.Authenticated.PointOfSale.PostVendorLocation());
                 }
                 if (new PointOfSaleAuthorization().IsAuthorizedForReports(user?.Email))
                 {
                     routes.Add(new Routes.Authenticated.PointOfSale.Reports.GetCashBasisIncome());
                     routes.Add(new Routes.Authenticated.PointOfSale.Reports.GetCardCharges());
                     routes.Add(new Routes.Authenticated.PointOfSale.Reports.GetCashBasisIncomeFromReceipts());
+                }
+                if (new PointOfSaleAuthorization().IsAuthorizedToCreateMassInvoices(user?.Email))
+                {
+                    routes.Add(new Routes.Authenticated.PointOfSale.PostCreateWeeklyInvoices());
+                    routes.Add(new Routes.Authenticated.PointOfSale.PostCreateMonthlyInvoices());
                 }
                 var matchedRoute = routes.FirstOrDefault(route => string.Equals(request.HttpMethod, route.HttpMethod, StringComparison.OrdinalIgnoreCase) &&
                                                                   string.Equals(request.Path, route.Path, StringComparison.OrdinalIgnoreCase));

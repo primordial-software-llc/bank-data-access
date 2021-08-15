@@ -21,5 +21,10 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
                    string.Equals(email, "kiara@primordial-software.com", StringComparison.OrdinalIgnoreCase) ||
                    string.Equals(email, "kmanrique506@hotmail.com", StringComparison.OrdinalIgnoreCase);
         }
+
+        public bool IsAuthorizedToCreateMassInvoices(string email)
+        {
+            return string.Equals(email, "timg456789@yahoo.com", StringComparison.OrdinalIgnoreCase);
+        }
     }
 }

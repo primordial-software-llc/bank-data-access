@@ -13,6 +13,12 @@ namespace PropertyRentalManagement.DatabaseModel
         [JsonProperty("vendorId")]
         public string VendorId { get; set; }
 
+        [JsonProperty("created")]
+        public string Created { get; set; }
+
+        [JsonProperty("createdBy")]
+        public string CreatedBy { get; set; }
+
         public Dictionary<string, AttributeValue> GetKey()
         {
             return new Dictionary<string, AttributeValue>

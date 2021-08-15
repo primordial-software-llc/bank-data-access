@@ -55,10 +55,12 @@ namespace FinanceApi.DatabaseModel
         [JsonProperty("weeklyRecurringExpenses")]
         public List<JObject> WeeklyRecurringExpenses { get; set; }
 
+        [JsonProperty("propertyLocationId")]
+        public string PropertyLocationId { get; set; }
+
         public Dictionary<string, AttributeValue> GetKey()
         {
             return new Dictionary<string, AttributeValue> { { "email", new AttributeValue { S = Email } } };
-
         }
 
         public string GetTable()
