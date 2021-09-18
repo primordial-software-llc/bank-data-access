@@ -104,18 +104,19 @@ namespace FinanceApi
                     routes.Add(new Routes.Authenticated.PointOfSale.GetCustomerPaymentSettings());
                     routes.Add(new Routes.Authenticated.PointOfSale.GetCustomerPaymentSettingsById());
                     routes.Add(new Routes.Authenticated.PointOfSale.GetCustomerInvoices());
-                    routes.Add(new Routes.Authenticated.PointOfSale.GetUnsentTransactions());
                     routes.Add(new Routes.Authenticated.PointOfSale.PatchVendor());
                     routes.Add(new Routes.Authenticated.PointOfSale.PostSpot());
                     routes.Add(new Routes.Authenticated.PointOfSale.PatchSpot());
                     routes.Add(new Routes.Authenticated.PointOfSale.DeleteReservation());
                     routes.Add(new Routes.Authenticated.PointOfSale.PostReceipt());
-                    routes.Add(new Routes.Authenticated.PointOfSale.PostTransaction());
-                    routes.Add(new Routes.Authenticated.PointOfSale.PostSendToAccounting());
                     routes.Add(new Routes.Authenticated.PointOfSale.GetRecurringInvoiceDateRange());
                     routes.Add(new Routes.Authenticated.PointOfSale.GetLocation());
                     routes.Add(new Routes.Authenticated.PointOfSale.GetVendorLocation());
                     routes.Add(new Routes.Authenticated.PointOfSale.PostVendorLocation());
+
+                    //routes.Add(new Routes.Authenticated.PointOfSale.GetUnsentTransactions());
+                    //routes.Add(new Routes.Authenticated.PointOfSale.PostTransaction());
+                    //routes.Add(new Routes.Authenticated.PointOfSale.PostSendToAccounting());
                 }
                 if (new PointOfSaleAuthorization().IsAuthorizedForReports(user?.Email))
                 {
