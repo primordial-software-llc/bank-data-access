@@ -19,5 +19,6 @@
     "tracing-mode"         : "PassThrough",
     "environment-variables" : "",
     "package-type"          : "Zip",
-    "image-tag"             : ""
+    "image-tag"             : "",
+    "function-architecture" : "x86_64"
 }
