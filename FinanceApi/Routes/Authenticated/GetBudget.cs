@@ -13,7 +13,7 @@ namespace FinanceApi.Routes.Authenticated
         public void Run(APIGatewayProxyRequest request, APIGatewayProxyResponse response, FinanceUser user)
         {
             var sanitizedUser = JObject.FromObject(user);
-            response.Body = JsonConvert.SerializeObject(sanitizedUser);
+            response.Body = sanitizedUser.ToString();
         }
     }
 }
