@@ -18,7 +18,7 @@ namespace FinanceApi
         /// </summary>
         public static List<string> BlackListedFinanceUserInputs => new List<string>
         {
-            "email", "firstName", "lastName", "licenseAgreement", "billingAgreement"
+            "email", "firstName", "lastName", "licenseAgreement", "billingAgreement", "bankLinks"
         };
 
         public static void SanitizeInput(JObject input)
