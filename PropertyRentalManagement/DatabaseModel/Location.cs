@@ -22,6 +22,9 @@ namespace PropertyRentalManagement.DatabaseModel
         [JsonProperty("salesTaxRateId")]
         public int SalesTaxRateId { get; set; }
 
+        [JsonProperty("invoiceItems")]
+        public List<string> InvoiceItems { get; set; }
+
         public Dictionary<string, AttributeValue> GetKey()
         {
             return new Dictionary<string, AttributeValue> { { "id", new AttributeValue { S = Id } } };

@@ -8,6 +8,9 @@ namespace PropertyRentalManagement.DatabaseModel
         [JsonProperty("id")]
         public string Id { get; set; }
 
+        [JsonProperty("invoiceItem")]
+        public Reference InvoiceItem { get; set; }
+
         [JsonProperty("rentalDate")]
         public string RentalDate { get; set; }
 

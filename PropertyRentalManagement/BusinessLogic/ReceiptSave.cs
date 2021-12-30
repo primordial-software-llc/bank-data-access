@@ -47,7 +47,8 @@ namespace PropertyRentalManagement.BusinessLogic
             string lastName,
             string email,
             Vendor vendor,
-            string userIp)
+            string userIp,
+            string invoiceItemId)
         {
             ReceiptSaveResult result = null;
             try
@@ -60,6 +61,7 @@ namespace PropertyRentalManagement.BusinessLogic
                     email,
                     vendor,
                     userIp,
+                    invoiceItemId,
                     out result);
             }
             catch (Exception e)
@@ -89,6 +91,7 @@ namespace PropertyRentalManagement.BusinessLogic
             string email,
             Vendor vendor,
             string userIp,
+            string invoiceItemId,
             out ReceiptSaveResult result)
         {
             var existing = ReceiptDbClient.Get(new ReceiptSaveResult { Id = receipt.Id }, true).Result;
@@ -140,7 +143,7 @@ namespace PropertyRentalManagement.BusinessLogic
 
             if (receipt.RentalAmount > 0)
             {
-                result.Invoice = QuickBooksClient.Create(CreateInvoice(customerId, receipt.RentalAmount, receipt.RentalDate, memo));
+                result.Invoice = QuickBooksClient.Create(CreateInvoice(customerId, receipt.RentalAmount, receipt.RentalDate, memo, invoiceItemId));
                 ReceiptDbClient.Create(result);
             }
 
@@ -212,7 +215,7 @@ namespace PropertyRentalManagement.BusinessLogic
             ReceiptDbClient.Create(result);
         }
 
-        private Invoice CreateInvoice(string customerId, decimal? rentalAmount, string transactionDate, string memo)
+        private Invoice CreateInvoice(string customerId, decimal? rentalAmount, string transactionDate, string memo, string invoiceItemId)
         {
             decimal quantity = 1;
             var taxRate = new Tax().GetTaxRate(QuickBooksClient, Location.SalesRentalTaxRateId);
@@ -228,7 +231,7 @@ namespace PropertyRentalManagement.BusinessLogic
                         DetailType = "SalesItemLineDetail",
                         SalesItemLineDetail = new SalesItemLineDetail
                         {
-                            ItemRef = new QuickBooksOnline.Models.Reference { Value = Location.RentProductId.ToString() },
+                            ItemRef = new QuickBooksOnline.Models.Reference { Value = invoiceItemId },
                             Quantity = quantity,
                             TaxCodeRef = new QuickBooksOnline.Models.Reference { Value = Accounting.Constants.QUICKBOOKS_INVOICE_LINE_TAXABLE },
                             UnitPrice = taxableAmount

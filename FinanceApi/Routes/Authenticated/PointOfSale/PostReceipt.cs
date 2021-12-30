@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using Amazon.DynamoDBv2;
 using Amazon.Lambda.APIGatewayEvents;
 using AwsDataAccess;
@@ -30,6 +28,11 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
             var dbClient = new AmazonDynamoDBClient();
             var logger = new ConsoleLogger();
             var locationClient = new DatabaseClient<Location>(dbClient, new ConsoleLogger());
+            var location = locationClient.Get(new Location { Id = receipt.LocationId }).Result;
+            if (string.IsNullOrWhiteSpace(receipt.InvoiceItem?.Id))
+            {
+                receipt.InvoiceItem = new PropertyRentalManagement.DatabaseModel.Reference { Id = location.RentProductId.ToString() };
+            }
             var receiptDbClient = new DatabaseClient<ReceiptSaveResult>(dbClient, logger);
             var spotReservationDbClient = new DatabaseClient<SpotReservation>(dbClient, logger);
             var vendorDbClient = new DatabaseClient<Vendor>(dbClient, logger);
@@ -51,7 +54,6 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
                 return;
             }
             var cardPayment = new CardPayment(logger, Configuration.CLOVER_MI_PUEBLO_PRIVATE_TOKEN);
-            var location = locationClient.Get(new Location { Id = receipt.LocationId }).Result;
             var receiptService = new ReceiptSave(receiptDbClient, qboClient, spotReservationDbClient, logger, cardPayment, location);
             string customerId = receipt.Customer.Id;
             if (string.IsNullOrWhiteSpace(customerId))
@@ -67,7 +69,7 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
                 var vendorResult = vendorService.CreateVendor(int.Parse(customerId), null, null, null, receipt.LocationId);
                 vendor = vendorResult.Item1;
             }
-            var receiptResult = receiptService.SaveReceipt(receipt, customerId, user.FirstName, user.LastName, user.Email, vendor, IpLookup.GetIp(request));
+            var receiptResult = receiptService.SaveReceipt(receipt, customerId, user.FirstName, user.LastName, user.Email, vendor, IpLookup.GetIp(request), receipt.InvoiceItem.Id);
             response.Body = JsonConvert.SerializeObject(receiptResult);
         }
     }

@@ -1,6 +1,5 @@
 ﻿using Amazon.Lambda.APIGatewayEvents;
 using FinanceApi.DatabaseModel;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace FinanceApi.Routes.Authenticated

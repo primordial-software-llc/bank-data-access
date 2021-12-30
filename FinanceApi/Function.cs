@@ -77,8 +77,7 @@ namespace FinanceApi
                 {
                     new Routes.Unauthenticated.PostSetToken(),
                     new Routes.Unauthenticated.PostRefreshToken(),
-                    new Routes.Unauthenticated.PostSignup(),
-                    new Routes.Unauthenticated.PointOfSale.GetSpotsForPublic()
+                    new Routes.Unauthenticated.PostSignup()
                 };
                 if ((user?.BillingAgreement?.AgreedToBillingTerms).GetValueOrDefault())
                 {
@@ -99,6 +98,7 @@ namespace FinanceApi
                 if (new PointOfSaleAuthorization().IsAuthorized(user?.Email))
                 {
                     routes.Add(new Routes.Authenticated.PointOfSale.GetCustomers());
+                    routes.Add(new Routes.Authenticated.PointOfSale.GetInvoiceItems());
                     routes.Add(new Routes.Authenticated.PointOfSale.GetSpots());
                     routes.Add(new Routes.Authenticated.PointOfSale.GetSpotReservations());
                     routes.Add(new Routes.Authenticated.PointOfSale.GetCustomerPaymentSettings());
