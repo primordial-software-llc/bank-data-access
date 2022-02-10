@@ -11,7 +11,8 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
                    string.Equals(email, "kiara@primordial-software.com", StringComparison.OrdinalIgnoreCase) ||
                    string.Equals(email, "kmanrique506@hotmail.com", StringComparison.OrdinalIgnoreCase) ||
                    string.Equals(email, "lakeland.mipueblo@outlook.com", StringComparison.OrdinalIgnoreCase) ||
-                   string.Equals(email, "george.loyola21@gmail.com", StringComparison.OrdinalIgnoreCase);
+                   string.Equals(email, "george.loyola21@gmail.com", StringComparison.OrdinalIgnoreCase) ||
+                   string.Equals(email, "lizeth.martinez08@gmail.com", StringComparison.OrdinalIgnoreCase);
         }
 
         public bool IsAuthorizedForReports(string email)
