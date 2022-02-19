@@ -24,8 +24,7 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
             var day = JsonConvert.DeserializeObject<CalendarDay>(request.Body);
             var date = new DateTime(day.Year, day.Month, day.DayOfMonth, 0, 0, 0, DateTimeKind.Utc);
             Console.WriteLine($"{user.Email} is creating monthly invoices for {date:yyyy-MM-dd}");
-            var taxRate = new Tax().GetTaxRate(qboClient, PropertyRentalManagement.Constants.QUICKBOOKS_TAX_RATE_POLK_COUNTY_RENTAL);
-            var recurringInvoices = new RecurringInvoices(new VendorService(new AmazonDynamoDBClient(), new ConsoleLogger()), qboClient, taxRate, new ConsoleLogger());
+            var recurringInvoices = new RecurringInvoices(new VendorService(new AmazonDynamoDBClient(), new ConsoleLogger()), qboClient, new ConsoleLogger());
             var monthlyInvoices = recurringInvoices.CreateInvoicesForFrequency(date, RecurringInvoices.Frequency.Monthly);
             var invoiceJson = JsonConvert.SerializeObject(monthlyInvoices);
             response.Body = invoiceJson;

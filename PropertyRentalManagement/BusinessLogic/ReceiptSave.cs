@@ -143,7 +143,16 @@ namespace PropertyRentalManagement.BusinessLogic
 
             if (receipt.RentalAmount > 0)
             {
-                result.Invoice = QuickBooksClient.Create(CreateInvoice(customerId, receipt.RentalAmount, receipt.RentalDate, memo, invoiceItemId));
+                result.Invoice = QuickBooksClient.Create(
+                    new InvoiceCreation().CreateInvoiceModel(
+                        QuickBooksClient,
+                        customerId,
+                        receipt.RentalAmount,
+                        receipt.RentalDate,
+                        memo,
+                        invoiceItemId,
+                        Location,
+                        true));
                 ReceiptDbClient.Create(result);
             }
 
@@ -213,40 +222,6 @@ namespace PropertyRentalManagement.BusinessLogic
                 }
             }
             ReceiptDbClient.Create(result);
-        }
-
-        private Invoice CreateInvoice(string customerId, decimal? rentalAmount, string transactionDate, string memo, string invoiceItemId)
-        {
-            decimal quantity = 1;
-            var taxRate = new Tax().GetTaxRate(QuickBooksClient, Location.SalesRentalTaxRateId);
-            decimal taxableAmount = rentalAmount.GetValueOrDefault() / (1 + taxRate);
-            var invoice = new Invoice
-            {
-                TxnDate = transactionDate,
-                CustomerRef = new QuickBooksOnline.Models.Reference { Value = customerId },
-                Line = new List<SalesLine>
-                {
-                    new SalesLine
-                    {
-                        DetailType = "SalesItemLineDetail",
-                        SalesItemLineDetail = new SalesItemLineDetail
-                        {
-                            ItemRef = new QuickBooksOnline.Models.Reference { Value = invoiceItemId },
-                            Quantity = quantity,
-                            TaxCodeRef = new QuickBooksOnline.Models.Reference { Value = Accounting.Constants.QUICKBOOKS_INVOICE_LINE_TAXABLE },
-                            UnitPrice = taxableAmount
-                        },
-                        Amount = quantity * taxableAmount
-                    }
-                },
-                TxnTaxDetail = new TxnTaxDetail
-                {
-                    TxnTaxCodeRef = new QuickBooksOnline.Models.Reference { Value = Location.SalesRentalTaxRateId.ToString() }
-                },
-                PrivateNote = memo,
-                SalesTermRef = new QuickBooksOnline.Models.Reference { Value = Constants.QUICKBOOKS_TERMS_DUE_NOW.ToString() }
-            };
-            return invoice;
         }
 
         private void Revert(ReceiptSaveResult result)

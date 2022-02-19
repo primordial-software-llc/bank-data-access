@@ -1,11 +1,8 @@
-﻿using System.Collections.Generic;
-using Amazon.DynamoDBv2;
-using Amazon.DynamoDBv2.Model;
+﻿using Amazon.DynamoDBv2;
 using Amazon.Lambda.APIGatewayEvents;
-using AwsDataAccess;
 using FinanceApi.DatabaseModel;
 using Newtonsoft.Json;
-using PropertyRentalManagement.DatabaseModel;
+using PropertyRentalManagement.DataServices;
 
 namespace FinanceApi.Routes.Authenticated.PointOfSale
 {
@@ -18,22 +15,9 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
             var dbClient = new AmazonDynamoDBClient();
             var logger = new ConsoleLogger();
             var vendorId = request.QueryStringParameters["vendorId"];
-            var locationClient = new DatabaseClient<Location>(dbClient, logger);
-            var locations = locationClient.ScanAll(new ScanRequest(new Location().GetTable()));
-            var vendorLocationClient = new DatabaseClient<VendorLocation>(dbClient, logger);
-            var vendorLocations = new List<VendorLocation>();
-            foreach (var location in locations)
-            {
-                var vendorLocation = vendorLocationClient.Get(new VendorLocation
-                {
-                    VendorId = vendorId,
-                    LocationId = location.Id
-                }).Result;
-                if (vendorLocation != null)
-                {
-                    vendorLocations.Add(vendorLocation);
-                }
-            }
+            var vendorService = new VendorService(dbClient, logger);
+            var locations = vendorService.GetLocations();
+            var vendorLocations = vendorService.GetVendorLocations(locations, vendorId);
             response.Body = JsonConvert.SerializeObject(vendorLocations);
         }
     }

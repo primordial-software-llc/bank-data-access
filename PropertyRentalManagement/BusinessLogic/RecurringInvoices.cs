@@ -6,7 +6,6 @@ using Newtonsoft.Json;
 using PropertyRentalManagement.DataServices;
 using PropertyRentalManagement.QuickBooksOnline;
 using PropertyRentalManagement.QuickBooksOnline.Models;
-using PropertyRentalManagement.QuickBooksOnline.Models.Invoices;
 
 namespace PropertyRentalManagement.BusinessLogic
 {
@@ -20,14 +19,12 @@ namespace PropertyRentalManagement.BusinessLogic
 
         private VendorService VendorService { get; }
         private QuickBooksOnlineClient QuickBooksClient { get; }
-        private decimal TaxRate { get; }
         private ILogging Logging { get; }
 
-        public RecurringInvoices(VendorService vendorService, QuickBooksOnlineClient quickBooksClient, decimal taxRate, ILogging logging)
+        public RecurringInvoices(VendorService vendorService, QuickBooksOnlineClient quickBooksClient, ILogging logging)
         {
             VendorService = vendorService;
             QuickBooksClient = quickBooksClient;
-            TaxRate = taxRate;
             Logging = logging;
         }
 
@@ -66,6 +63,7 @@ namespace PropertyRentalManagement.BusinessLogic
             var allActiveCustomers = QuickBooksClient.QueryAll<Customer>("select * from customer")
                 .ToDictionary(x => x.Id);
             var vendors = new ActiveVendorSearch().GetActiveVendors(allActiveCustomers, VendorService, frequency);
+            var locations = VendorService.GetLocations();
             var newInvoices = new List<Invoice>();
             foreach (var vendor in vendors.Values)
             {
@@ -73,7 +71,21 @@ namespace PropertyRentalManagement.BusinessLogic
                 if (!vendorInvoices.Any())
                 {
                     var invoiceDate = frequency == Frequency.Weekly ? dateRange.End : dateRange.Start;
-                    newInvoices.Add(CreateInvoice(invoiceDate, allActiveCustomers[vendor.QuickBooksOnlineId], vendor));
+                    var vendorLocation = VendorService
+                        .GetVendorLocations(locations, vendor.Id)
+                        .First();
+                    var invoiceLocation = locations.First(x => x.Id == vendorLocation.LocationId);
+                    var invoiceModel = new InvoiceCreation().CreateInvoiceModel(
+                        QuickBooksClient,
+                        allActiveCustomers[vendor.QuickBooksOnlineId].Id.ToString(),
+                        vendor.RentPrice.GetValueOrDefault(),
+                        invoiceDate.ToString("yyyy-MM-dd"),
+                        vendor.Memo,
+                        Constants.QUICKBOOKS_PRODUCT_RENT.ToString(),
+                        invoiceLocation,
+                        true);
+                    invoiceModel = QuickBooksClient.Create(invoiceModel);
+                    newInvoices.Add(invoiceModel);
                 }
             }
             var paymentApplicator = new PaymentApplicator(QuickBooksClient);
@@ -82,39 +94,6 @@ namespace PropertyRentalManagement.BusinessLogic
                 paymentApplicator.ApplyUnappliedPaymentsToInvoice(invoice);
             }
             return newInvoices;
-        }
-
-        private Invoice CreateInvoice(DateTime date, Customer customer, DatabaseModel.Vendor vendor)
-        {
-            decimal quantity = 1;
-            decimal taxableAmount = vendor.RentPrice.GetValueOrDefault() / (1 + TaxRate);
-            var invoice = new Invoice
-            {
-                TxnDate = date.ToString("yyyy-MM-dd"),
-                CustomerRef = new Reference { Value = customer.Id.ToString() },
-                Line = new List<SalesLine>
-                {
-                    new SalesLine
-                    {
-                        DetailType = "SalesItemLineDetail",
-                        SalesItemLineDetail = new SalesItemLineDetail
-                        {
-                            ItemRef = new Reference { Value = Constants.QUICKBOOKS_PRODUCT_RENT.ToString() },
-                            Quantity = quantity,
-                            TaxCodeRef = new Reference { Value = Accounting.Constants.QUICKBOOKS_INVOICE_LINE_TAXABLE },
-                            UnitPrice = taxableAmount
-                        },
-                        Amount = quantity * taxableAmount
-                    }
-                },
-                TxnTaxDetail = new TxnTaxDetail
-                {
-                    TxnTaxCodeRef = new Reference { Value = Constants.QUICKBOOKS_TAX_RATE_POLK_COUNTY_RENTAL.ToString() }
-                },
-                PrivateNote = vendor.Memo,
-                SalesTermRef = new Reference { Value = Constants.QUICKBOOKS_TERMS_DUE_NOW.ToString() }
-            };
-            return QuickBooksClient.Create(invoice);
         }
 
         public static DateRange GetRange(Frequency frequency, DateTime date)
