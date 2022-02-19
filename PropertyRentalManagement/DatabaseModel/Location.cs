@@ -18,9 +18,6 @@ namespace PropertyRentalManagement.DatabaseModel
 
         [JsonProperty("salesRentalTaxRateId")]
         public int SalesRentalTaxRateId { get; set; }
-        
-        [JsonProperty("salesTaxRateId")]
-        public int SalesTaxRateId { get; set; }
 
         [JsonProperty("invoiceItems")]
         public List<string> InvoiceItems { get; set; }

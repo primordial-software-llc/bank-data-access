@@ -6,7 +6,7 @@ namespace PropertyRentalManagement.BusinessLogic
 {
     public class Tax
     {
-        public decimal GetTaxRate(QuickBooksOnlineClient client, int taxCodeId)
+        public decimal GetTaxRate(QuickBooksOnlineClient client, string taxCodeId)
         {
             var taxCode = client.Query<TaxCode>($"select * from TaxCode where Id = '{taxCodeId}'").Single();
             var taxRateId = taxCode.SalesTaxRateList.TaxRateDetail.Single().TaxRateRef.Value;

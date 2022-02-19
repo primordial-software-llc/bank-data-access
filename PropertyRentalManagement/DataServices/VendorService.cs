@@ -100,5 +100,33 @@ namespace PropertyRentalManagement.DataServices
 
             return items;
         }
+
+        public List<Location> GetLocations()
+        {
+            var locationClient = new DatabaseClient<Location>(DbClient, Logger);
+            var locations = locationClient.ScanAll(new ScanRequest(new Location().GetTable()));
+            return locations;
+        }
+
+        public List<VendorLocation> GetVendorLocations(
+            List<Location> locations,
+            string vendorId)
+        {
+            var vendorLocationClient = new DatabaseClient<VendorLocation>(DbClient, Logger);
+            var vendorLocations = new List<VendorLocation>();
+            foreach (var location in locations)
+            {
+                var vendorLocation = vendorLocationClient.Get(new VendorLocation
+                {
+                    VendorId = vendorId,
+                    LocationId = location.Id
+                }).Result;
+                if (vendorLocation != null)
+                {
+                    vendorLocations.Add(vendorLocation);
+                }
+            }
+            return vendorLocations;
+        }
     }
 }

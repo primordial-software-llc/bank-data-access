@@ -35,6 +35,10 @@ namespace FinanceApi.Routes.Authenticated.PointOfSale
             {
                 errors.Add("vendorId is required for each vendor location.");
             }
+            if (vendorLocationUpdates.Count > 1)
+            {
+                errors.Add("A vendor can only be assigned to a single location.");
+            }
             if (errors.Any())
             {
                 response.StatusCode = 400;

@@ -57,6 +57,5 @@ namespace FinanceApi.Tests
             Assert.Equal("2020-07-01", RecurringInvoices.StartOfMonth(new DateTime(2020, 7, 13)).ToString("yyyy-MM-dd"));
             Assert.Equal("2020-08-01", RecurringInvoices.StartOfMonth(new DateTime(2020, 8, 14)).ToString("yyyy-MM-dd"));
         }
-
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using FinanceApi.Tests.InfrastructureAsCode;
 using Newtonsoft.Json;
 using PropertyRentalManagement.QuickBooksOnline;
@@ -21,9 +22,12 @@ namespace FinanceApi.Tests
         public void GetCustomers()
         {
             var qboClient = Factory.CreateQuickBooksOnlineClient(new XUnitLogger(Output));
-            var customers = qboClient.QueryAll<Customer>("select * from Customer");
-            Output.WriteLine(customers.Count.ToString());
-            Output.WriteLine(JsonConvert.SerializeObject(customers));
+            //var customers = qboClient.QueryAll<Customer>("select * from Customer");
+            var invoice = qboClient.QueryAll<Invoice>($"select * from Invoice where id = '{45477}'").First();
+            //Output.WriteLine(customers.Count.ToString());
+            //Output.WriteLine(JsonConvert.SerializeObject(customers));
+            invoice.Line.First().SalesItemLineDetail.TaxCodeRef = null;
+            invoice = qboClient.Create(invoice);
         }
 
         private void CreateExpense(QuickBooksOnlineClient client, string txnDate, decimal amount, string account, string privateNote)
