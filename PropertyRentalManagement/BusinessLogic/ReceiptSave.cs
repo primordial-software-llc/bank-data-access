@@ -6,7 +6,6 @@ using NodaTime.Extensions;
 using PropertyRentalManagement.DatabaseModel;
 using PropertyRentalManagement.QuickBooksOnline;
 using PropertyRentalManagement.QuickBooksOnline.Models;
-using PropertyRentalManagement.QuickBooksOnline.Models.Invoices;
 using PropertyRentalManagement.QuickBooksOnline.Models.Payments;
 using System;
 using System.Collections.Generic;
