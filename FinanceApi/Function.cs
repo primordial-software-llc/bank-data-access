@@ -113,10 +113,6 @@ namespace FinanceApi
                     routes.Add(new Routes.Authenticated.PointOfSale.GetLocation());
                     routes.Add(new Routes.Authenticated.PointOfSale.GetVendorLocation());
                     routes.Add(new Routes.Authenticated.PointOfSale.PostVendorLocation());
-
-                    //routes.Add(new Routes.Authenticated.PointOfSale.GetUnsentTransactions());
-                    //routes.Add(new Routes.Authenticated.PointOfSale.PostTransaction());
-                    //routes.Add(new Routes.Authenticated.PointOfSale.PostSendToAccounting());
                 }
                 if (new PointOfSaleAuthorization().IsAuthorizedForReports(user?.Email))
                 {
