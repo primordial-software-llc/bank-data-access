@@ -116,24 +116,6 @@ namespace PropertyRentalManagement.BusinessLogic
             };
             ReceiptDbClient.Create(result);
             var memo = receipt.Memo;
-            if (receipt.MakeCardPayment.GetValueOrDefault())
-            {
-                var last4 = receipt.CardPayment.CardNumber.Substring(receipt.CardPayment.CardNumber.Length - 4);
-                Logger.Log($"{firstName} {lastName} {email} is charging card ending in {last4} ${receipt.ThisPayment:C} on {DateTime.UtcNow:O} for receipt {result.Id}.");
-                var chargeResult = CardPayment.Authorize(
-                    receipt.ThisPayment * 100,
-                    receipt.CardPayment.CardNumber,
-                    receipt.CardPayment.ExpirationMonth,
-                    receipt.CardPayment.ExpirationYear,
-                    receipt.CardPayment.Cvv,
-                    receipt.IsCardPresent);
-                result.CardAuthorizationResult = chargeResult;
-                ReceiptDbClient.Create(result);
-                if (chargeResult["error"] != null)
-                {
-                    return;
-                }
-            }
 
             if (receipt.Spots != null && receipt.Spots.Any())
             {
@@ -213,11 +195,33 @@ namespace PropertyRentalManagement.BusinessLogic
 
             if (receipt.MakeCardPayment.GetValueOrDefault())
             {
-                result.CardCaptureResult = CardPayment.Capture(result.CardAuthorizationResult["id"].Value<string>());
-                for (var ct = 0; ct < result.Payments.Count; ct++)
+                var last4 = receipt.CardPayment.CardNumber.Substring(receipt.CardPayment.CardNumber.Length - 4);
+                Logger.Log($"{firstName} {lastName} {email} is charging card ending in {last4} ${receipt.ThisPayment:C} on {DateTime.UtcNow:O} for receipt {result.Id}.");
+                var chargeResult = CardPayment.Charge(
+                    receipt.ThisPayment * 100,
+                    receipt.CardPayment.CardNumber,
+                    receipt.CardPayment.ExpirationMonth,
+                    receipt.CardPayment.ExpirationYear,
+                    receipt.CardPayment.Cvv,
+                    receipt.IsCardPresent);
+                result.CardAuthorizationResult = chargeResult;
+                result.CardCaptureResult = chargeResult;
+                ReceiptDbClient.Create(result);
+                if (chargeResult["error"] != null)
                 {
-                    result.Payments[ct].PrivateNote += Environment.NewLine + Environment.NewLine + $"Card payment confirmation {result.CardAuthorizationResult.ToString(Formatting.Indented)}";
-                    result.Payments[ct] = QuickBooksClient.SparseUpdate(result.Payments[ct]);
+                    return;
+                }
+                try // Clover charges aren't reverted so we don't want to raise any exceptions after this point and consider the transaction a success. Failing to record the charge confirmation onto the QBO payment is a trivial issue anyway and doesn't affect the business or customer.
+                {
+                    for (var ct = 0; ct < result.Payments.Count; ct++)
+                    {
+                        result.Payments[ct].PrivateNote += Environment.NewLine + Environment.NewLine + $"Card payment confirmation {result.CardCaptureResult.ToString(Formatting.Indented)}";
+                        result.Payments[ct] = QuickBooksClient.SparseUpdate(result.Payments[ct]);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Logger.Log("Failed to update QuickBooks Online payment with payment confirmation charge id: " + e);
                 }
             }
             ReceiptDbClient.Create(result);

@@ -56,7 +56,7 @@ namespace PropertyRentalManagement.BusinessLogic
             return JObject.Parse(body);
         }
 
-        public JObject Authorize(
+        public JObject Charge(
             decimal? amountInCents,
             string cardNumber,
             string expirationMonth,
@@ -111,12 +111,12 @@ namespace PropertyRentalManagement.BusinessLogic
             {
                 { "amount", amountInCents },
                 { "source", sourceToken },
-                { "capture", false },
+                { "capture", true },
                 { "currency", "usd" }
             };
             if (isCardPresent.HasValue)
             {
-                chargeData["ecomind"] = isCardPresent.Value ? "ecom" : "moto";
+                chargeData["ecomind"] = "moto"; // Card is entered by the mercant vs "ecom" where card is entered by the customer.
             }
             var chargeRequest = new HttpRequestMessage(HttpMethod.Post, $"{CLOVER_PROD_ECOMMERCE_API}/v1/charges");
             chargeRequest.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
